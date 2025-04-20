@@ -9,6 +9,7 @@ import Witnesses from "@/pages/witnesses";
 import About from "@/pages/about";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 function Router() {
   return (
@@ -24,16 +25,18 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <div className="min-h-screen flex flex-col">
-          <Header />
-          <main className="flex-1">
-            <Router />
-          </main>
-          <Footer />
-        </div>
-        <Toaster />
-      </TooltipProvider>
+      <ThemeProvider defaultTheme="system">
+        <TooltipProvider>
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            <main className="flex-1">
+              <Router />
+            </main>
+            <Footer />
+          </div>
+          <Toaster />
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

@@ -5,6 +5,7 @@ import LoginModal from '../modals/LoginModal';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { ThemeToggle } from '../ThemeToggle';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -30,7 +31,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+      <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm transition-colors duration-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center">
@@ -46,13 +47,13 @@ export default function Header() {
               
               {/* Desktop Navigation */}
               <nav className="hidden md:ml-8 md:flex md:space-x-8">
-                <Link href="/" className={`px-3 py-2 text-sm font-medium ${isActive('/') ? 'text-primary-600' : 'text-gray-600 hover:text-primary-600'}`}>
+                <Link href="/" className={`px-3 py-2 text-sm font-medium ${isActive('/') ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}>
                   Home
                 </Link>
-                <Link href="/witnesses" className={`px-3 py-2 text-sm font-medium ${isActive('/witnesses') ? 'text-primary-600' : 'text-gray-600 hover:text-primary-600'}`}>
+                <Link href="/witnesses" className={`px-3 py-2 text-sm font-medium ${isActive('/witnesses') ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}>
                   Witnesses
                 </Link>
-                <Link href="/about" className={`px-3 py-2 text-sm font-medium ${isActive('/about') ? 'text-primary-600' : 'text-gray-600 hover:text-primary-600'}`}>
+                <Link href="/about" className={`px-3 py-2 text-sm font-medium ${isActive('/about') ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}>
                   About Aliento
                 </Link>
               </nav>
@@ -60,10 +61,13 @@ export default function Header() {
             
             {/* Authentication */}
             <div className="flex items-center gap-4">
+              <ThemeToggle />
+              
               {!isLoggedIn ? (
                 <Button
                   onClick={handleLogin}
-                  className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium bg-primary-500 text-white hover:bg-primary-600"
+                  variant="default"
+                  className="inline-flex items-center justify-center"
                 >
                   <span className="material-symbols-outlined mr-1">login</span>
                   Login with Keychain
@@ -89,7 +93,7 @@ export default function Header() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-500 cursor-pointer">
+                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
                       Logout
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -99,7 +103,7 @@ export default function Header() {
               {/* Mobile menu button */}
               <button 
                 type="button" 
-                className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+                className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
                 onClick={toggleMobileMenu}
               >
                 <span className="sr-only">Open main menu</span>
@@ -112,13 +116,13 @@ export default function Header() {
         {/* Mobile Navigation Menu */}
         <div className={`md:hidden ${mobileMenuOpen ? '' : 'hidden'}`}>
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <Link href="/" className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/') ? 'bg-primary-50 text-primary-600' : 'text-gray-600 hover:bg-gray-50 hover:text-primary-600'}`}>
+            <Link href="/" className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-primary'}`}>
               Home
             </Link>
-            <Link href="/witnesses" className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/witnesses') ? 'bg-primary-50 text-primary-600' : 'text-gray-600 hover:bg-gray-50 hover:text-primary-600'}`}>
+            <Link href="/witnesses" className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/witnesses') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-primary'}`}>
               Witnesses
             </Link>
-            <Link href="/about" className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/about') ? 'bg-primary-50 text-primary-600' : 'text-gray-600 hover:bg-gray-50 hover:text-primary-600'}`}>
+            <Link href="/about" className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/about') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-primary'}`}>
               About Aliento
             </Link>
           </div>
