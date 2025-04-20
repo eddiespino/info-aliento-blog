@@ -21,14 +21,14 @@ export default function Home() {
                   Vote for trusted witnesses to secure the network and support the Aliento project's vision for a decentralized future.
                 </p>
 
-                <div className="mt-10 flex gap-3 justify-center">
-                  <Link href="/witnesses">
-                    <Button className="rounded-md px-5 py-3 font-medium">
+                <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center px-4">
+                  <Link href="/witnesses" className="w-full sm:w-auto">
+                    <Button className="rounded-md px-5 py-3 font-medium w-full sm:w-auto">
                       View Top Witnesses
                     </Button>
                   </Link>
-                  <Link href="/about">
-                    <Button variant="outline" className="rounded-md px-5 py-3 font-medium">
+                  <Link href="/about" className="w-full sm:w-auto">
+                    <Button variant="outline" className="rounded-md px-5 py-3 font-medium w-full sm:w-auto">
                       About Aliento
                     </Button>
                   </Link>
@@ -69,12 +69,12 @@ export default function Home() {
           <p className="text-xl text-primary-foreground/90 mb-8 max-w-3xl mx-auto">
             Participate in a truly decentralized ecosystem, support witnesses, and help shape the future of the blockchain.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
             <a 
               href="https://peakd.com" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md bg-card text-primary hover:bg-card/90 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md bg-card text-primary hover:bg-card/90 focus:outline-none focus:ring-2 focus:ring-primary w-full"
             >
               Join Hive
             </a>
@@ -82,7 +82,7 @@ export default function Home() {
               href="https://hive.io/whitepaper.pdf" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="inline-flex items-center justify-center px-5 py-3 border border-primary-foreground text-base font-medium rounded-md text-primary-foreground hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary-foreground"
+              className="inline-flex items-center justify-center px-5 py-3 border border-primary-foreground text-base font-medium rounded-md text-primary-foreground hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary-foreground w-full"
             >
               Read the Whitepaper
             </a>
