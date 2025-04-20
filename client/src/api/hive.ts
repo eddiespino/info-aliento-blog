@@ -69,6 +69,9 @@ export const getHiveNodes = async (): Promise<HiveNode[]> => {
   }
 };
 
+// Conversion rate from VESTS to HIVE (HP)
+let vestToHpRatio: number | null = null;
+
 // Get network statistics (block height, tx per day, etc.)
 export const getNetworkStats = async (): Promise<NetworkStats> => {
   try {
@@ -124,6 +127,12 @@ export const getNetworkStats = async (): Promise<NetworkStats> => {
     
     const data = await resultResponse.json();
     const props = data.result;
+    
+    // Calculate the VESTS to HP ratio as per https://developers.hive.io/tutorials-recipes/vest-to-hive.html
+    const totalHive = parseFloat(props.total_vesting_fund_hive.split(' ')[0]);
+    const totalVests = parseFloat(props.total_vesting_shares.split(' ')[0]);
+    vestToHpRatio = totalHive / totalVests;
+    console.log('VESTS to HP ratio:', vestToHpRatio);
     
     // Price feed request
     let priceResult;
@@ -243,15 +252,26 @@ export const getWitnesses = async (): Promise<Witness[]> => {
     
     // Format the witness data
     return witnesses.map((witness: any, index: number) => {
-      // Convert vests to Hive Power (proper conversion with M/B for millions/billions)
-      const vestToHp = parseFloat(witness.votes) / 1000000000000;
+      // If we don't have the ratio yet, make a call to get it
+      if (vestToHpRatio === null) {
+        // Use approximate conversion
+        vestToHpRatio = 0.00049;
+      }
+      
+      // Convert VESTS to actual Hive Power using the conversion rate
+      const vestAmount = parseFloat(witness.votes);
+      const hiveAmount = vestAmount * vestToHpRatio;
       
       // Format Hive Power with appropriate suffix (M for millions, B for billions)
       let formattedHp;
-      if (vestToHp >= 1000) {
-        formattedHp = `${(vestToHp / 1000).toFixed(1)}B HP`;
+      if (hiveAmount >= 1000000000) {
+        formattedHp = `${(hiveAmount / 1000000000).toFixed(1)}B HP`;
+      } else if (hiveAmount >= 1000000) {
+        formattedHp = `${(hiveAmount / 1000000).toFixed(1)}M HP`;
+      } else if (hiveAmount >= 1000) {
+        formattedHp = `${(hiveAmount / 1000).toFixed(1)}K HP`;
       } else {
-        formattedHp = `${vestToHp.toFixed(1)}M HP`;
+        formattedHp = `${hiveAmount.toFixed(1)} HP`;
       }
       
       return {
@@ -329,15 +349,26 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
       return null;
     }
     
-    // Convert vests to Hive Power (proper conversion with M/B for millions/billions)
-    const vestToHp = parseFloat(witness.votes) / 1000000000000;
-      
+    // If we don't have the ratio yet, make a call to get it
+    if (vestToHpRatio === null) {
+      // Use approximate conversion
+      vestToHpRatio = 0.00049;
+    }
+    
+    // Convert VESTS to actual Hive Power using the conversion rate
+    const vestAmount = parseFloat(witness.votes);
+    const hiveAmount = vestAmount * vestToHpRatio;
+    
     // Format Hive Power with appropriate suffix (M for millions, B for billions)
     let formattedHp;
-    if (vestToHp >= 1000) {
-      formattedHp = `${(vestToHp / 1000).toFixed(1)}B HP`;
+    if (hiveAmount >= 1000000000) {
+      formattedHp = `${(hiveAmount / 1000000000).toFixed(1)}B HP`;
+    } else if (hiveAmount >= 1000000) {
+      formattedHp = `${(hiveAmount / 1000000).toFixed(1)}M HP`;
+    } else if (hiveAmount >= 1000) {
+      formattedHp = `${(hiveAmount / 1000).toFixed(1)}K HP`;
     } else {
-      formattedHp = `${vestToHp.toFixed(1)}M HP`;
+      formattedHp = `${hiveAmount.toFixed(1)} HP`;
     }
     
     // Fetch all witnesses to determine rank
