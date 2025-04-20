@@ -27,43 +27,48 @@ export default function WitnessCard({ witness, highlighted = false }: WitnessCar
 
   return (
     <>
-      <div className={`p-4 border rounded-lg shadow-sm ${highlighted ? 'bg-blue-50 border-blue-200' : 'bg-white'}`}>
-        <div className="flex justify-between items-start">
+      <div className={`p-4 border rounded-lg shadow-sm ${
+        highlighted 
+          ? 'bg-primary/5 border-primary/20' 
+          : 'bg-card border-border'
+      }`}>
+        <div className="flex flex-wrap justify-between items-start gap-3">
           <div className="flex items-center">
-            <Avatar className="h-12 w-12 mr-3">
+            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 mr-3">
               <AvatarImage src={witness.profileImage} alt={witness.name} />
               <AvatarFallback>{witness.name.substring(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="text-base font-medium text-gray-900">@{witness.name}</h3>
-              <p className="text-sm text-gray-500">Rank: #{witness.rank}</p>
+              <h3 className="text-base font-medium text-foreground">@{witness.name}</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">Rank: #{witness.rank}</p>
             </div>
           </div>
           <Button 
             size="sm" 
-            className="bg-primary-500 hover:bg-primary-600"
+            className="flex items-center gap-1"
             onClick={handleVoteClick}
           >
+            <span className="material-symbols-outlined text-sm">how_to_vote</span>
             Vote
           </Button>
         </div>
         
-        <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+        <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
           <div>
-            <dt className="text-gray-500">Votes</dt>
-            <dd className="font-medium text-gray-900">{witness.votesHivePower}</dd>
+            <dt className="text-xs text-muted-foreground">Votes</dt>
+            <dd className="font-medium text-foreground text-xs sm:text-sm truncate">{witness.votesHivePower}</dd>
           </div>
           <div>
-            <dt className="text-gray-500">Last Block</dt>
-            <dd className="font-medium text-gray-900">{witness.lastBlock}</dd>
+            <dt className="text-xs text-muted-foreground">Last Block</dt>
+            <dd className="font-medium text-foreground text-xs sm:text-sm truncate">{witness.lastBlock}</dd>
           </div>
           <div>
-            <dt className="text-gray-500">Price Feed</dt>
-            <dd className="font-medium text-gray-900">{witness.priceFeed}</dd>
+            <dt className="text-xs text-muted-foreground">Price Feed</dt>
+            <dd className="font-medium text-foreground text-xs sm:text-sm truncate">{witness.priceFeed}</dd>
           </div>
           <div>
-            <dt className="text-gray-500">Version</dt>
-            <dd className="font-medium text-gray-900">{witness.version}</dd>
+            <dt className="text-xs text-muted-foreground">Version</dt>
+            <dd className="font-medium text-foreground text-xs sm:text-sm truncate">{witness.version}</dd>
           </div>
         </div>
       </div>

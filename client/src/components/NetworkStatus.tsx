@@ -85,59 +85,108 @@ export default function NetworkStatus() {
       {/* API Nodes Status */}
       <div className="mt-12">
         <h3 className="text-lg font-medium text-foreground mb-4">API Nodes Status</h3>
-        <Card>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Node URL</TableHead>
-                  <TableHead>Version</TableHead>
-                  <TableHead>Last Update</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead>Tests</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {nodesLoading ? (
-                  Array.from({ length: 3 }).map((_, i) => (
-                    <TableRow key={i}>
-                      <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-12" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  nodes.slice(0, 5).map((node, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="text-sm font-medium text-primary">
-                        {node.url}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {node.version}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {node.lastUpdate}
-                      </TableCell>
-                      <TableCell>
-                        <Badge 
-                          variant={node.score === '100%' ? 'default' : 'outline'}
-                          className={node.score === '100%' ? 'bg-primary/20 text-primary' : ''}
-                        >
-                          {node.score}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {node.tests}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </Card>
+        
+        {/* Desktop View - Table */}
+        <div className="hidden md:block">
+          <Card>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Node URL</TableHead>
+                    <TableHead>Version</TableHead>
+                    <TableHead>Last Update</TableHead>
+                    <TableHead>Score</TableHead>
+                    <TableHead>Tests</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {nodesLoading ? (
+                    Array.from({ length: 3 }).map((_, i) => (
+                      <TableRow key={i}>
+                        <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-12" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    nodes.slice(0, 5).map((node, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="text-sm font-medium text-primary">
+                          {node.url}
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {node.version}
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {node.lastUpdate}
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant={node.score === '100%' ? 'default' : 'outline'}
+                            className={node.score === '100%' ? 'bg-primary/20 text-primary' : ''}
+                          >
+                            {node.score}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {node.tests}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </Card>
+        </div>
+        
+        {/* Mobile View - Cards */}
+        <div className="md:hidden">
+          {nodesLoading ? (
+            <div className="space-y-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Card key={i} className="p-4">
+                  <Skeleton className="h-5 w-2/3 mb-3" />
+                  <div className="grid grid-cols-2 gap-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {nodes.slice(0, 5).map((node, index) => (
+                <Card key={index} className="overflow-hidden">
+                  <div className="p-4 bg-muted/20 border-b border-border flex justify-between items-center">
+                    <div className="font-medium text-primary truncate mr-2">{node.url}</div>
+                    <Badge 
+                      variant={node.score === '100%' ? 'default' : 'outline'}
+                      className={node.score === '100%' ? 'bg-primary/20 text-primary' : ''}
+                    >
+                      {node.score}
+                    </Badge>
+                  </div>
+                  <div className="p-4 text-sm">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                      <div className="text-muted-foreground">Version:</div>
+                      <div>{node.version}</div>
+                      <div className="text-muted-foreground">Last Update:</div>
+                      <div>{node.lastUpdate}</div>
+                      <div className="text-muted-foreground">Tests:</div>
+                      <div>{node.tests}</div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

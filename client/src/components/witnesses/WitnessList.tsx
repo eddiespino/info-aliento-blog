@@ -229,63 +229,104 @@ export default function WitnessList() {
       {/* Pagination */}
       {!isLoading && totalPages > 1 && (
         <div className="mt-6">
-          <nav className="flex items-center justify-between border-t border-border bg-card px-4 py-3 sm:px-6 rounded-md shadow-sm">
-            <div className="hidden sm:block">
-              <p className="text-sm text-muted-foreground">
+          <nav className="border-t border-border bg-card px-4 py-3 sm:px-6 rounded-md shadow-sm">
+            {/* Desktop pagination with stats and page numbers */}
+            <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:justify-between">
+              <p className="text-sm text-muted-foreground mb-3 sm:mb-0">
                 Showing <span className="font-medium text-foreground">{(currentPage - 1) * 10 + 1}</span> to{' '}
                 <span className="font-medium text-foreground">{Math.min(currentPage * 10, witnesses.length)}</span> of{' '}
                 <span className="font-medium text-foreground">{witnesses.length}</span> witnesses
               </p>
-            </div>
-            <div className="flex flex-1 justify-between sm:justify-end">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={prevPage}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </Button>
-              <div className="hidden sm:flex mx-2 items-center">
-                {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
-                  const pageNum = i + 1;
-                  const isCurrentPage = pageNum === currentPage;
-                  
-                  return (
-                    <Button
-                      key={i}
-                      variant={isCurrentPage ? "secondary" : "ghost"}
-                      size="sm"
-                      onClick={() => goToPage(pageNum)}
-                      className="mx-1"
-                    >
-                      {pageNum}
-                    </Button>
-                  );
-                })}
-                {totalPages > 5 && (
-                  <>
-                    <span className="mx-1 text-muted-foreground">...</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => goToPage(totalPages)}
-                      className="mx-1"
-                    >
-                      {totalPages}
-                    </Button>
-                  </>
-                )}
+              
+              <div className="flex items-center">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={prevPage}
+                  disabled={currentPage === 1}
+                >
+                  <span className="material-symbols-outlined text-sm mr-1">chevron_left</span>
+                  Previous
+                </Button>
+                
+                <div className="flex mx-2 items-center">
+                  {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
+                    const pageNum = i + 1;
+                    const isCurrentPage = pageNum === currentPage;
+                    
+                    return (
+                      <Button
+                        key={i}
+                        variant={isCurrentPage ? "secondary" : "ghost"}
+                        size="sm"
+                        onClick={() => goToPage(pageNum)}
+                        className="mx-1"
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  })}
+                  {totalPages > 5 && (
+                    <>
+                      <span className="mx-1 text-muted-foreground">...</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => goToPage(totalPages)}
+                        className="mx-1"
+                      >
+                        {totalPages}
+                      </Button>
+                    </>
+                  )}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={nextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                  <span className="material-symbols-outlined text-sm ml-1">chevron_right</span>
+                </Button>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={nextPage}
-                disabled={currentPage === totalPages}
-                className="ml-3"
-              >
-                Next
-              </Button>
+            </div>
+            
+            {/* Mobile pagination - simplified */}
+            <div className="sm:hidden">
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">
+                  Page {currentPage} of {totalPages}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {(currentPage - 1) * 10 + 1}-{Math.min(currentPage * 10, witnesses.length)} of {witnesses.length}
+                </p>
+              </div>
+              
+              <div className="flex justify-between mt-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={prevPage}
+                  disabled={currentPage === 1}
+                  className="w-24"
+                >
+                  <span className="material-symbols-outlined text-sm mr-1">chevron_left</span>
+                  Previous
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={nextPage}
+                  disabled={currentPage === totalPages}
+                  className="w-24"
+                >
+                  Next
+                  <span className="material-symbols-outlined text-sm ml-1">chevron_right</span>
+                </Button>
+              </div>
             </div>
           </nav>
         </div>
