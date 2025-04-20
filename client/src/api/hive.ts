@@ -76,9 +76,10 @@ export const getNetworkStats = async (): Promise<NetworkStats> => {
     
     console.log('Making API call to:', apiNode);
     
+    // Dynamic properties request
+    let resultResponse;
     try {
-      // Dynamic properties request
-      const result = await fetch(apiNode, {
+      resultResponse = await fetch(apiNode, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -92,17 +93,15 @@ export const getNetworkStats = async (): Promise<NetworkStats> => {
       });
       
       // Check response status
-      if (!result.ok) {
-        throw new Error(`HTTP error status: ${result.status}`);
+      if (!resultResponse.ok) {
+        throw new Error(`HTTP error status: ${resultResponse.status}`);
       }
-      
-      return result;
     } catch (fetchError) {
       console.error('Fetch error getting dynamic properties:', fetchError);
       // If the best node fails, try the default node
       if (apiNode !== DEFAULT_API_NODE) {
         console.log('Trying default API node as fallback');
-        const fallbackResult = await fetch(DEFAULT_API_NODE, {
+        resultResponse = await fetch(DEFAULT_API_NODE, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -114,27 +113,58 @@ export const getNetworkStats = async (): Promise<NetworkStats> => {
             "id": 1
           })
         });
-        return fallbackResult;
+        
+        if (!resultResponse.ok) {
+          throw new Error(`Fallback HTTP error status: ${resultResponse.status}`);
+        }
+      } else {
+        throw fetchError;
       }
-      throw fetchError;
     }
     
-    const data = await result.json();
+    const data = await resultResponse.json();
     const props = data.result;
     
     // Price feed request
-    const priceResult = await fetch(apiNode, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        "jsonrpc": "2.0",
-        "method": "condenser_api.get_current_median_history_price",
-        "params": [],
-        "id": 1
-      })
-    });
+    let priceResult;
+    try {
+      priceResult = await fetch(apiNode, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "jsonrpc": "2.0",
+          "method": "condenser_api.get_current_median_history_price",
+          "params": [],
+          "id": 1
+        })
+      });
+      
+      if (!priceResult.ok) {
+        throw new Error(`Price feed HTTP error status: ${priceResult.status}`);
+      }
+    } catch (priceError) {
+      console.error('Error fetching price feed:', priceError);
+      // Try default node as a fallback if we're not already using it
+      if (apiNode !== DEFAULT_API_NODE) {
+        console.log('Using fallback node for price feed');
+        priceResult = await fetch(DEFAULT_API_NODE, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "jsonrpc": "2.0",
+            "method": "condenser_api.get_current_median_history_price",
+            "params": [],
+            "id": 1
+          })
+        });
+      } else {
+        throw priceError;
+      }
+    }
     
     const priceData = await priceResult.json();
     const price = priceData.result;
@@ -165,20 +195,48 @@ export const getNetworkStats = async (): Promise<NetworkStats> => {
 export const getWitnesses = async (): Promise<Witness[]> => {
   try {
     const apiNode = await getBestHiveNode();
+    console.log('Fetching witnesses from:', apiNode);
     
     // Request witness data
-    const result = await fetch(apiNode, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        "jsonrpc": "2.0",
-        "method": "condenser_api.get_witnesses_by_vote",
-        "params": ["", 100],
-        "id": 1
-      })
-    });
+    let result;
+    try {
+      result = await fetch(apiNode, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "jsonrpc": "2.0",
+          "method": "condenser_api.get_witnesses_by_vote",
+          "params": ["", 100],
+          "id": 1
+        })
+      });
+      
+      if (!result.ok) {
+        throw new Error(`Witness list HTTP error status: ${result.status}`);
+      }
+    } catch (fetchError) {
+      console.error('Error fetching witness list:', fetchError);
+      // Try default node as a fallback if we're not already using it
+      if (apiNode !== DEFAULT_API_NODE) {
+        console.log('Using fallback node for witness list');
+        result = await fetch(DEFAULT_API_NODE, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "jsonrpc": "2.0",
+            "method": "condenser_api.get_witnesses_by_vote",
+            "params": ["", 100],
+            "id": 1
+          })
+        });
+      } else {
+        throw fetchError;
+      }
+    }
     
     const data = await result.json();
     const witnesses = data.result;
@@ -213,20 +271,48 @@ export const getWitnesses = async (): Promise<Witness[]> => {
 export const getWitnessByName = async (name: string): Promise<Witness | null> => {
   try {
     const apiNode = await getBestHiveNode();
+    console.log(`Fetching witness ${name} from:`, apiNode);
     
     // Request witness data
-    const result = await fetch(apiNode, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        "jsonrpc": "2.0",
-        "method": "condenser_api.get_witness_by_account",
-        "params": [name],
-        "id": 1
-      })
-    });
+    let result;
+    try {
+      result = await fetch(apiNode, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "jsonrpc": "2.0",
+          "method": "condenser_api.get_witness_by_account",
+          "params": [name],
+          "id": 1
+        })
+      });
+      
+      if (!result.ok) {
+        throw new Error(`Witness fetch HTTP error status: ${result.status}`);
+      }
+    } catch (fetchError) {
+      console.error(`Error fetching witness ${name}:`, fetchError);
+      // Try default node as a fallback if we're not already using it
+      if (apiNode !== DEFAULT_API_NODE) {
+        console.log('Using fallback node for specific witness');
+        result = await fetch(DEFAULT_API_NODE, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "jsonrpc": "2.0",
+            "method": "condenser_api.get_witness_by_account",
+            "params": [name],
+            "id": 1
+          })
+        });
+      } else {
+        throw fetchError;
+      }
+    }
     
     const data = await result.json();
     const witness = data.result;
