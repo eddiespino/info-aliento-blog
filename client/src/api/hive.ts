@@ -243,8 +243,16 @@ export const getWitnesses = async (): Promise<Witness[]> => {
     
     // Format the witness data
     return witnesses.map((witness: any, index: number) => {
-      // Convert vests to Hive Power
+      // Convert vests to Hive Power (proper conversion with M/B for millions/billions)
       const vestToHp = parseFloat(witness.votes) / 1000000000000;
+      
+      // Format Hive Power with appropriate suffix (M for millions, B for billions)
+      let formattedHp;
+      if (vestToHp >= 1000) {
+        formattedHp = `${(vestToHp / 1000).toFixed(1)}B HP`;
+      } else {
+        formattedHp = `${vestToHp.toFixed(1)}M HP`;
+      }
       
       return {
         id: witness.id,
@@ -252,7 +260,7 @@ export const getWitnesses = async (): Promise<Witness[]> => {
         rank: index + 1,
         url: witness.url,
         votes: witness.votes,
-        votesHivePower: `${(vestToHp / 1000000).toFixed(1)}M HP`,
+        votesHivePower: formattedHp,
         lastBlock: `#${witness.last_confirmed_block_num}`,
         missedBlocks: witness.total_missed,
         priceFeed: `$${parseFloat(witness.hbd_exchange_rate.base).toFixed(3)}`,
@@ -321,8 +329,16 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
       return null;
     }
     
-    // Convert vests to Hive Power
+    // Convert vests to Hive Power (proper conversion with M/B for millions/billions)
     const vestToHp = parseFloat(witness.votes) / 1000000000000;
+      
+    // Format Hive Power with appropriate suffix (M for millions, B for billions)
+    let formattedHp;
+    if (vestToHp >= 1000) {
+      formattedHp = `${(vestToHp / 1000).toFixed(1)}B HP`;
+    } else {
+      formattedHp = `${vestToHp.toFixed(1)}M HP`;
+    }
     
     // Fetch all witnesses to determine rank
     const allWitnesses = await getWitnesses();
@@ -334,7 +350,7 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
       rank: rank,
       url: witness.url,
       votes: witness.votes,
-      votesHivePower: `${(vestToHp / 1000000).toFixed(1)}M HP`,
+      votesHivePower: formattedHp,
       lastBlock: `#${witness.last_confirmed_block_num}`,
       missedBlocks: witness.total_missed,
       priceFeed: `$${parseFloat(witness.hbd_exchange_rate.base).toFixed(3)}`,
