@@ -123,7 +123,7 @@ export default function NetworkStatus() {
                       <TableCell>
                         <Badge 
                           variant={node.score === '100%' ? 'default' : 'outline'}
-                          className={node.score === '100%' ? 'bg-primary/20' : ''}
+                          className={node.score === '100%' ? 'bg-primary/20 text-primary' : ''}
                         >
                           {node.score}
                         </Badge>

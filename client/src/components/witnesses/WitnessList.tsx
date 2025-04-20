@@ -56,13 +56,13 @@ export default function WitnessList() {
             onChange={handleSearchChange}
             className="w-full pl-4 pr-10"
           />
-          <span className="material-symbols-outlined absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+          <span className="material-symbols-outlined absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
             search
           </span>
         </div>
         
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">Sort by:</span>
+          <span className="text-sm text-muted-foreground">Sort by:</span>
           <Select value={sortBy} onValueChange={handleSortChange}>
             <SelectTrigger className="w-36">
               <SelectValue placeholder="Sort by..." />
@@ -83,7 +83,7 @@ export default function WitnessList() {
           {isLoading ? (
             <div className="space-y-4">
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="bg-white p-4 border rounded-lg">
+                <div key={i} className="bg-card p-4 border border-border rounded-lg">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center">
                       <Skeleton className="h-12 w-12 rounded-full mr-4" />
@@ -102,9 +102,9 @@ export default function WitnessList() {
               ))}
             </div>
           ) : (
-            <ul className="divide-y divide-gray-200 bg-white shadow rounded-lg border border-gray-200">
+            <ul className="divide-y divide-border bg-card shadow rounded-lg border border-border">
               {paginatedItems.map((witness) => (
-                <li key={witness.id} className={`px-4 py-4 ${witness.name === 'aliento' ? 'bg-blue-50' : ''}`}>
+                <li key={witness.id} className={`px-4 py-4 ${witness.name === 'aliento' ? 'bg-primary/10' : ''}`}>
                   <div className="flex justify-between items-start">
                     <div className="flex items-center">
                       <div className="mr-4 flex-shrink-0">
@@ -114,13 +114,13 @@ export default function WitnessList() {
                         </Avatar>
                       </div>
                       <div>
-                        <h3 className="text-base font-medium text-gray-900">@{witness.name}</h3>
-                        <p className="mt-1 text-sm text-gray-500">Rank: #{witness.rank}</p>
+                        <h3 className="text-base font-medium text-foreground">@{witness.name}</h3>
+                        <p className="mt-1 text-sm text-muted-foreground">Rank: #{witness.rank}</p>
                       </div>
                     </div>
                     <Button 
                       size="sm"
-                      className="ml-2 bg-primary-500 hover:bg-primary-600"
+                      className="ml-2"
                       onClick={() => handleVoteClick(witness.name)}
                     >
                       Vote
@@ -128,12 +128,12 @@ export default function WitnessList() {
                   </div>
                   <div className="mt-2 grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <dt className="text-gray-500">Votes</dt>
-                      <dd className="font-medium text-gray-900">{witness.votesHivePower}</dd>
+                      <dt className="text-muted-foreground">Votes</dt>
+                      <dd className="font-medium text-foreground">{witness.votesHivePower}</dd>
                     </div>
                     <div>
-                      <dt className="text-gray-500">Last Block</dt>
-                      <dd className="font-medium text-gray-900">{witness.lastBlock}</dd>
+                      <dt className="text-muted-foreground">Last Block</dt>
+                      <dd className="font-medium text-foreground">{witness.lastBlock}</dd>
                     </div>
                   </div>
                 </li>
@@ -146,7 +146,7 @@ export default function WitnessList() {
       {/* Desktop Table View */}
       {!isMobile && (
         <div className="hidden md:block">
-          <div className="bg-white overflow-hidden shadow rounded-lg border border-gray-200">
+          <div className="bg-card overflow-hidden shadow rounded-lg border border-border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -182,9 +182,9 @@ export default function WitnessList() {
                   paginatedItems.map((witness) => (
                     <TableRow 
                       key={witness.id} 
-                      className={witness.name === 'aliento' ? 'bg-blue-50' : 'hover:bg-gray-50'}
+                      className={witness.name === 'aliento' ? 'bg-primary/10' : 'hover:bg-muted/50'}
                     >
-                      <TableCell className="text-sm text-gray-500">
+                      <TableCell className="text-sm text-muted-foreground">
                         #{witness.rank}
                       </TableCell>
                       <TableCell>
@@ -194,24 +194,24 @@ export default function WitnessList() {
                             <AvatarFallback>{witness.name.substring(0, 2).toUpperCase()}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <div className="text-sm font-medium text-gray-900">@{witness.name}</div>
-                            <div className="text-sm text-gray-500">Version: {witness.version}</div>
+                            <div className="text-sm font-medium text-foreground">@{witness.name}</div>
+                            <div className="text-sm text-muted-foreground">Version: {witness.version}</div>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-sm text-gray-500">
+                      <TableCell className="text-sm text-muted-foreground">
                         {witness.votesHivePower}
                       </TableCell>
-                      <TableCell className="text-sm text-gray-500">
+                      <TableCell className="text-sm text-muted-foreground">
                         {witness.lastBlock}
                       </TableCell>
-                      <TableCell className="text-sm text-gray-500">
+                      <TableCell className="text-sm text-muted-foreground">
                         {witness.priceFeed}
                       </TableCell>
                       <TableCell className="text-sm">
                         <Button 
                           variant="link"
-                          className="text-primary-600 hover:text-primary-900 p-0"
+                          className="text-primary hover:text-primary/80 p-0"
                           onClick={() => handleVoteClick(witness.name)}
                         >
                           Vote
@@ -229,12 +229,12 @@ export default function WitnessList() {
       {/* Pagination */}
       {!isLoading && totalPages > 1 && (
         <div className="mt-6">
-          <nav className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-md shadow-sm">
+          <nav className="flex items-center justify-between border-t border-border bg-card px-4 py-3 sm:px-6 rounded-md shadow-sm">
             <div className="hidden sm:block">
-              <p className="text-sm text-gray-700">
-                Showing <span className="font-medium">{(currentPage - 1) * 10 + 1}</span> to{' '}
-                <span className="font-medium">{Math.min(currentPage * 10, witnesses.length)}</span> of{' '}
-                <span className="font-medium">{witnesses.length}</span> witnesses
+              <p className="text-sm text-muted-foreground">
+                Showing <span className="font-medium text-foreground">{(currentPage - 1) * 10 + 1}</span> to{' '}
+                <span className="font-medium text-foreground">{Math.min(currentPage * 10, witnesses.length)}</span> of{' '}
+                <span className="font-medium text-foreground">{witnesses.length}</span> witnesses
               </p>
             </div>
             <div className="flex flex-1 justify-between sm:justify-end">
@@ -243,7 +243,6 @@ export default function WitnessList() {
                 size="sm"
                 onClick={prevPage}
                 disabled={currentPage === 1}
-                className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
                 Previous
               </Button>
@@ -258,7 +257,7 @@ export default function WitnessList() {
                       variant={isCurrentPage ? "secondary" : "ghost"}
                       size="sm"
                       onClick={() => goToPage(pageNum)}
-                      className={`mx-1 ${isCurrentPage ? 'bg-primary-50 text-primary-600' : ''}`}
+                      className="mx-1"
                     >
                       {pageNum}
                     </Button>
@@ -266,7 +265,7 @@ export default function WitnessList() {
                 })}
                 {totalPages > 5 && (
                   <>
-                    <span className="mx-1">...</span>
+                    <span className="mx-1 text-muted-foreground">...</span>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -283,7 +282,7 @@ export default function WitnessList() {
                 size="sm"
                 onClick={nextPage}
                 disabled={currentPage === totalPages}
-                className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="ml-3"
               >
                 Next
               </Button>
