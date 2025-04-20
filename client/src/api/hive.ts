@@ -16,11 +16,21 @@ export const getBestHiveNode = async (): Promise<string> => {
   try {
     const nodes = await getHiveNodes();
     
-    // Find first node with 100% score
+    // Find a node with 100% score
     const bestNode = nodes.find(node => node.score === '100%');
     
-    if (bestNode) {
-      cachedBestNode = `https://${bestNode.url}`;
+    // Make sure we have a valid node with URL
+    if (bestNode && bestNode.url) {
+      // Check if the URL already has https:// prefix
+      cachedBestNode = bestNode.url.startsWith('http') ? bestNode.url : `https://${bestNode.url}`;
+      console.log("Using Hive node:", cachedBestNode);
+      return cachedBestNode;
+    }
+    
+    // If no 100% node is found, use the first available node
+    if (nodes.length > 0 && nodes[0].url) {
+      cachedBestNode = nodes[0].url.startsWith('http') ? nodes[0].url : `https://${nodes[0].url}`;
+      console.log("Using fallback Hive node:", cachedBestNode);
       return cachedBestNode;
     }
     
@@ -44,7 +54,7 @@ export const getHiveNodes = async (): Promise<HiveNode[]> => {
     
     // Format node data
     const nodes = data.map((node: any) => ({
-      url: node.url,
+      url: node.endpoint || node.url, // Use endpoint property if available (contains full URL)
       version: node.version || '-',
       lastUpdate: node.lastUpdate || 'unknown',
       score: `${node.score}%`,
@@ -64,25 +74,56 @@ export const getNetworkStats = async (): Promise<NetworkStats> => {
   try {
     const apiNode = await getBestHiveNode();
     
-    // Dynamic properties request
-    const result = await fetch(`${apiNode}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        "jsonrpc": "2.0",
-        "method": "condenser_api.get_dynamic_global_properties",
-        "params": [],
-        "id": 1
-      })
-    });
+    console.log('Making API call to:', apiNode);
+    
+    try {
+      // Dynamic properties request
+      const result = await fetch(apiNode, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "jsonrpc": "2.0",
+          "method": "condenser_api.get_dynamic_global_properties",
+          "params": [],
+          "id": 1
+        })
+      });
+      
+      // Check response status
+      if (!result.ok) {
+        throw new Error(`HTTP error status: ${result.status}`);
+      }
+      
+      return result;
+    } catch (fetchError) {
+      console.error('Fetch error getting dynamic properties:', fetchError);
+      // If the best node fails, try the default node
+      if (apiNode !== DEFAULT_API_NODE) {
+        console.log('Trying default API node as fallback');
+        const fallbackResult = await fetch(DEFAULT_API_NODE, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "jsonrpc": "2.0",
+            "method": "condenser_api.get_dynamic_global_properties",
+            "params": [],
+            "id": 1
+          })
+        });
+        return fallbackResult;
+      }
+      throw fetchError;
+    }
     
     const data = await result.json();
     const props = data.result;
     
     // Price feed request
-    const priceResult = await fetch(`${apiNode}`, {
+    const priceResult = await fetch(apiNode, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -109,6 +150,8 @@ export const getNetworkStats = async (): Promise<NetworkStats> => {
     };
   } catch (error) {
     console.error('Error fetching network stats:', error);
+    // Log more detailed error information
+    console.log('API Node used:', await getBestHiveNode());
     return {
       blockHeight: "Unknown",
       txPerDay: "Unknown",
@@ -124,7 +167,7 @@ export const getWitnesses = async (): Promise<Witness[]> => {
     const apiNode = await getBestHiveNode();
     
     // Request witness data
-    const result = await fetch(`${apiNode}`, {
+    const result = await fetch(apiNode, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -172,7 +215,7 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
     const apiNode = await getBestHiveNode();
     
     // Request witness data
-    const result = await fetch(`${apiNode}`, {
+    const result = await fetch(apiNode, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
