@@ -305,7 +305,7 @@ export const getWitnesses = async (): Promise<Witness[]> => {
       // Format Hive Power using our utility function
       const formattedHp = formatHivePower(hiveAmount);
       
-      // Format last block number with commas
+      // Format last block number with commas (PeakD style - no # prefix)
       const blockNum = parseInt(witness.last_confirmed_block_num);
       const formattedBlockNum = formatNumberWithCommas(blockNum);
       
@@ -316,7 +316,7 @@ export const getWitnesses = async (): Promise<Witness[]> => {
         url: witness.url,
         votes: witness.votes,
         votesHivePower: formattedHp,
-        lastBlock: `#${formattedBlockNum}`,
+        lastBlock: formattedBlockNum,
         missedBlocks: witness.total_missed,
         priceFeed: `$${parseFloat(witness.hbd_exchange_rate.base).toFixed(3)}`,
         version: witness.running_version,
@@ -394,7 +394,7 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
     // Format Hive Power using our utility function
     const formattedHp = formatHivePower(hiveAmount);
     
-    // Format last block number with commas
+    // Format last block number with commas (PeakD style - no # prefix)
     const blockNum = parseInt(witness.last_confirmed_block_num);
     const formattedBlockNum = formatNumberWithCommas(blockNum);
     
@@ -409,7 +409,7 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
       url: witness.url,
       votes: witness.votes,
       votesHivePower: formattedHp,
-      lastBlock: `#${formattedBlockNum}`,
+      lastBlock: formattedBlockNum,
       missedBlocks: witness.total_missed,
       priceFeed: `$${parseFloat(witness.hbd_exchange_rate.base).toFixed(3)}`,
       version: witness.running_version,

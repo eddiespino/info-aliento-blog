@@ -15,27 +15,27 @@ export function formatNumberWithCommas(num: number): string {
 }
 
 /**
- * Format large numbers into a more readable format
+ * Format large numbers into a more readable format (PeakD style)
  * @param num Number to format
  * @param decimals Number of decimal places
- * @returns Formatted string (e.g., 17.9M)
+ * @returns Formatted string (e.g., 17.9m - lowercase for PeakD style)
  */
 export function formatLargeNumber(num: number, decimals: number = 1): string {
   if (num >= 1000000000) {
-    return `${(num / 1000000000).toFixed(decimals)}B`;
+    return `${(num / 1000000000).toFixed(decimals)}b`;
   } else if (num >= 1000000) {
-    return `${(num / 1000000).toFixed(decimals)}M`;
+    return `${(num / 1000000).toFixed(decimals)}m`;
   } else if (num >= 1000) {
-    return `${(num / 1000).toFixed(decimals)}K`;
+    return `${(num / 1000).toFixed(decimals)}k`;
   }
   return num.toFixed(decimals);
 }
 
 /**
- * Format Hive Power value
+ * Format Hive Power value (PeakD style)
  * @param hiveAmount Amount in Hive
- * @returns Formatted string (e.g., 17.9M HP)
+ * @returns Formatted string (e.g., 17.9m)
  */
 export function formatHivePower(hiveAmount: number): string {
-  return `${formatLargeNumber(hiveAmount)} HP`;
+  return formatLargeNumber(hiveAmount);
 }
