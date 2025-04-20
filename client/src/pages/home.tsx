@@ -1,6 +1,5 @@
 import NetworkStatus from '@/components/NetworkStatus';
 import FeaturedWitness from '@/components/FeaturedWitness';
-import Debug from '@/components/Debug';
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
 
@@ -56,9 +55,6 @@ export default function Home() {
       <section id="about" className="py-16 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <FeaturedWitness />
-          <div className="mt-12">
-            <Debug />
-          </div>
         </div>
       </section>
       
