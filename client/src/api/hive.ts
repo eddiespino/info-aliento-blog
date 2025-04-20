@@ -1,4 +1,5 @@
 import { HiveNode, NetworkStats, Witness } from '@/types/hive';
+import { formatNumberWithCommas, formatHivePower, formatLargeNumber } from '@/lib/utils';
 
 // Default API node to use if we can't fetch the best nodes
 const DEFAULT_API_NODE = 'https://api.hive.blog';
@@ -301,10 +302,12 @@ export const getWitnesses = async (): Promise<Witness[]> => {
       const vestAmount = parseFloat(witness.votes);
       const hiveAmount = vestAmount * (vestToHpRatio || 0.0005);
       
-      // Format Hive Power as millions (M)
-      // Looking at your screenshot and peakd.com reference, all values should be displayed as M HP
-      const hiveMillions = hiveAmount / 1000000;
-      const formattedHp = `${hiveMillions.toFixed(1)}M HP`;
+      // Format Hive Power using our utility function
+      const formattedHp = formatHivePower(hiveAmount);
+      
+      // Format last block number with commas
+      const blockNum = parseInt(witness.last_confirmed_block_num);
+      const formattedBlockNum = formatNumberWithCommas(blockNum);
       
       return {
         id: witness.id,
@@ -313,7 +316,7 @@ export const getWitnesses = async (): Promise<Witness[]> => {
         url: witness.url,
         votes: witness.votes,
         votesHivePower: formattedHp,
-        lastBlock: `#${witness.last_confirmed_block_num}`,
+        lastBlock: `#${formattedBlockNum}`,
         missedBlocks: witness.total_missed,
         priceFeed: `$${parseFloat(witness.hbd_exchange_rate.base).toFixed(3)}`,
         version: witness.running_version,
@@ -388,10 +391,12 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
     const vestAmount = parseFloat(witness.votes);
     const hiveAmount = vestAmount * (vestToHpRatio || 0.0005);
     
-    // Format Hive Power as millions (M)
-    // Looking at your screenshot and peakd.com reference, all values should be displayed as M HP
-    const hiveMillions = hiveAmount / 1000000;
-    const formattedHp = `${hiveMillions.toFixed(1)}M HP`;
+    // Format Hive Power using our utility function
+    const formattedHp = formatHivePower(hiveAmount);
+    
+    // Format last block number with commas
+    const blockNum = parseInt(witness.last_confirmed_block_num);
+    const formattedBlockNum = formatNumberWithCommas(blockNum);
     
     // Fetch all witnesses to determine rank
     const allWitnesses = await getWitnesses();
@@ -404,7 +409,7 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
       url: witness.url,
       votes: witness.votes,
       votesHivePower: formattedHp,
-      lastBlock: `#${witness.last_confirmed_block_num}`,
+      lastBlock: `#${formattedBlockNum}`,
       missedBlocks: witness.total_missed,
       priceFeed: `$${parseFloat(witness.hbd_exchange_rate.base).toFixed(3)}`,
       version: witness.running_version,
