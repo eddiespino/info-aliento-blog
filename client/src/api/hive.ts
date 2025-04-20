@@ -301,17 +301,10 @@ export const getWitnesses = async (): Promise<Witness[]> => {
       const vestAmount = parseFloat(witness.votes);
       const hiveAmount = vestAmount * (vestToHpRatio || 0.0005);
       
-      // Format Hive Power with appropriate suffix (M for millions, B for billions)
-      let formattedHp;
-      if (hiveAmount >= 1000000000) {
-        formattedHp = `${(hiveAmount / 1000000000).toFixed(1)}B HP`;
-      } else if (hiveAmount >= 1000000) {
-        formattedHp = `${(hiveAmount / 1000000).toFixed(1)}M HP`;
-      } else if (hiveAmount >= 1000) {
-        formattedHp = `${(hiveAmount / 1000).toFixed(1)}K HP`;
-      } else {
-        formattedHp = `${hiveAmount.toFixed(1)} HP`;
-      }
+      // Format Hive Power as millions (M)
+      // Looking at your screenshot and peakd.com reference, all values should be displayed as M HP
+      const hiveMillions = hiveAmount / 1000000;
+      const formattedHp = `${hiveMillions.toFixed(1)}M HP`;
       
       return {
         id: witness.id,
@@ -395,17 +388,10 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
     const vestAmount = parseFloat(witness.votes);
     const hiveAmount = vestAmount * (vestToHpRatio || 0.0005);
     
-    // Format Hive Power with appropriate suffix (M for millions, B for billions)
-    let formattedHp;
-    if (hiveAmount >= 1000000000) {
-      formattedHp = `${(hiveAmount / 1000000000).toFixed(1)}B HP`;
-    } else if (hiveAmount >= 1000000) {
-      formattedHp = `${(hiveAmount / 1000000).toFixed(1)}M HP`;
-    } else if (hiveAmount >= 1000) {
-      formattedHp = `${(hiveAmount / 1000).toFixed(1)}K HP`;
-    } else {
-      formattedHp = `${hiveAmount.toFixed(1)} HP`;
-    }
+    // Format Hive Power as millions (M)
+    // Looking at your screenshot and peakd.com reference, all values should be displayed as M HP
+    const hiveMillions = hiveAmount / 1000000;
+    const formattedHp = `${hiveMillions.toFixed(1)}M HP`;
     
     // Fetch all witnesses to determine rank
     const allWitnesses = await getWitnesses();
