@@ -25,46 +25,46 @@ export default function FeaturedWitness() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
       <div>
-        <Badge className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800 mb-4">
+        <Badge variant="secondary" className="mb-4">
           Featured Witness
         </Badge>
-        <h2 className="text-4xl font-bold text-gray-900 mb-6">Aliento Witness</h2>
-        <p className="text-lg text-gray-600 mb-6">
+        <h2 className="text-4xl font-bold text-foreground mb-6">Aliento Witness</h2>
+        <p className="text-lg text-muted-foreground mb-6">
           The Aliento project is dedicated to supporting the Hive blockchain ecosystem through reliable witness operations, 
           community development, and innovative tools that enhance the blockchain experience for all users.
         </p>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
           <div className="flex flex-col">
-            <dt className="text-sm font-medium text-gray-500">Witness Rank</dt>
+            <dt className="text-sm font-medium text-muted-foreground">Witness Rank</dt>
             {isLoading ? (
               <Skeleton className="h-8 w-16 mt-1" />
             ) : (
-              <dd className="mt-1 text-2xl font-semibold text-primary-600">#{witness?.rank}</dd>
+              <dd className="mt-1 text-2xl font-semibold text-primary">#{witness?.rank}</dd>
             )}
           </div>
           <div className="flex flex-col">
-            <dt className="text-sm font-medium text-gray-500">Total Votes</dt>
+            <dt className="text-sm font-medium text-muted-foreground">Total Votes</dt>
             {isLoading ? (
               <Skeleton className="h-8 w-24 mt-1" />
             ) : (
-              <dd className="mt-1 text-2xl font-semibold text-primary-600">{witness?.votesHivePower}</dd>
+              <dd className="mt-1 text-2xl font-semibold text-primary">{witness?.votesHivePower}</dd>
             )}
           </div>
           <div className="flex flex-col">
-            <dt className="text-sm font-medium text-gray-500">Last Block</dt>
+            <dt className="text-sm font-medium text-muted-foreground">Last Block</dt>
             {isLoading ? (
               <Skeleton className="h-8 w-28 mt-1" />
             ) : (
-              <dd className="mt-1 text-2xl font-semibold text-primary-600">{witness?.lastBlock}</dd>
+              <dd className="mt-1 text-2xl font-semibold text-primary">{witness?.lastBlock}</dd>
             )}
           </div>
           <div className="flex flex-col">
-            <dt className="text-sm font-medium text-gray-500">Uptime</dt>
+            <dt className="text-sm font-medium text-muted-foreground">Uptime</dt>
             {isLoading ? (
               <Skeleton className="h-8 w-16 mt-1" />
             ) : (
-              <dd className="mt-1 text-2xl font-semibold text-primary-600">99.98%</dd>
+              <dd className="mt-1 text-2xl font-semibold text-primary">99.98%</dd>
             )}
           </div>
         </div>
@@ -87,7 +87,7 @@ export default function FeaturedWitness() {
           className="rounded-xl shadow-lg"
         />
         
-        <div className="absolute -bottom-6 -left-6 bg-white rounded-lg shadow-lg p-6 max-w-xs">
+        <div className="absolute -bottom-6 -left-6 bg-card text-card-foreground rounded-lg shadow-lg border border-border p-6 max-w-xs">
           <div className="flex items-center mb-4">
             {isLoading ? (
               <Skeleton className="h-12 w-12 rounded-full mr-4" />
@@ -99,11 +99,11 @@ export default function FeaturedWitness() {
               />
             )}
             <div>
-              <h4 className="font-medium text-gray-900">@aliento</h4>
-              <p className="text-sm text-gray-500">Witness since 2021</p>
+              <h4 className="font-medium text-foreground">@aliento</h4>
+              <p className="text-sm text-muted-foreground">Witness since 2021</p>
             </div>
           </div>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             "Our mission is to support and strengthen the Hive ecosystem through reliable infrastructure and community-focused initiatives."
           </p>
         </div>

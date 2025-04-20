@@ -11,8 +11,8 @@ export default function NetworkStatus() {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900">Hive Network Status</h2>
-        <p className="mt-2 text-gray-600">Current state of the Hive blockchain network</p>
+        <h2 className="text-3xl font-bold text-foreground">Hive Network Status</h2>
+        <p className="mt-2 text-muted-foreground">Current state of the Hive blockchain network</p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -20,13 +20,13 @@ export default function NetworkStatus() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary-500 p-2 bg-primary-50 rounded-full">speed</span>
+              <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-full">speed</span>
               <div>
-                <h3 className="text-sm font-medium text-gray-500">Block Height</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">Block Height</h3>
                 {statsLoading ? (
                   <Skeleton className="h-8 w-24 mt-1" />
                 ) : (
-                  <p className="text-2xl font-semibold text-gray-900">{stats?.blockHeight}</p>
+                  <p className="text-2xl font-semibold text-foreground">{stats?.blockHeight}</p>
                 )}
               </div>
             </div>
@@ -36,13 +36,13 @@ export default function NetworkStatus() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary-500 p-2 bg-primary-50 rounded-full">bolt</span>
+              <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-full">bolt</span>
               <div>
-                <h3 className="text-sm font-medium text-gray-500">Transactions/Day</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">Transactions/Day</h3>
                 {statsLoading ? (
                   <Skeleton className="h-8 w-24 mt-1" />
                 ) : (
-                  <p className="text-2xl font-semibold text-gray-900">{stats?.txPerDay}</p>
+                  <p className="text-2xl font-semibold text-foreground">{stats?.txPerDay}</p>
                 )}
               </div>
             </div>
@@ -52,13 +52,13 @@ export default function NetworkStatus() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary-500 p-2 bg-primary-50 rounded-full">account_balance</span>
+              <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-full">account_balance</span>
               <div>
-                <h3 className="text-sm font-medium text-gray-500">Active Witnesses</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">Active Witnesses</h3>
                 {statsLoading ? (
                   <Skeleton className="h-8 w-10 mt-1" />
                 ) : (
-                  <p className="text-2xl font-semibold text-gray-900">{stats?.activeWitnesses}</p>
+                  <p className="text-2xl font-semibold text-foreground">{stats?.activeWitnesses}</p>
                 )}
               </div>
             </div>
@@ -68,13 +68,13 @@ export default function NetworkStatus() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary-500 p-2 bg-primary-50 rounded-full">trending_up</span>
+              <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-full">trending_up</span>
               <div>
-                <h3 className="text-sm font-medium text-gray-500">HIVE Price</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">HIVE Price</h3>
                 {statsLoading ? (
                   <Skeleton className="h-8 w-16 mt-1" />
                 ) : (
-                  <p className="text-2xl font-semibold text-gray-900">{stats?.hivePrice}</p>
+                  <p className="text-2xl font-semibold text-foreground">{stats?.hivePrice}</p>
                 )}
               </div>
             </div>
@@ -84,7 +84,7 @@ export default function NetworkStatus() {
       
       {/* API Nodes Status */}
       <div className="mt-12">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">API Nodes Status</h3>
+        <h3 className="text-lg font-medium text-foreground mb-4">API Nodes Status</h3>
         <Card>
           <div className="overflow-x-auto">
             <Table>
@@ -111,24 +111,24 @@ export default function NetworkStatus() {
                 ) : (
                   nodes.slice(0, 5).map((node, index) => (
                     <TableRow key={index}>
-                      <TableCell className="text-sm font-medium text-primary-600">
+                      <TableCell className="text-sm font-medium text-primary">
                         {node.url}
                       </TableCell>
-                      <TableCell className="text-sm text-gray-500">
+                      <TableCell className="text-sm text-muted-foreground">
                         {node.version}
                       </TableCell>
-                      <TableCell className="text-sm text-gray-500">
+                      <TableCell className="text-sm text-muted-foreground">
                         {node.lastUpdate}
                       </TableCell>
                       <TableCell>
                         <Badge 
-                          variant={node.score === '100%' ? 'success' : 'outline'}
-                          className={node.score === '100%' ? 'bg-green-100 text-green-800' : ''}
+                          variant={node.score === '100%' ? 'default' : 'outline'}
+                          className={node.score === '100%' ? 'bg-primary/20' : ''}
                         >
                           {node.score}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-sm text-gray-500">
+                      <TableCell className="text-sm text-muted-foreground">
                         {node.tests}
                       </TableCell>
                     </TableRow>
