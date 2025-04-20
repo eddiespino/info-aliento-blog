@@ -72,6 +72,48 @@ export const getHiveNodes = async (): Promise<HiveNode[]> => {
 // Conversion rate from VESTS to HIVE (HP)
 let vestToHpRatio: number | null = null;
 
+// Function to ensure we have the vests to hp ratio
+const ensureVestToHpRatio = async (): Promise<number> => {
+  if (vestToHpRatio !== null) {
+    return vestToHpRatio;
+  }
+
+  try {
+    const apiNode = await getBestHiveNode();
+    const response = await fetch(apiNode, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "jsonrpc": "2.0",
+        "method": "condenser_api.get_dynamic_global_properties",
+        "params": [],
+        "id": 1
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    const props = data.result;
+    
+    // Calculate the VESTS to HP ratio
+    const totalHive = parseFloat(props.total_vesting_fund_hive.split(' ')[0]);
+    const totalVests = parseFloat(props.total_vesting_shares.split(' ')[0]);
+    vestToHpRatio = totalHive / totalVests;
+    console.log('Updated VESTS to HP ratio:', vestToHpRatio);
+    
+    return vestToHpRatio;
+  } catch (error) {
+    console.error('Error getting VESTS to HP ratio:', error);
+    // Use a reasonable fallback value based on typical ratio
+    return 0.5 / 1000000; // This is an approximation, use actual value when available
+  }
+};
+
 // Get network statistics (block height, tx per day, etc.)
 export const getNetworkStats = async (): Promise<NetworkStats> => {
   try {
@@ -250,17 +292,14 @@ export const getWitnesses = async (): Promise<Witness[]> => {
     const data = await result.json();
     const witnesses = data.result;
     
+    // Ensure we have the vests to HP ratio before processing
+    await ensureVestToHpRatio();
+      
     // Format the witness data
     return witnesses.map((witness: any, index: number) => {
-      // If we don't have the ratio yet, make a call to get it
-      if (vestToHpRatio === null) {
-        // Use approximate conversion
-        vestToHpRatio = 0.00049;
-      }
-      
       // Convert VESTS to actual Hive Power using the conversion rate
       const vestAmount = parseFloat(witness.votes);
-      const hiveAmount = vestAmount * vestToHpRatio;
+      const hiveAmount = vestAmount * (vestToHpRatio || 0.0005);
       
       // Format Hive Power with appropriate suffix (M for millions, B for billions)
       let formattedHp;
@@ -349,15 +388,12 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
       return null;
     }
     
-    // If we don't have the ratio yet, make a call to get it
-    if (vestToHpRatio === null) {
-      // Use approximate conversion
-      vestToHpRatio = 0.00049;
-    }
+    // Ensure we have the vests to HP ratio before processing
+    await ensureVestToHpRatio();
     
     // Convert VESTS to actual Hive Power using the conversion rate
     const vestAmount = parseFloat(witness.votes);
-    const hiveAmount = vestAmount * vestToHpRatio;
+    const hiveAmount = vestAmount * (vestToHpRatio || 0.0005);
     
     // Format Hive Power with appropriate suffix (M for millions, B for billions)
     let formattedHp;
