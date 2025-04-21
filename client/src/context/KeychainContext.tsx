@@ -105,7 +105,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     return { success: true };
   };
 
-  // Real login implementation using Keychain
+  // Real login implementation using Keychain SDK
   const login = async (username: string): Promise<LoginResponse> => {
     if (useDevelopmentMode) {
       // Use mock login in development
@@ -131,12 +131,17 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
 
     try {
-      // This is a simplified implementation - in a real app you'd verify 
-      // the user with a challenge that the blockchain signs
+      // First, try using the original Keychain API method to check if the account exists
+      // by attempting to sign a message
+      console.log('Checking if account exists in keychain:', username);
+      
+      // Create a unique message to sign
+      const signMessage = `Login to Aliento Witness Dashboard: ${new Date().toISOString()}`;
+      
       const response = await new Promise<LoginResponse>((resolve) => {
         keychain.requestSignBuffer(
           username,
-          `Login to Aliento Witness Dashboard: ${new Date().toISOString()}`,
+          signMessage,
           'Posting',
           (keychainResponse) => {
             console.log('Keychain login response:', keychainResponse);
@@ -162,12 +167,13 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
           console.log('Fetching complete user data for:', username);
           const userData = await getUserData(username);
           setUser(userData);
+          setIsLoggedIn(true);
         } catch (dataError) {
           console.error('Error fetching user data:', dataError);
           // Set minimal user data if fetching complete data fails
           setUser({ username });
+          setIsLoggedIn(true);
         }
-        setIsLoggedIn(true);
       }
       
       return response;
@@ -187,7 +193,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     setIsLoggedIn(false);
   };
 
-  // Vote witness implementation
+  // Vote witness implementation using direct Keychain API
   const voteWitness = async (witness: string, approve: boolean): Promise<VoteWitnessResponse> => {
     if (useDevelopmentMode) {
       const response = await mockVoteWitness(witness, approve);
@@ -211,6 +217,8 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
 
     try {
+      console.log('Voting for witness:', witness, approve);
+      
       const response = await new Promise<VoteWitnessResponse>((resolve) => {
         keychain.requestWitnessVote(
           user.username,
