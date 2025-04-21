@@ -673,3 +673,154 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
     return null;
   }
 };
+
+// Define type for witness voters
+export interface WitnessVoter {
+  username: string;
+  profileImage: string;
+  hivePower: string;
+}
+
+// Get voters for a specific witness
+export const getWitnessVoters = async (witnessName: string): Promise<WitnessVoter[]> => {
+  try {
+    const apiNode = await getBestHiveNode();
+    console.log(`Fetching voters for witness ${witnessName} from:`, apiNode);
+    
+    // First, we need to get list of accounts that have voted for this witness
+    // Since there's no direct API call, we need to use find_accounts method with regex pattern
+    // This is an approximation - in a production app, you'd use a specialized API
+    
+    // Using hive-js API wrapper to get witness voters
+    // We'll simulate this for now by getting the top accounts by vesting (HP)
+    let result;
+    try {
+      result = await fetch(apiNode, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "jsonrpc": "2.0",
+          "method": "condenser_api.lookup_accounts",
+          "params": ["", 100], // Get top 100 accounts
+          "id": 1
+        })
+      });
+      
+      if (!result.ok) {
+        throw new Error(`Account lookup HTTP error status: ${result.status}`);
+      }
+    } catch (fetchError) {
+      console.error(`Error fetching accounts:`, fetchError);
+      if (apiNode !== DEFAULT_API_NODE) {
+        result = await fetch(DEFAULT_API_NODE, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "jsonrpc": "2.0",
+            "method": "condenser_api.lookup_accounts",
+            "params": ["", 100],
+            "id": 1
+          })
+        });
+      } else {
+        throw fetchError;
+      }
+    }
+    
+    const accounts = await result.json();
+    const accountNames = accounts.result;
+    
+    if (!accountNames || accountNames.length === 0) {
+      return [];
+    }
+    
+    // Now get detailed account info including witness votes
+    let accountsResult;
+    try {
+      accountsResult = await fetch(apiNode, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "jsonrpc": "2.0",
+          "method": "condenser_api.get_accounts",
+          "params": [accountNames],
+          "id": 2
+        })
+      });
+      
+      if (!accountsResult.ok) {
+        throw new Error(`Account details HTTP error status: ${accountsResult.status}`);
+      }
+    } catch (fetchError) {
+      console.error(`Error fetching account details:`, fetchError);
+      if (apiNode !== DEFAULT_API_NODE) {
+        accountsResult = await fetch(DEFAULT_API_NODE, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "jsonrpc": "2.0",
+            "method": "condenser_api.get_accounts",
+            "params": [accountNames],
+            "id": 2
+          })
+        });
+      } else {
+        throw fetchError;
+      }
+    }
+    
+    const accountsData = await accountsResult.json();
+    const accountDetails = accountsData.result;
+    
+    if (!accountDetails || accountDetails.length === 0) {
+      return [];
+    }
+    
+    // Ensure we have the vests to HP ratio before processing
+    await ensureVestToHpRatio();
+    
+    // Filter accounts that voted for this witness
+    const voters = accountDetails
+      .filter((account: any) => {
+        return Array.isArray(account.witness_votes) && 
+               account.witness_votes.includes(witnessName);
+      })
+      .map((account: any) => {
+        // Calculate Hive Power from vesting shares
+        const vestingShares = parseFloat(account.vesting_shares.split(' ')[0]);
+        const delegatedVestingShares = parseFloat(account.delegated_vesting_shares ? account.delegated_vesting_shares.split(' ')[0] : '0');
+        const receivedVestingShares = parseFloat(account.received_vesting_shares ? account.received_vesting_shares.split(' ')[0] : '0');
+        
+        // Calculate effective vesting shares (own + received - delegated)
+        const effectiveVestingShares = vestingShares - delegatedVestingShares + receivedVestingShares;
+        
+        // Calculate Hive Power
+        const hivePower = effectiveVestingShares * (vestToHpRatio || 0.0005);
+        
+        return {
+          username: account.name,
+          profileImage: `https://images.hive.blog/u/${account.name}/avatar`,
+          hivePower: formatHivePower(hivePower)
+        };
+      });
+    
+    // Sort by Hive Power in descending order
+    return voters.sort((a, b) => {
+      const aHP = parseFloat(a.hivePower.replace(/[^0-9.]/g, ''));
+      const bHP = parseFloat(b.hivePower.replace(/[^0-9.]/g, ''));
+      return bHP - aHP;
+    });
+    
+  } catch (error) {
+    console.error(`Error fetching witness voters for ${witnessName}:`, error);
+    return [];
+  }
+};

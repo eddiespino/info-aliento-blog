@@ -60,6 +60,22 @@ export function useWitness(name: string) {
   };
 }
 
+export function useWitnessVoters(witnessName: string) {
+  const { data: voters = [], isLoading, isError, error } = useQuery({
+    queryKey: ['witness-voters', witnessName],
+    queryFn: () => getWitnessVoters(witnessName),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    enabled: !!witnessName,
+  });
+
+  return {
+    voters,
+    isLoading,
+    isError,
+    error
+  };
+}
+
 export function useAlientoWitness() {
   return useWitness('aliento');
 }
