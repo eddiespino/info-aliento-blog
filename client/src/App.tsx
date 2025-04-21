@@ -19,7 +19,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/witnesses" component={Witnesses} />
       <Route path="/about" component={About} />
-      <Route path="/@:name" component={WitnessProfile} />
+      <Route path="/witness/:name" component={WitnessProfile} />
       <Route component={NotFound} />
     </Switch>
   );
