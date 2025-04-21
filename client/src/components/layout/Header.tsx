@@ -89,14 +89,34 @@ export default function Header() {
                         </Avatar>
                         <div className="flex flex-col">
                           <span className="text-sm font-medium">@{user?.username}</span>
+                          <span className="text-xs text-muted-foreground">{user?.hivePower}</span>
                         </div>
                       </div>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
-                      Logout
-                    </DropdownMenuItem>
+                    <div className="p-2 text-sm">
+                      <div className="flex flex-col space-y-1 mb-2">
+                        <div className="text-muted-foreground">Hive Power:</div>
+                        <div className="font-medium">{user?.hivePower}</div>
+                      </div>
+                      <div className="flex flex-col space-y-1 mb-2">
+                        <div className="text-muted-foreground">Witness Votes:</div>
+                        <div className="flex items-center gap-2">
+                          <span className="bg-primary/20 text-primary font-medium px-2 py-0.5 rounded-full text-xs">
+                            {user?.freeWitnessVotes} free votes
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            ({30 - (user?.freeWitnessVotes || 0)}/30 used)
+                          </span>
+                        </div>
+                      </div>
+                      <div className="mt-4 border-t border-border pt-2">
+                        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
+                          Logout
+                        </DropdownMenuItem>
+                      </div>
+                    </div>
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
@@ -193,12 +213,18 @@ export default function Header() {
                           {user?.username?.substring(0, 2).toUpperCase() || 'U'}
                         </AvatarFallback>
                       </Avatar>
-                      <div>
+                      <div className="flex flex-col">
                         <div className="font-medium">@{user?.username}</div>
+                        <div className="text-xs text-muted-foreground">{user?.hivePower}</div>
+                        <div className="text-xs mt-1">
+                          <span className="bg-primary/20 text-primary font-medium px-2 py-0.5 rounded-full">
+                            {user?.freeWitnessVotes} free votes
+                          </span>
+                        </div>
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-destructive p-0 h-auto"
+                          className="text-destructive p-0 h-auto mt-2"
                           onClick={() => {
                             setMobileMenuOpen(false);
                             handleLogout();

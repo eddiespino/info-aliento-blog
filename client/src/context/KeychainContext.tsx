@@ -112,7 +112,14 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
       const response = await mockLogin(username);
       
       if (response.success) {
-        setUser({ username });
+        try {
+          console.log('Development mode: Fetching user data for:', username);
+          const userData = await getUserData(username);
+          setUser(userData);
+        } catch (dataError) {
+          console.error('Development mode: Error fetching user data:', dataError);
+          setUser({ username });
+        }
         setIsLoggedIn(true);
       }
       
@@ -151,7 +158,15 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
       });
 
       if (response.success) {
-        setUser({ username });
+        try {
+          console.log('Fetching complete user data for:', username);
+          const userData = await getUserData(username);
+          setUser(userData);
+        } catch (dataError) {
+          console.error('Error fetching user data:', dataError);
+          // Set minimal user data if fetching complete data fails
+          setUser({ username });
+        }
         setIsLoggedIn(true);
       }
       
@@ -175,7 +190,20 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
   // Vote witness implementation
   const voteWitness = async (witness: string, approve: boolean): Promise<VoteWitnessResponse> => {
     if (useDevelopmentMode) {
-      return mockVoteWitness(witness, approve);
+      const response = await mockVoteWitness(witness, approve);
+      
+      // In development mode, update user data after voting
+      if (response.success && user) {
+        try {
+          console.log('Development mode: Updating user data after witness vote');
+          const userData = await getUserData(user.username);
+          setUser(userData);
+        } catch (dataError) {
+          console.error('Development mode: Error updating user data after vote:', dataError);
+        }
+      }
+      
+      return response;
     }
     
     if (!isKeychainInstalled || !keychain || !isLoggedIn || !user) {
@@ -183,7 +211,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
 
     try {
-      return new Promise<VoteWitnessResponse>((resolve) => {
+      const response = await new Promise<VoteWitnessResponse>((resolve) => {
         keychain.requestWitnessVote(
           user.username,
           witness,
@@ -201,6 +229,19 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
           }
         );
       });
+      
+      // Update user data after successful vote to refresh witness votes and free votes count
+      if (response.success) {
+        try {
+          console.log('Updating user data after witness vote');
+          const userData = await getUserData(user.username);
+          setUser(userData);
+        } catch (dataError) {
+          console.error('Error updating user data after vote:', dataError);
+        }
+      }
+      
+      return response;
     } catch (error) {
       console.error('Vote witness error:', error);
       return { success: false, error: String(error) };
