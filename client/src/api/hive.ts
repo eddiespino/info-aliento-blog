@@ -1,4 +1,4 @@
-import { HiveNode, NetworkStats, Witness, UserData } from '@/types/hive';
+import { HiveNode, NetworkStats, Witness, UserData, WitnessVoter } from '@/types/hive';
 import { formatNumberWithCommas, formatHivePower, formatLargeNumber } from '@/lib/utils';
 
 // Default API node to use if we can't fetch the best nodes
@@ -674,12 +674,7 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
   }
 };
 
-// Define type for witness voters
-export interface WitnessVoter {
-  username: string;
-  profileImage: string;
-  hivePower: string;
-}
+// Use the WitnessVoter type from types/hive.ts
 
 // Get voters for a specific witness
 export const getWitnessVoters = async (witnessName: string): Promise<WitnessVoter[]> => {

@@ -37,6 +37,12 @@ export interface UserData {
   witnessVotes?: string[];
 }
 
+export interface WitnessVoter {
+  username: string;
+  profileImage: string;
+  hivePower: string;
+}
+
 export type VoteWitnessResponse = {
   success: boolean;
   error?: string;
