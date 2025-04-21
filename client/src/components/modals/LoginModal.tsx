@@ -61,13 +61,6 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
         </DialogHeader>
         
         <div className="p-5 bg-muted/50 dark:bg-muted/20 rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-medium">Hive Keychain Status:</span>
-            <Badge variant={isKeychainInstalled ? "success" : "destructive"}>
-              {isKeychainInstalled ? 'Detected' : 'Not Detected'}
-            </Badge>
-          </div>
-          
           {isDevelopmentMode && !isKeychainInstalled && (
             <Alert variant="info" className="mb-4 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
               <AlertCircle className="h-4 w-4" />
@@ -91,13 +84,21 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
               <Label htmlFor="usernameInput" className="block text-sm font-medium mb-1">
                 Hive Username
               </Label>
-              <Input
-                id="usernameInput"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter your Hive username"
-                className="w-full"
-              />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
+                <Input
+                  id="usernameInput"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="username"
+                  className="w-full pl-7"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && username.trim()) {
+                      handleLogin();
+                    }
+                  }}
+                />
+              </div>
             </div>
           ) : (
             <div className="flex flex-col items-center">
