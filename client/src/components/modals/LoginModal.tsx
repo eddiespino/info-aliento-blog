@@ -30,7 +30,16 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
       if (result.success) {
         onClose();
       } else if (result.error) {
-        setLoginError(result.error);
+        // Format error message in a more user-friendly way
+        let errorMessage = result.error;
+        
+        if (result.error.includes('does not exist on the Hive blockchain')) {
+          errorMessage = `@${username.trim().toLowerCase()} is not a valid Hive account.`;
+        } else if (result.error.includes('Account not found in your Hive Keychain')) {
+          errorMessage = `@${username.trim().toLowerCase()} is not found in your Hive Keychain. Make sure you have added this account to Keychain.`;
+        }
+        
+        setLoginError(errorMessage);
       }
     } catch (error) {
       setLoginError(String(error));

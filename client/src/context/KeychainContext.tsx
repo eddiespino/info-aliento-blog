@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { UserData, LoginResponse, VoteWitnessResponse } from '@/types/hive';
-import { getUserData } from '@/api/hive';
+import { getUserData, getUserAccount } from '@/api/hive';
 // Import Buffer shim to ensure Buffer is available
 import '@/lib/buffer-shim';
 // Type definitions are imported via the .d.ts file automatically
@@ -90,7 +90,9 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
   const mockLogin = async (username: string): Promise<LoginResponse> => {
     console.log('Development mode: Mock login called with username:', username);
     
-    // Simulate a successful login with the provided username
+    // In development mode, we still verify the account exists on the blockchain,
+    // but we already did this check in the login function before calling mockLogin.
+    // Just providing a successful mock response since we know the account exists.
     return { 
       success: true, 
       username,
@@ -111,6 +113,20 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
   const login = async (username: string): Promise<LoginResponse> => {
     // Remove any @ symbols and trim whitespace
     const cleanedUsername = username.replace('@', '').trim().toLowerCase();
+    
+    // First check if the account exists on the Hive blockchain
+    console.log('Checking if account exists on Hive blockchain:', cleanedUsername);
+    const hiveAccount = await getUserAccount(cleanedUsername);
+    
+    if (!hiveAccount) {
+      console.error('Account does not exist on Hive blockchain:', cleanedUsername);
+      return {
+        success: false,
+        error: 'The account does not exist on the Hive blockchain'
+      };
+    }
+    
+    console.log('Account verified on Hive blockchain:', cleanedUsername);
     
     if (useDevelopmentMode) {
       // Use mock login in development
@@ -136,7 +152,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
 
     try {
-      // First check if the account exists using keychain.requestHandshake
+      // Now check if the account exists in keychain
       console.log('Verifying account exists in keychain:', cleanedUsername);
       
       // Create a unique message to sign to verify the key exists
