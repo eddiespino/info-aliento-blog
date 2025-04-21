@@ -300,7 +300,8 @@ export const getWitnesses = async (): Promise<Witness[]> => {
     return witnesses.map((witness: any, index: number) => {
       // Convert VESTS to actual Hive Power using the conversion rate
       const vestAmount = parseFloat(witness.votes);
-      const hiveAmount = vestAmount * (vestToHpRatio || 0.0005);
+      // Divide by 1,000,000 to account for the scale of VESTS in Hive blockchain
+      const hiveAmount = vestAmount * (vestToHpRatio || 0.0005) / 1000000;
       
       // Format Hive Power using our utility function
       const formattedHp = formatHivePower(hiveAmount);
@@ -389,7 +390,8 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
     
     // Convert VESTS to actual Hive Power using the conversion rate
     const vestAmount = parseFloat(witness.votes);
-    const hiveAmount = vestAmount * (vestToHpRatio || 0.0005);
+    // Divide by 1,000,000 to account for the scale of VESTS in Hive blockchain
+    const hiveAmount = vestAmount * (vestToHpRatio || 0.0005) / 1000000;
     
     // Format Hive Power using our utility function
     const formattedHp = formatHivePower(hiveAmount);
