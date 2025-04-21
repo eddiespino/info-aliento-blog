@@ -1,9 +1,10 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { UserData, LoginResponse, VoteWitnessResponse } from '@/types/hive';
+// Type definitions are imported via the .d.ts file automatically
 
 // Create a context for Keychain functionality
 interface KeychainContextType {
-  keychain: any;
+  keychain: Window['hive_keychain'] | null;
   user: UserData | null;
   isLoggedIn: boolean;
   isKeychainInstalled: boolean;
@@ -30,13 +31,13 @@ const KeychainContext = createContext<KeychainContextType>(defaultContextValue);
 
 // Provider component
 export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [keychain, setKeychain] = useState<any>(null);
+  const [keychain, setKeychain] = useState<Window['hive_keychain'] | null>(null);
   const [user, setUser] = useState<UserData | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isKeychainInstalled, setIsKeychainInstalled] = useState(false);
   
   // For development environment
-  const isDevelopmentMode = process.env.NODE_ENV === 'development';
+  const isDevelopmentMode = import.meta.env.DEV || import.meta.env.MODE === 'development';
   const [useDevelopmentMode, setUseDevelopmentMode] = useState(isDevelopmentMode);
 
   // Check if Keychain is installed
@@ -44,19 +45,42 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     const checkKeychain = () => {
       // Check if window.hive_keychain exists
       if (typeof window !== 'undefined' && 'hive_keychain' in window) {
+        console.log('Hive Keychain extension detected');
         setKeychain((window as any).hive_keychain);
         setIsKeychainInstalled(true);
+        return true;
       } else {
         console.log('Hive Keychain extension not detected');
-        
-        // If in development mode, we'll still provide mock functionality
-        if (isDevelopmentMode) {
-          setUseDevelopmentMode(true);
-        }
+        return false;
       }
     };
 
-    checkKeychain();
+    // First immediate check
+    const initialCheck = checkKeychain();
+    
+    // If keychain not found initially, try a few more times with delay
+    // Sometimes browser extensions take a moment to initialize
+    if (!initialCheck) {
+      let attempts = 0;
+      const maxAttempts = 3;
+      const checkInterval = setInterval(() => {
+        attempts++;
+        const found = checkKeychain();
+        
+        if (found || attempts >= maxAttempts) {
+          clearInterval(checkInterval);
+          
+          // If still not found after all attempts and in development mode,
+          // enable the development mode fallback
+          if (!found && isDevelopmentMode) {
+            console.log('Switching to development mode after failed keychain detection');
+            setUseDevelopmentMode(true);
+          }
+        }
+      }, 1000); // Check every second
+      
+      return () => clearInterval(checkInterval);
+    }
   }, [isDevelopmentMode]);
 
   // Mock functions for development environment
@@ -106,18 +130,19 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
           username,
           `Login to Aliento Witness Dashboard: ${new Date().toISOString()}`,
           'Posting',
-          (response: any) => {
-            if (response.success) {
+          (keychainResponse) => {
+            console.log('Keychain login response:', keychainResponse);
+            if (keychainResponse.success) {
               resolve({ 
                 success: true, 
                 username,
-                publicKey: response.publicKey,
-                result: response 
+                publicKey: keychainResponse.publicKey,
+                result: keychainResponse 
               });
             } else {
               resolve({ 
                 success: false, 
-                error: response.message 
+                error: keychainResponse.message || 'Unknown error' 
               });
             }
           }
@@ -162,11 +187,15 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
           user.username,
           witness,
           approve,
-          (response: any) => {
-            if (response.success) {
-              resolve({ success: true, result: response });
+          (keychainResponse) => {
+            console.log('Keychain vote witness response:', keychainResponse);
+            if (keychainResponse.success) {
+              resolve({ success: true, result: keychainResponse });
             } else {
-              resolve({ success: false, error: response.message });
+              resolve({ 
+                success: false, 
+                error: keychainResponse.message || 'Unknown error'
+              });
             }
           }
         );
