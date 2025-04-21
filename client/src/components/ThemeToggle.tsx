@@ -11,15 +11,15 @@ export function ThemeToggle() {
   };
 
   return (
-    <div className="flex items-center space-x-2">
-      <Sun className="h-[1rem] w-[1rem] text-muted-foreground" />
+    <div className="flex items-center space-x-1">
+      <Sun className="h-[0.875rem] w-[0.875rem] text-muted-foreground" />
       <Switch 
         checked={isDark} 
         onCheckedChange={toggleTheme} 
-        className="data-[state=checked]:bg-primary"
+        className="data-[state=checked]:bg-primary scale-75"
         aria-label="Toggle dark mode"
       />
-      <Moon className="h-[1rem] w-[1rem] text-muted-foreground" />
+      <Moon className="h-[0.875rem] w-[0.875rem] text-muted-foreground" />
     </div>
   );
 }
