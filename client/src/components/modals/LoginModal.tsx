@@ -62,7 +62,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
         
         <div className="p-5 bg-muted/50 dark:bg-muted/20 rounded-lg">
           {isDevelopmentMode && !isKeychainInstalled && (
-            <Alert variant="info" className="mb-4 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+            <Alert className="mb-4 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
                 Development mode is active. You can log in with any username for testing.

@@ -13,13 +13,21 @@ export default function VoteModal({ open, onClose, witness }: VoteModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { voteWitness } = useKeychain();
 
+  const [voteError, setVoteError] = useState<string | null>(null);
+
   const handleVote = async () => {
     setIsSubmitting(true);
+    setVoteError(null);
     try {
       const result = await voteWitness(witness, true);
       if (result.success) {
         onClose();
+      } else if (result.error) {
+        setVoteError(result.error);
       }
+    } catch (error) {
+      setVoteError(String(error));
+      console.error('Error voting for witness:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -38,34 +46,32 @@ export default function VoteModal({ open, onClose, witness }: VoteModalProps) {
           </DialogDescription>
         </DialogHeader>
         
-        <div className="mt-4 bg-gray-50 p-4 rounded-md">
+        <div className="mt-4 bg-muted/50 dark:bg-muted/20 p-4 rounded-md">
           <dl className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
             <div className="sm:col-span-1">
-              <dt className="text-sm font-medium text-gray-500">
+              <dt className="text-sm font-medium text-muted-foreground">
                 Witness
               </dt>
-              <dd className="mt-1 text-sm text-gray-900">
+              <dd className="mt-1 text-sm font-medium">
                 @{witness}
               </dd>
             </div>
             <div className="sm:col-span-1">
-              <dt className="text-sm font-medium text-gray-500">
+              <dt className="text-sm font-medium text-muted-foreground">
                 Approval
               </dt>
-              <dd className="mt-1 text-sm text-gray-900">
+              <dd className="mt-1 text-sm font-medium">
                 Approve
-              </dd>
-            </div>
-            <div className="sm:col-span-2">
-              <dt className="text-sm font-medium text-gray-500">
-                Required Authority
-              </dt>
-              <dd className="mt-1 text-sm text-gray-900">
-                Active Key via Hive Keychain
               </dd>
             </div>
           </dl>
         </div>
+        
+        {voteError && (
+          <div className="mt-3 text-sm text-destructive bg-destructive/10 p-2 rounded-md">
+            <span className="font-medium">Error:</span> {voteError}
+          </div>
+        )}
         
         <DialogFooter className="sm:justify-between">
           <Button
