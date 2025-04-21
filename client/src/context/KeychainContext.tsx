@@ -105,20 +105,23 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     return { success: true };
   };
 
-  // Real login implementation using Keychain SDK
+  // Real login implementation with strict username verification
   const login = async (username: string): Promise<LoginResponse> => {
+    // Remove any @ symbols and trim whitespace
+    const cleanedUsername = username.replace('@', '').trim().toLowerCase();
+    
     if (useDevelopmentMode) {
       // Use mock login in development
-      const response = await mockLogin(username);
+      const response = await mockLogin(cleanedUsername);
       
       if (response.success) {
         try {
-          console.log('Development mode: Fetching user data for:', username);
-          const userData = await getUserData(username);
+          console.log('Development mode: Fetching user data for:', cleanedUsername);
+          const userData = await getUserData(cleanedUsername);
           setUser(userData);
         } catch (dataError) {
           console.error('Development mode: Error fetching user data:', dataError);
-          setUser({ username });
+          setUser({ username: cleanedUsername });
         }
         setIsLoggedIn(true);
       }
@@ -131,24 +134,66 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
 
     try {
-      // First, try using the original Keychain API method to check if the account exists
-      // by attempting to sign a message
-      console.log('Checking if account exists in keychain:', username);
+      // First check if the account exists using keychain.requestHandshake
+      console.log('Verifying account exists in keychain:', cleanedUsername);
       
-      // Create a unique message to sign
+      // Create a unique message to sign to verify the key exists
       const signMessage = `Login to Aliento Witness Dashboard: ${new Date().toISOString()}`;
+
+      // Check if the login will succeed by attempting a signature first
+      const verifyKeychainHasAccount = new Promise<boolean>((resolve) => {
+        // The keychain will only attempt to sign if it has the account
+        keychain.requestSignBuffer(
+          cleanedUsername,
+          signMessage,
+          'Posting',
+          (verifyResponse) => {
+            if (verifyResponse.success) {
+              console.log('Account verified in keychain:', cleanedUsername);
+              resolve(true);
+            } else {
+              // If there's an error that's not related to the account not existing,
+              // log it specifically
+              if (verifyResponse.message && verifyResponse.message.includes("account doesn't exist")) {
+                console.log('Account does not exist in keychain:', cleanedUsername);
+              } else if (verifyResponse.message && verifyResponse.message.includes("User canceled")) {
+                console.log('User canceled the verification:', cleanedUsername);
+              } else {
+                console.log('Verification failed with message:', verifyResponse.message);
+              }
+              resolve(false);
+            }
+          }
+        );
+      });
+
+      // Wait for account verification
+      const accountExists = await verifyKeychainHasAccount;
+      
+      if (!accountExists) {
+        console.error('Account not found in keychain or user canceled');
+        return { 
+          success: false, 
+          error: 'Account not found in your Hive Keychain or request was canceled' 
+        };
+      }
+
+      // If verification passed, proceed with actual login
+      console.log('Proceeding with login for verified account:', cleanedUsername);
+      
+      const loginMessage = `Login to Aliento Witness Dashboard: ${new Date().toISOString()}`;
       
       const response = await new Promise<LoginResponse>((resolve) => {
         keychain.requestSignBuffer(
-          username,
-          signMessage,
+          cleanedUsername,
+          loginMessage,
           'Posting',
           (keychainResponse) => {
             console.log('Keychain login response:', keychainResponse);
             if (keychainResponse.success) {
               resolve({ 
                 success: true, 
-                username,
+                username: cleanedUsername,
                 publicKey: keychainResponse.publicKey,
                 result: keychainResponse 
               });
@@ -164,14 +209,14 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
 
       if (response.success) {
         try {
-          console.log('Fetching complete user data for:', username);
-          const userData = await getUserData(username);
+          console.log('Fetching complete user data for:', cleanedUsername);
+          const userData = await getUserData(cleanedUsername);
           setUser(userData);
           setIsLoggedIn(true);
         } catch (dataError) {
           console.error('Error fetching user data:', dataError);
           // Set minimal user data if fetching complete data fails
-          setUser({ username });
+          setUser({ username: cleanedUsername });
           setIsLoggedIn(true);
         }
       }

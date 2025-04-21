@@ -20,14 +20,19 @@ export default function VoteModal({ open, onClose, witness }: VoteModalProps) {
     setVoteError(null);
     try {
       const result = await voteWitness(witness, true);
+      console.log('Vote result:', result);
+      
       if (result.success) {
         onClose();
       } else if (result.error) {
         setVoteError(result.error);
+      } else {
+        // Generic error if no specific error was provided
+        setVoteError('Failed to vote for witness. Please try again.');
       }
     } catch (error) {
-      setVoteError(String(error));
       console.error('Error voting for witness:', error);
+      setVoteError(typeof error === 'string' ? error : 'An unexpected error occurred during voting.');
     } finally {
       setIsSubmitting(false);
     }
