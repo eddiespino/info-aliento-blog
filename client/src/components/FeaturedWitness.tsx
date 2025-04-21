@@ -83,12 +83,14 @@ export default function FeaturedWitness() {
       
       {/* Image and quote card - responsive design */}
       <div className="relative mt-8 lg:mt-0">
-        {/* Main image */}
-        <img 
-          src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80" 
-          alt="Network nodes visualization" 
-          className="rounded-xl shadow-lg w-full"
-        />
+        {/* Main image - Aliento Logo */}
+        <div className="bg-gradient-to-br from-blue-400 to-indigo-600 rounded-xl shadow-lg p-12 flex justify-center items-center">
+          <img 
+            src={alientoLogo} 
+            alt="Aliento Logo" 
+            className="w-3/4 max-w-[300px]"
+          />
+        </div>
         
         {/* Quote card with different positioning for mobile/desktop */}
         <div className="bg-card text-card-foreground rounded-lg shadow-lg border border-border p-4 sm:p-6 
