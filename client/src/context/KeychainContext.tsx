@@ -1,6 +1,8 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { UserData, LoginResponse, VoteWitnessResponse } from '@/types/hive';
 import { getUserData } from '@/api/hive';
+// Import Buffer shim to ensure Buffer is available
+import '@/lib/buffer-shim';
 // Type definitions are imported via the .d.ts file automatically
 
 // Create a context for Keychain functionality
@@ -238,7 +240,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     setIsLoggedIn(false);
   };
 
-  // Vote witness implementation using KeychainSDK
+  // Vote witness implementation using direct Keychain API
   const voteWitness = async (witness: string, approve: boolean): Promise<VoteWitnessResponse> => {
     if (useDevelopmentMode) {
       const response = await mockVoteWitness(witness, approve);
@@ -257,50 +259,44 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
       return response;
     }
     
-    if (!isKeychainInstalled || !keychainSDK || !isLoggedIn || !user) {
+    if (!isKeychainInstalled || !keychain || !isLoggedIn || !user) {
       return { success: false, error: 'Not logged in or Keychain not available' };
     }
 
     try {
-      console.log('Voting for witness using KeychainSDK:', witness, approve);
+      console.log('Voting for witness:', witness, approve);
       
-      // Use KeychainSDK to vote for witness
-      const voteData = {
-        username: user.username,
-        witness: witness,
-        vote: approve
-      };
-      
-      try {
-        // Use SDK's witness vote method
-        const keychainResponse = await keychainSDK.witnessVote(voteData);
-        console.log('Keychain SDK witness vote response:', keychainResponse);
-        
-        if (keychainResponse && keychainResponse.success) {
-          // Update user data after successful vote to refresh witness votes and free votes count
-          try {
-            console.log('Updating user data after witness vote');
-            const userData = await getUserData(user.username);
-            setUser(userData);
-          } catch (dataError) {
-            console.error('Error updating user data after vote:', dataError);
+      const response = await new Promise<VoteWitnessResponse>((resolve) => {
+        keychain.requestWitnessVote(
+          user.username,
+          witness,
+          approve,
+          (keychainResponse) => {
+            console.log('Keychain vote witness response:', keychainResponse);
+            if (keychainResponse.success) {
+              resolve({ success: true, result: keychainResponse });
+            } else {
+              resolve({ 
+                success: false, 
+                error: keychainResponse.message || 'Unknown error'
+              });
+            }
           }
-          
-          return { success: true, result: keychainResponse };
-        } else {
-          console.error('Keychain witness vote failed:', keychainResponse);
-          return { 
-            success: false, 
-            error: keychainResponse.error || 'Unknown error'
-          };
+        );
+      });
+      
+      // Update user data after successful vote to refresh witness votes and free votes count
+      if (response.success) {
+        try {
+          console.log('Updating user data after witness vote');
+          const userData = await getUserData(user.username);
+          setUser(userData);
+        } catch (dataError) {
+          console.error('Error updating user data after vote:', dataError);
         }
-      } catch (keychainError) {
-        console.error('Error during Keychain witness vote:', keychainError);
-        return { 
-          success: false, 
-          error: String(keychainError) 
-        };
       }
+      
+      return response;
     } catch (error) {
       console.error('Vote witness error:', error);
       return { success: false, error: String(error) };
