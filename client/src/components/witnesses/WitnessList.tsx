@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useWitnesses, usePagination } from '@/hooks/useWitnesses';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useWitnesses, useLazyLoading } from '@/hooks/useWitnesses';
 import WitnessCard from './WitnessCard';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import VoteModal from '../modals/VoteModal';
 import { useKeychain } from '@/context/KeychainContext';
 import LoginModal from '../modals/LoginModal';
+import { Progress } from '@/components/ui/progress';
 
 type SortOption = 'rank' | 'votes' | 'name' | 'lastBlock';
 
@@ -19,12 +20,34 @@ export default function WitnessList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('rank');
   const { witnesses, isLoading } = useWitnesses(searchTerm, sortBy);
-  const { paginatedItems, currentPage, totalPages, goToPage, nextPage, prevPage } = usePagination(witnesses, 10);
+  const { visibleItems, loadMore, hasMore, percent } = useLazyLoading(witnesses, 20, 20);
   const isMobile = useMobile();
   const [selectedWitness, setSelectedWitness] = useState<string | null>(null);
   const [voteModalOpen, setVoteModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const { isLoggedIn } = useKeychain();
+  
+  // Reference to observe for intersection
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  // Implement intersection observer for infinite scrolling
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) observer.observe(currentTarget);
+
+    return () => {
+      if (currentTarget) observer.unobserve(currentTarget);
+    };
+  }, [loadMore, hasMore]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -103,7 +126,7 @@ export default function WitnessList() {
             </div>
           ) : (
             <ul className="divide-y divide-border bg-card shadow rounded-lg border border-border">
-              {paginatedItems.map((witness) => (
+              {visibleItems.map((witness) => (
                 <li key={witness.id} className={`px-4 py-4 ${witness.name === 'aliento' ? 'bg-primary/10' : ''}`}>
                   <div className="flex justify-between items-start">
                     <div className="flex items-center">
@@ -138,6 +161,11 @@ export default function WitnessList() {
                   </div>
                 </li>
               ))}
+              {hasMore && (
+                <li ref={observerTarget} className="p-4 flex justify-center">
+                  <Skeleton className="h-12 w-12 rounded-full" />
+                </li>
+              )}
             </ul>
           )}
         </div>
@@ -179,46 +207,55 @@ export default function WitnessList() {
                     </TableRow>
                   ))
                 ) : (
-                  paginatedItems.map((witness) => (
-                    <TableRow 
-                      key={witness.id} 
-                      className={witness.name === 'aliento' ? 'bg-primary/10' : 'hover:bg-muted/50'}
-                    >
-                      <TableCell className="text-sm text-muted-foreground">
-                        #{witness.rank}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center">
-                          <Avatar className="h-10 w-10 mr-4">
-                            <AvatarImage src={witness.profileImage} alt={witness.name} />
-                            <AvatarFallback>{witness.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="text-sm font-medium text-foreground">@{witness.name}</div>
-                            <div className="text-sm text-muted-foreground">Version: {witness.version}</div>
+                  <>
+                    {visibleItems.map((witness) => (
+                      <TableRow 
+                        key={witness.id} 
+                        className={witness.name === 'aliento' ? 'bg-primary/10' : 'hover:bg-muted/50'}
+                      >
+                        <TableCell className="text-sm text-muted-foreground">
+                          #{witness.rank}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center">
+                            <Avatar className="h-10 w-10 mr-4">
+                              <AvatarImage src={witness.profileImage} alt={witness.name} />
+                              <AvatarFallback>{witness.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="text-sm font-medium text-foreground">@{witness.name}</div>
+                              <div className="text-sm text-muted-foreground">Version: {witness.version}</div>
+                            </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {witness.votesHivePower}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {witness.lastBlock}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {witness.priceFeed}
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        <Button 
-                          variant="link"
-                          className="text-primary hover:text-primary/80 p-0"
-                          onClick={() => handleVoteClick(witness.name)}
-                        >
-                          Vote
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {witness.votesHivePower}
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {witness.lastBlock}
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {witness.priceFeed}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          <Button 
+                            variant="link"
+                            className="text-primary hover:text-primary/80 p-0"
+                            onClick={() => handleVoteClick(witness.name)}
+                          >
+                            Vote
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {hasMore && (
+                      <TableRow ref={observerTarget}>
+                        <TableCell colSpan={6} className="text-center p-4">
+                          <Skeleton className="h-10 w-10 rounded-full mx-auto" />
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </>
                 )}
               </TableBody>
             </Table>
@@ -226,109 +263,23 @@ export default function WitnessList() {
         </div>
       )}
 
-      {/* Pagination */}
-      {!isLoading && totalPages > 1 && (
+      {/* Loading Progress */}
+      {!isLoading && hasMore && (
         <div className="mt-6">
-          <nav className="border-t border-border bg-card px-4 py-3 sm:px-6 rounded-md shadow-sm">
-            {/* Desktop pagination with stats and page numbers */}
-            <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="border-t border-border bg-card px-4 py-3 sm:px-6 rounded-md shadow-sm">
+            {/* Display loading progress */}
+            <div className="flex flex-wrap items-center justify-between">
               <p className="text-sm text-muted-foreground mb-3 sm:mb-0">
-                Showing <span className="font-medium text-foreground">{(currentPage - 1) * 10 + 1}</span> to{' '}
-                <span className="font-medium text-foreground">{Math.min(currentPage * 10, witnesses.length)}</span> of{' '}
+                Showing <span className="font-medium text-foreground">{visibleItems.length}</span> of{' '}
                 <span className="font-medium text-foreground">{witnesses.length}</span> witnesses
               </p>
               
-              <div className="flex items-center">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={prevPage}
-                  disabled={currentPage === 1}
-                >
-                  <span className="material-symbols-outlined text-sm mr-1">chevron_left</span>
-                  Previous
-                </Button>
-                
-                <div className="flex mx-2 items-center">
-                  {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
-                    const pageNum = i + 1;
-                    const isCurrentPage = pageNum === currentPage;
-                    
-                    return (
-                      <Button
-                        key={i}
-                        variant={isCurrentPage ? "secondary" : "ghost"}
-                        size="sm"
-                        onClick={() => goToPage(pageNum)}
-                        className="mx-1"
-                      >
-                        {pageNum}
-                      </Button>
-                    );
-                  })}
-                  {totalPages > 5 && (
-                    <>
-                      <span className="mx-1 text-muted-foreground">...</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => goToPage(totalPages)}
-                        className="mx-1"
-                      >
-                        {totalPages}
-                      </Button>
-                    </>
-                  )}
-                </div>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={nextPage}
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                  <span className="material-symbols-outlined text-sm ml-1">chevron_right</span>
-                </Button>
+              <div className="w-full sm:w-1/2 flex items-center gap-3">
+                <Progress value={percent} className="h-2" />
+                <span className="text-xs text-muted-foreground whitespace-nowrap">{percent}%</span>
               </div>
             </div>
-            
-            {/* Mobile pagination - simplified */}
-            <div className="sm:hidden">
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-muted-foreground">
-                  Page {currentPage} of {totalPages}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {(currentPage - 1) * 10 + 1}-{Math.min(currentPage * 10, witnesses.length)} of {witnesses.length}
-                </p>
-              </div>
-              
-              <div className="flex justify-between mt-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={prevPage}
-                  disabled={currentPage === 1}
-                  className="w-24"
-                >
-                  <span className="material-symbols-outlined text-sm mr-1">chevron_left</span>
-                  Previous
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={nextPage}
-                  disabled={currentPage === totalPages}
-                  className="w-24"
-                >
-                  Next
-                  <span className="material-symbols-outlined text-sm ml-1">chevron_right</span>
-                </Button>
-              </div>
-            </div>
-          </nav>
+          </div>
         </div>
       )}
 

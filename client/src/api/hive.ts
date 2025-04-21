@@ -249,7 +249,7 @@ export const getWitnesses = async (): Promise<Witness[]> => {
     const apiNode = await getBestHiveNode();
     console.log('Fetching witnesses from:', apiNode);
     
-    // Request witness data
+    // Request witness data - fetch 1000 witnesses instead of 100
     let result;
     try {
       result = await fetch(apiNode, {
@@ -260,7 +260,7 @@ export const getWitnesses = async (): Promise<Witness[]> => {
         body: JSON.stringify({
           "jsonrpc": "2.0",
           "method": "condenser_api.get_witnesses_by_vote",
-          "params": ["", 100],
+          "params": ["", 1000], // Increased to get more witnesses
           "id": 1
         })
       });
@@ -281,7 +281,7 @@ export const getWitnesses = async (): Promise<Witness[]> => {
           body: JSON.stringify({
             "jsonrpc": "2.0",
             "method": "condenser_api.get_witnesses_by_vote",
-            "params": ["", 100],
+            "params": ["", 1000], // Increased to get more witnesses
             "id": 1
           })
         });

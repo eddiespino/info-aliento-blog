@@ -99,3 +99,29 @@ export function usePagination<T>(items: T[], pageSize: number = 10) {
     prevPage
   };
 }
+
+// New hook for lazy loading data
+export function useLazyLoading<T>(items: T[], initialCount: number = 20, incrementCount: number = 20) {
+  const [visibleCount, setVisibleCount] = useState(initialCount);
+  
+  const visibleItems = useMemo(() => {
+    return items.slice(0, visibleCount);
+  }, [items, visibleCount]);
+  
+  const loadMore = () => {
+    setVisibleCount(prevCount => Math.min(prevCount + incrementCount, items.length));
+  };
+  
+  const hasMore = visibleCount < items.length;
+  
+  const percent = items.length > 0 ? Math.round((visibleCount / items.length) * 100) : 0;
+  
+  return {
+    visibleItems,
+    loadMore,
+    hasMore,
+    visibleCount,
+    totalCount: items.length,
+    percent
+  };
+}
