@@ -13,6 +13,7 @@ import VoteModal from '../modals/VoteModal';
 import { useKeychain } from '@/context/KeychainContext';
 import LoginModal from '../modals/LoginModal';
 import { Progress } from '@/components/ui/progress';
+import { Link } from 'wouter';
 
 type SortOption = 'rank' | 'votes' | 'name' | 'lastBlock';
 
@@ -135,7 +136,7 @@ export default function WitnessList() {
               {visibleItems.map((witness: any) => (
                 <li key={witness.id} className={`px-4 py-4 ${witness.name === 'aliento' ? 'bg-primary/10' : ''}`}>
                   <div className="flex justify-between items-start">
-                    <div className="flex items-center">
+                    <Link href={`/@${witness.name}`} className="flex items-center hover:opacity-90 transition-opacity">
                       <div className="mr-4 flex-shrink-0">
                         <Avatar className="h-12 w-12">
                           <AvatarImage src={witness.profileImage} alt={witness.name} />
@@ -146,7 +147,7 @@ export default function WitnessList() {
                         <h3 className="text-base font-medium text-foreground">@{witness.name}</h3>
                         <p className="mt-1 text-sm text-muted-foreground">Rank: #{witness.rank}</p>
                       </div>
-                    </div>
+                    </Link>
                     <Button 
                       size="sm"
                       className="ml-2"
@@ -223,7 +224,7 @@ export default function WitnessList() {
                           #{witness.rank}
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center">
+                          <Link href={`/@${witness.name}`} className="flex items-center hover:opacity-90 transition-opacity">
                             <Avatar className="h-10 w-10 mr-4">
                               <AvatarImage src={witness.profileImage} alt={witness.name} />
                               <AvatarFallback>{witness.name.substring(0, 2).toUpperCase()}</AvatarFallback>
@@ -232,7 +233,7 @@ export default function WitnessList() {
                               <div className="text-sm font-medium text-foreground">@{witness.name}</div>
                               <div className="text-sm text-muted-foreground">Version: {witness.version}</div>
                             </div>
-                          </div>
+                          </Link>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {witness.votesHivePower}

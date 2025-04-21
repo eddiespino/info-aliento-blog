@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getWitnesses, getWitnessByName, getWitnessVoters } from '@/api/hive';
-import { Witness, WitnessVoter } from '@/types/hive';
+import { Witness } from '@/types/hive';
 import { useState, useMemo } from 'react';
 
 export function useWitnesses(searchTerm: string = '', sortBy: 'rank' | 'votes' | 'name' | 'lastBlock' = 'rank') {
@@ -28,7 +28,7 @@ export function useWitnesses(searchTerm: string = '', sortBy: 'rank' | 'votes' |
         case 'votes':
           return parseFloat(b.votes) - parseFloat(a.votes);
         case 'lastBlock':
-          return parseInt(b.lastBlock.replace(/,/g, '')) - parseInt(a.lastBlock.replace(/,/g, ''));
+          return parseInt(b.lastBlock.substring(1)) - parseInt(a.lastBlock.substring(1));
         case 'rank':
         default:
           return a.rank - b.rank;
