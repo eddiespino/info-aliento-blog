@@ -1,4 +1,4 @@
-import { HiveNode, NetworkStats, Witness } from '@/types/hive';
+import { HiveNode, NetworkStats, Witness, UserData } from '@/types/hive';
 import { formatNumberWithCommas, formatHivePower, formatLargeNumber } from '@/lib/utils';
 
 // Default API node to use if we can't fetch the best nodes
@@ -331,7 +331,169 @@ export const getWitnesses = async (): Promise<Witness[]> => {
   }
 };
 
-// Get information for a specific witness
+// Get user account information
+export const getUserAccount = async (username: string): Promise<any> => {
+  try {
+    const apiNode = await getBestHiveNode();
+    console.log(`Fetching account ${username} from:`, apiNode);
+    
+    // Request account data
+    let result;
+    try {
+      result = await fetch(apiNode, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "jsonrpc": "2.0",
+          "method": "condenser_api.get_accounts",
+          "params": [[username]],
+          "id": 1
+        })
+      });
+      
+      if (!result.ok) {
+        throw new Error(`Account fetch HTTP error status: ${result.status}`);
+      }
+    } catch (fetchError) {
+      console.error(`Error fetching account ${username}:`, fetchError);
+      // Try default node as a fallback
+      if (apiNode !== DEFAULT_API_NODE) {
+        console.log('Using fallback node for account info');
+        result = await fetch(DEFAULT_API_NODE, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "jsonrpc": "2.0",
+            "method": "condenser_api.get_accounts",
+            "params": [[username]],
+            "id": 1
+          })
+        });
+      } else {
+        throw fetchError;
+      }
+    }
+    
+    const data = await result.json();
+    const accounts = data.result;
+    
+    if (!accounts || accounts.length === 0) {
+      return null;
+    }
+    
+    return accounts[0];
+  } catch (error) {
+    console.error(`Error fetching account ${username}:`, error);
+    return null;
+  }
+};
+
+// Get user's witness votes
+export const getUserWitnessVotes = async (username: string): Promise<string[]> => {
+  try {
+    const account = await getUserAccount(username);
+    
+    if (!account) {
+      return [];
+    }
+    
+    // Witness votes are stored in the account's 'witness_votes' array
+    return account.witness_votes || [];
+  } catch (error) {
+    console.error(`Error fetching witness votes for ${username}:`, error);
+    return [];
+  }
+};
+
+// Calculate user's Hive Power
+export const calculateUserHivePower = async (username: string): Promise<string> => {
+  try {
+    const account = await getUserAccount(username);
+    
+    if (!account) {
+      return '0 HP';
+    }
+    
+    // Ensure we have the vests to HP ratio before processing
+    await ensureVestToHpRatio();
+    
+    // Calculate Hive Power from vesting shares
+    // Format is like: "3714.812943 VESTS"
+    const vestingShares = parseFloat(account.vesting_shares.split(' ')[0]);
+    const delegatedVestingShares = parseFloat(account.delegated_vesting_shares.split(' ')[0]);
+    const receivedVestingShares = parseFloat(account.received_vesting_shares.split(' ')[0]);
+    
+    // Total effective vesting shares = own + received - delegated
+    const effectiveVests = vestingShares + receivedVestingShares - delegatedVestingShares;
+    
+    // Calculate Hive Power
+    const hivePower = effectiveVests * (vestToHpRatio || 0.0005);
+    
+    // Format Hive Power
+    return formatHivePower(hivePower);
+  } catch (error) {
+    console.error(`Error calculating Hive Power for ${username}:`, error);
+    return '0 HP';
+  }
+};
+
+// Count free witness votes
+export const getFreeWitnessVotes = async (username: string): Promise<number> => {
+  try {
+    const account = await getUserAccount(username);
+    
+    if (!account) {
+      return 0;
+    }
+    
+    // Each Hive account can vote for up to 30 witnesses
+    const maxWitnessVotes = 30;
+    
+    // Get current witness votes
+    const witnessVotes = account.witness_votes || [];
+    
+    // Calculate remaining/free votes
+    return maxWitnessVotes - witnessVotes.length;
+  } catch (error) {
+    console.error(`Error calculating free witness votes for ${username}:`, error);
+    return 0;
+  }
+};
+
+// Get complete user data including profile, Hive Power and witness votes
+export const getUserData = async (username: string): Promise<UserData> => {
+  try {
+    // Get user's Hive Power
+    const hivePower = await calculateUserHivePower(username);
+    
+    // Get user's witness votes
+    const witnessVotes = await getUserWitnessVotes(username);
+    
+    // Calculate free witness votes
+    const freeWitnessVotes = await getFreeWitnessVotes(username);
+    
+    // Return complete user data
+    return {
+      username,
+      profileImage: `https://images.hive.blog/u/${username}/avatar`,
+      hivePower,
+      freeWitnessVotes,
+      witnessVotes
+    };
+  } catch (error) {
+    console.error(`Error getting complete user data for ${username}:`, error);
+    // Return minimal data in case of error
+    return {
+      username,
+      profileImage: `https://images.hive.blog/u/${username}/avatar`
+    };
+  }
+};
+
 export const getWitnessByName = async (name: string): Promise<Witness | null> => {
   try {
     const apiNode = await getBestHiveNode();

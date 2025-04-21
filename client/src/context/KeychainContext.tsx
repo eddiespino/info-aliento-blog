@@ -1,5 +1,6 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { UserData, LoginResponse, VoteWitnessResponse } from '@/types/hive';
+import { getUserData } from '@/api/hive';
 // Type definitions are imported via the .d.ts file automatically
 
 // Create a context for Keychain functionality
