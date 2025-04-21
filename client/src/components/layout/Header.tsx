@@ -89,7 +89,9 @@ export default function Header() {
                         </Avatar>
                         <div className="flex flex-col">
                           <span className="text-sm font-medium">@{user?.username}</span>
-                          <span className="text-xs text-muted-foreground">{user?.hivePower}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {user?.hivePower} <span className="opacity-70">(own)</span>
+                          </span>
                         </div>
                       </div>
                     </Button>
@@ -97,8 +99,15 @@ export default function Header() {
                   <DropdownMenuContent>
                     <div className="p-2 text-sm">
                       <div className="flex flex-col space-y-1 mb-2">
-                        <div className="text-muted-foreground">Hive Power:</div>
+                        <div className="text-muted-foreground">Own Hive Power:</div>
                         <div className="font-medium">{user?.hivePower}</div>
+                      </div>
+                      <div className="flex flex-col space-y-1 mb-2">
+                        <div className="text-muted-foreground">Effective Hive Power:</div>
+                        <div className="font-medium">{user?.effectiveHivePower}</div>
+                        <div className="text-xs text-muted-foreground">
+                          (includes delegations in/out)
+                        </div>
                       </div>
                       <div className="flex flex-col space-y-1 mb-2">
                         <div className="text-muted-foreground">Witness Votes:</div>
@@ -215,7 +224,9 @@ export default function Header() {
                       </Avatar>
                       <div className="flex flex-col">
                         <div className="font-medium">@{user?.username}</div>
-                        <div className="text-xs text-muted-foreground">{user?.hivePower}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {user?.hivePower} <span className="opacity-70">(own)</span>
+                        </div>
                         <div className="text-xs mt-1">
                           <span className="bg-primary/20 text-primary font-medium px-2 py-0.5 rounded-full">
                             {user?.freeWitnessVotes} free votes

@@ -424,6 +424,35 @@ export const calculateUserHivePower = async (username: string): Promise<string> 
     // Calculate Hive Power from vesting shares
     // Format is like: "3714.812943 VESTS"
     const vestingShares = parseFloat(account.vesting_shares.split(' ')[0]);
+    
+    // Only use the account's own vesting shares, ignoring delegations in or out
+    // as requested by the user
+    
+    // Calculate Hive Power
+    const hivePower = vestingShares * (vestToHpRatio || 0.0005);
+    
+    // Format Hive Power
+    return formatHivePower(hivePower);
+  } catch (error) {
+    console.error(`Error calculating Hive Power for ${username}:`, error);
+    return '0 HP';
+  }
+};
+
+// Calculate user's effective Hive Power (including delegations)
+export const calculateEffectiveHivePower = async (username: string): Promise<string> => {
+  try {
+    const account = await getUserAccount(username);
+    
+    if (!account) {
+      return '0 HP';
+    }
+    
+    // Ensure we have the vests to HP ratio before processing
+    await ensureVestToHpRatio();
+    
+    // Calculate Effective Hive Power from vesting shares
+    const vestingShares = parseFloat(account.vesting_shares.split(' ')[0]);
     const delegatedVestingShares = parseFloat(account.delegated_vesting_shares.split(' ')[0]);
     const receivedVestingShares = parseFloat(account.received_vesting_shares.split(' ')[0]);
     
@@ -436,7 +465,7 @@ export const calculateUserHivePower = async (username: string): Promise<string> 
     // Format Hive Power
     return formatHivePower(hivePower);
   } catch (error) {
-    console.error(`Error calculating Hive Power for ${username}:`, error);
+    console.error(`Error calculating effective Hive Power for ${username}:`, error);
     return '0 HP';
   }
 };
@@ -467,8 +496,11 @@ export const getFreeWitnessVotes = async (username: string): Promise<number> => 
 // Get complete user data including profile, Hive Power and witness votes
 export const getUserData = async (username: string): Promise<UserData> => {
   try {
-    // Get user's Hive Power
+    // Get user's own Hive Power (without delegations)
     const hivePower = await calculateUserHivePower(username);
+    
+    // Get user's effective Hive Power (including delegations)
+    const effectiveHivePower = await calculateEffectiveHivePower(username);
     
     // Get user's witness votes
     const witnessVotes = await getUserWitnessVotes(username);
@@ -481,6 +513,7 @@ export const getUserData = async (username: string): Promise<UserData> => {
       username,
       profileImage: `https://images.hive.blog/u/${username}/avatar`,
       hivePower,
+      effectiveHivePower,
       freeWitnessVotes,
       witnessVotes
     };

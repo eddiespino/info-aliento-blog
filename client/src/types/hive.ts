@@ -32,6 +32,7 @@ export interface UserData {
   username: string;
   profileImage?: string;
   hivePower?: string;
+  effectiveHivePower?: string;
   freeWitnessVotes?: number;
   witnessVotes?: string[];
 }
