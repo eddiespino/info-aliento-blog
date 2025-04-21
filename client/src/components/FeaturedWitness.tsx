@@ -6,6 +6,7 @@ import { useState } from 'react';
 import VoteModal from './modals/VoteModal';
 import LoginModal from './modals/LoginModal';
 import { Badge } from '@/components/ui/badge';
+import alientoLogo from '@/assets/aliento-logo.png';
 
 export default function FeaturedWitness() {
   const { witness, isLoading } = useAlientoWitness();

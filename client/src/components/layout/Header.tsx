@@ -39,26 +39,12 @@ export default function Header() {
               <div className="flex-shrink-0 mr-1 sm:mr-0">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2">
-                  {/* Inline SVG for Aliento logo - ensures it always displays */}
-                  <svg 
-                    viewBox="0 0 100 100" 
-                    className="h-8 w-8"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle cx="50" cy="50" r="50" fill="#222B38" />
-                    <path d="M31.25 26.04C35.42 26.04 38.54 29.17 38.54 33.33C38.54 37.5 35.42 40.62 31.25 40.62C27.08 40.62 23.96 37.5 23.96 33.33C23.96 29.17 27.08 26.04 31.25 26.04Z" fill="#fff" />
-                    <path d="M50 33.33C54.17 33.33 57.29 36.46 57.29 40.63C57.29 44.79 54.17 47.92 50 47.92C45.83 47.92 42.71 44.79 42.71 40.63C42.71 36.46 45.83 33.33 50 33.33Z" fill="#fff" />
-                    <path d="M68.75 26.04C72.92 26.04 76.04 29.17 76.04 33.33C76.04 37.5 72.92 40.62 68.75 40.62C64.58 40.62 61.46 37.5 61.46 33.33C61.46 29.17 64.58 26.04 68.75 26.04Z" fill="#fff" />
-                    <path d="M31.25 59.38C35.42 59.38 38.54 62.5 38.54 66.67C38.54 70.83 35.42 73.96 31.25 73.96C27.08 73.96 23.96 70.83 23.96 66.67C23.96 62.5 27.08 59.38 31.25 59.38Z" fill="#fff" />
-                    <path d="M68.75 59.38C72.92 59.38 76.04 62.5 76.04 66.67C76.04 70.83 72.92 73.96 68.75 73.96C64.58 73.96 61.46 70.83 61.46 66.67C61.46 62.5 64.58 59.38 68.75 59.38Z" fill="#fff" />
-                    <path d="M31.25 40.62V59.38" stroke="#fff" strokeWidth="3" />
-                    <path d="M31.25 40.62L50 47.92" stroke="#fff" strokeWidth="3" />
-                    <path d="M31.25 59.38L50 47.92" stroke="#fff" strokeWidth="3" />
-                    <path d="M68.75 40.62L50 47.92" stroke="#fff" strokeWidth="3" />
-                    <path d="M68.75 40.62V59.38" stroke="#fff" strokeWidth="3" />
-                    <path d="M68.75 59.38L50 47.92" stroke="#fff" strokeWidth="3" />
-                  </svg>
+                  {/* New Aliento logo */}
+                  <img 
+                    src={alientoLogo} 
+                    alt="Aliento Logo" 
+                    className="h-9 w-9"
+                  />
                   <span className="text-lg font-semibold hidden xs:inline-block">Aliento Witness</span>
                 </Link>
               </div>
