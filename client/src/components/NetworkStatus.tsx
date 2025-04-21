@@ -88,51 +88,43 @@ export default function NetworkStatus() {
         
         {/* Desktop View - Table */}
         <div className="hidden md:block">
-          <Card>
+          <Card className="overflow-hidden border-border">
             <div className="overflow-x-auto">
               <Table>
-                <TableHeader>
+                <TableHeader className="bg-muted/50">
                   <TableRow>
-                    <TableHead>Node URL</TableHead>
-                    <TableHead>Version</TableHead>
-                    <TableHead>Last Update</TableHead>
-                    <TableHead>Score</TableHead>
-                    <TableHead>Tests</TableHead>
+                    <TableHead className="font-medium">Node URL</TableHead>
+                    <TableHead className="font-medium">Version</TableHead>
+                    <TableHead className="font-medium text-right">Score</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {nodesLoading ? (
-                    Array.from({ length: 3 }).map((_, i) => (
+                    Array.from({ length: 5 }).map((_, i) => (
                       <TableRow key={i}>
-                        <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-48" /></TableCell>
                         <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                        <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                        <TableCell><Skeleton className="h-4 w-12" /></TableCell>
-                        <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                        <TableCell className="text-right"><Skeleton className="h-4 w-16 ml-auto" /></TableCell>
                       </TableRow>
                     ))
                   ) : (
-                    nodes.slice(0, 5).map((node, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="text-sm font-medium text-primary">
-                          {node.url}
+                    nodes.slice(0, 10).map((node, index) => (
+                      <TableRow key={index} className={index % 2 === 0 ? 'bg-muted/20' : ''}>
+                        <TableCell className="text-sm font-medium text-primary hover:text-primary/80">
+                          <a href={node.url.startsWith('http') ? node.url : `https://${node.url}`} target="_blank" rel="noopener noreferrer">
+                            {node.url}
+                          </a>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {node.version}
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {node.lastUpdate}
-                        </TableCell>
-                        <TableCell>
+                        <TableCell className="text-right">
                           <Badge 
                             variant={node.score === '100%' ? 'default' : 'outline'}
-                            className={node.score === '100%' ? 'bg-primary/20 text-primary' : ''}
+                            className={`${node.score === '100%' ? 'bg-primary/20 text-primary' : 'text-muted-foreground'} min-w-[60px] text-center`}
                           >
                             {node.score}
                           </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {node.tests}
                         </TableCell>
                       </TableRow>
                     ))
@@ -144,15 +136,13 @@ export default function NetworkStatus() {
         </div>
         
         {/* Mobile View - Cards */}
-        <div className="md:hidden">
+        <div className="md:hidden space-y-4">
           {nodesLoading ? (
             <div className="space-y-4">
-              {Array.from({ length: 3 }).map((_, i) => (
+              {Array.from({ length: 5 }).map((_, i) => (
                 <Card key={i} className="p-4">
                   <Skeleton className="h-5 w-2/3 mb-3" />
                   <div className="grid grid-cols-2 gap-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
                     <Skeleton className="h-4 w-full" />
                     <Skeleton className="h-4 w-full" />
                   </div>
@@ -161,13 +151,17 @@ export default function NetworkStatus() {
             </div>
           ) : (
             <div className="space-y-4">
-              {nodes.slice(0, 5).map((node, index) => (
-                <Card key={index} className="overflow-hidden">
-                  <div className="p-4 bg-muted/20 border-b border-border flex justify-between items-center">
-                    <div className="font-medium text-primary truncate mr-2">{node.url}</div>
+              {nodes.slice(0, 10).map((node, index) => (
+                <Card key={index} className="overflow-hidden border-border">
+                  <div className="p-4 bg-muted/30 border-b border-border flex justify-between items-center">
+                    <div className="font-medium text-primary truncate mr-2">
+                      <a href={node.url.startsWith('http') ? node.url : `https://${node.url}`} target="_blank" rel="noopener noreferrer">
+                        {node.url}
+                      </a>
+                    </div>
                     <Badge 
                       variant={node.score === '100%' ? 'default' : 'outline'}
-                      className={node.score === '100%' ? 'bg-primary/20 text-primary' : ''}
+                      className={`${node.score === '100%' ? 'bg-primary/20 text-primary' : 'text-muted-foreground'} min-w-[60px] text-center`}
                     >
                       {node.score}
                     </Badge>
@@ -176,10 +170,6 @@ export default function NetworkStatus() {
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                       <div className="text-muted-foreground">Version:</div>
                       <div>{node.version}</div>
-                      <div className="text-muted-foreground">Last Update:</div>
-                      <div>{node.lastUpdate}</div>
-                      <div className="text-muted-foreground">Tests:</div>
-                      <div>{node.tests}</div>
                     </div>
                   </div>
                 </Card>
