@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from '../ThemeToggle';
+import alientoLogo from '@/assets/aliento-logo.png';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -38,10 +39,12 @@ export default function Header() {
               <div className="flex-shrink-0">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary-500 text-3xl">
-                    hub
-                  </span>
-                  <span className="text-lg font-semibold">Aliento Witness</span>
+                  <img 
+                    src={alientoLogo} 
+                    alt="Aliento Witness" 
+                    className="h-8 w-8 rounded-full"
+                  />
+                  <span className="text-lg font-semibold hidden xs:inline-block">Aliento Witness</span>
                 </Link>
               </div>
               
@@ -60,24 +63,25 @@ export default function Header() {
             </div>
             
             {/* Authentication */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <ThemeToggle />
               
               {!isLoggedIn ? (
                 <Button
                   onClick={handleLogin}
                   variant="default"
-                  className="inline-flex items-center justify-center"
+                  size="sm"
+                  className="inline-flex items-center justify-center px-3 text-xs sm:text-sm"
                 >
-                  <span className="material-symbols-outlined mr-1">login</span>
+                  <span className="material-symbols-outlined text-sm mr-1">login</span>
                   <span className="hidden sm:inline">Login with Keychain</span>
                   <span className="sm:hidden">Login</span>
                 </Button>
               ) : (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="p-0">
-                      <div className="flex items-center gap-3">
+                    <Button variant="ghost" className="p-0 h-auto">
+                      <div className="flex items-center gap-2">
                         <Avatar className="h-8 w-8">
                           <AvatarImage 
                             src={user?.profileImage} 
@@ -87,7 +91,7 @@ export default function Header() {
                             {user?.username?.substring(0, 2).toUpperCase() || 'U'}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="flex flex-col">
+                        <div className="hidden sm:flex flex-col">
                           <span className="text-sm font-medium">@{user?.username}</span>
                           <span className="text-xs text-muted-foreground">
                             {user?.hivePower} <span className="opacity-70">(own)</span>
