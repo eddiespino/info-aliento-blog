@@ -813,7 +813,7 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
       });
     
     // Sort by Hive Power in descending order
-    return voters.sort((a, b) => {
+    return voters.sort((a: WitnessVoter, b: WitnessVoter) => {
       const aHP = parseFloat(a.hivePower.replace(/[^0-9.]/g, ''));
       const bHP = parseFloat(b.hivePower.replace(/[^0-9.]/g, ''));
       return bHP - aHP;

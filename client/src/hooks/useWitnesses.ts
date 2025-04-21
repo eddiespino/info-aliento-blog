@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getWitnesses, getWitnessByName } from '@/api/hive';
+import { getWitnesses, getWitnessByName, getWitnessVoters } from '@/api/hive';
 import { Witness } from '@/types/hive';
 import { useState, useMemo } from 'react';
 

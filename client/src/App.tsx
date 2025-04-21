@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Witnesses from "@/pages/witnesses";
 import About from "@/pages/about";
+import WitnessProfile from "@/pages/witness-profile";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/witnesses" component={Witnesses} />
       <Route path="/about" component={About} />
+      <Route path="/@:name" component={WitnessProfile} />
       <Route component={NotFound} />
     </Switch>
   );

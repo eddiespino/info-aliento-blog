@@ -5,6 +5,7 @@ import { useKeychain } from '@/context/KeychainContext';
 import { useState } from 'react';
 import VoteModal from '../modals/VoteModal';
 import LoginModal from '../modals/LoginModal';
+import { Link } from 'wouter';
 
 interface WitnessCardProps {
   witness: Witness;
@@ -33,7 +34,7 @@ export default function WitnessCard({ witness, highlighted = false }: WitnessCar
           : 'bg-card border-border'
       }`}>
         <div className="flex flex-wrap justify-between items-start gap-3">
-          <div className="flex items-center">
+          <Link href={`/@${witness.name}`} className="flex items-center hover:opacity-90 transition-opacity">
             <Avatar className="h-10 w-10 sm:h-12 sm:w-12 mr-3">
               <AvatarImage src={witness.profileImage} alt={witness.name} />
               <AvatarFallback>{witness.name.substring(0, 2).toUpperCase()}</AvatarFallback>
@@ -42,7 +43,7 @@ export default function WitnessCard({ witness, highlighted = false }: WitnessCar
               <h3 className="text-base font-medium text-foreground">@{witness.name}</h3>
               <p className="text-xs sm:text-sm text-muted-foreground">Rank: #{witness.rank}</p>
             </div>
-          </div>
+          </Link>
           <Button 
             size="sm" 
             className="flex items-center gap-1"
