@@ -27,8 +27,9 @@ export default function WitnessList() {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const { isLoggedIn } = useKeychain();
   
-  // Reference to observe for intersection
-  const observerTarget = useRef<HTMLDivElement>(null);
+  // References to observe for intersection - separate refs for different element types
+  const liRef = useRef<HTMLLIElement>(null);
+  const trRef = useRef<HTMLTableRowElement>(null);
 
   // Implement intersection observer for infinite scrolling
   useEffect(() => {
@@ -41,13 +42,18 @@ export default function WitnessList() {
       { threshold: 0.1 }
     );
 
-    const currentTarget = observerTarget.current;
-    if (currentTarget) observer.observe(currentTarget);
+    // Observe both possible ref targets
+    const liTarget = liRef.current;
+    const trTarget = trRef.current;
+    
+    if (liTarget) observer.observe(liTarget);
+    if (trTarget) observer.observe(trTarget);
 
     return () => {
-      if (currentTarget) observer.unobserve(currentTarget);
+      if (liTarget) observer.unobserve(liTarget);
+      if (trTarget) observer.unobserve(trTarget);
     };
-  }, [loadMore, hasMore]);
+  }, [loadMore, hasMore, liRef, trRef]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -126,7 +132,7 @@ export default function WitnessList() {
             </div>
           ) : (
             <ul className="divide-y divide-border bg-card shadow rounded-lg border border-border">
-              {visibleItems.map((witness) => (
+              {visibleItems.map((witness: any) => (
                 <li key={witness.id} className={`px-4 py-4 ${witness.name === 'aliento' ? 'bg-primary/10' : ''}`}>
                   <div className="flex justify-between items-start">
                     <div className="flex items-center">
@@ -162,7 +168,7 @@ export default function WitnessList() {
                 </li>
               ))}
               {hasMore && (
-                <li ref={observerTarget} className="p-4 flex justify-center">
+                <li ref={liRef} className="p-4 flex justify-center">
                   <Skeleton className="h-12 w-12 rounded-full" />
                 </li>
               )}
@@ -208,7 +214,7 @@ export default function WitnessList() {
                   ))
                 ) : (
                   <>
-                    {visibleItems.map((witness) => (
+                    {visibleItems.map((witness: any) => (
                       <TableRow 
                         key={witness.id} 
                         className={witness.name === 'aliento' ? 'bg-primary/10' : 'hover:bg-muted/50'}
@@ -249,7 +255,7 @@ export default function WitnessList() {
                       </TableRow>
                     ))}
                     {hasMore && (
-                      <TableRow ref={observerTarget}>
+                      <TableRow ref={trRef}>
                         <TableCell colSpan={6} className="text-center p-4">
                           <Skeleton className="h-10 w-10 rounded-full mx-auto" />
                         </TableCell>
