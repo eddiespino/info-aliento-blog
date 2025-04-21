@@ -221,13 +221,68 @@ export const getNetworkStats = async (): Promise<NetworkStats> => {
     const priceData = await priceResult.json();
     const price = priceData.result;
     
+    // Get active witnesses that have signed blocks in the last 24 hours
+    let witnessResult;
+    try {
+      witnessResult = await fetch(apiNode, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "jsonrpc": "2.0",
+          "method": "condenser_api.get_witnesses_by_vote",
+          "params": ["", 1000], // Get up to 1000 witnesses
+          "id": 2
+        })
+      });
+      
+      if (!witnessResult.ok) {
+        throw new Error(`Witness HTTP error status: ${witnessResult.status}`);
+      }
+    } catch (witnessError) {
+      console.error('Error fetching witness data:', witnessError);
+      // Try default node as a fallback
+      if (apiNode !== DEFAULT_API_NODE) {
+        console.log('Using fallback node for witness data');
+        witnessResult = await fetch(DEFAULT_API_NODE, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "jsonrpc": "2.0",
+            "method": "condenser_api.get_witnesses_by_vote",
+            "params": ["", 1000],
+            "id": 2
+          })
+        });
+      } else {
+        throw witnessError;
+      }
+    }
+    
+    const witnessData = await witnessResult.json();
+    const witnesses = witnessData.result;
+    
+    // Calculate how many witnesses have signed a block in the last 24 hours
+    // Current block - 28800 = block from 24 hours ago (assuming 3 second block time)
+    const currentBlockNum = props.head_block_number;
+    const blockFrom24HoursAgo = currentBlockNum - (24 * 60 * 60 / 3);
+    
+    // Count witnesses that have a recent block (in the last 24 hours)
+    const activeWitnessCount = witnesses.filter((witness: any) => {
+      const lastBlock = parseInt(witness.last_confirmed_block_num);
+      return lastBlock > blockFrom24HoursAgo;
+    }).length;
+    
     // Format the price as USD
     const hivePrice = parseFloat(price.base.split(' ')[0]) / parseFloat(price.quote.split(' ')[0]);
     
     return {
       blockHeight: props.head_block_number.toLocaleString(),
       txPerDay: Math.round(props.current_aslot / 1440 * 20).toLocaleString(), // Rough estimate
-      activeWitnesses: "21", // Top witnesses count is always 21
+      activeWitnesses: activeWitnessCount.toString(), // Total witnesses that signed a block in last 24 hours
       hivePrice: `$${hivePrice.toFixed(3)}`
     };
   } catch (error) {
@@ -237,7 +292,7 @@ export const getNetworkStats = async (): Promise<NetworkStats> => {
     return {
       blockHeight: "Unknown",
       txPerDay: "Unknown",
-      activeWitnesses: "21",
+      activeWitnesses: "Unknown",
       hivePrice: "Unknown"
     };
   }
