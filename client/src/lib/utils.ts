@@ -32,10 +32,17 @@ export function formatLargeNumber(num: number, decimals: number = 1): string {
 }
 
 /**
- * Format Hive Power value (PeakD style)
+ * Format Hive Power value with commas, 3 decimal places, and "HP" suffix
  * @param hiveAmount Amount in Hive
- * @returns Formatted string (e.g., 17.9m)
+ * @returns Formatted string (e.g., 17,123.456 HP)
  */
 export function formatHivePower(hiveAmount: number): string {
-  return formatLargeNumber(hiveAmount);
+  // Format with commas and 3 decimal places
+  const formattedNumber = hiveAmount.toLocaleString('en-US', {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3
+  });
+  
+  // Add HP suffix
+  return `${formattedNumber} HP`;
 }
