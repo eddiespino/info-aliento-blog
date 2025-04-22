@@ -24,6 +24,8 @@ export default function WitnessProfile() {
   const { isLoggedIn } = useKeychain();
   const [voteModalOpen, setVoteModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [proxyModalOpen, setProxyModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState('');
   const [activeTab, setActiveTab] = useState('profile');
 
   // Pagination for voters list
@@ -267,7 +269,17 @@ export default function WitnessProfile() {
                                   <TableCell>@{voter.username}</TableCell>
                                   <TableCell className="text-right font-medium">{voter.hivePower}</TableCell>
                                   <TableCell className="text-right font-medium">
-                                    {voter.proxiedHivePower ? voter.proxiedHivePower : "-"}
+                                    {voter.proxiedHivePower ? (
+                                      <button 
+                                        className="text-primary hover:underline cursor-pointer"
+                                        onClick={() => {
+                                          setSelectedUser(voter.username);
+                                          setProxyModalOpen(true);
+                                        }}
+                                      >
+                                        {voter.proxiedHivePower}
+                                      </button>
+                                    ) : "-"}
                                   </TableCell>
                                   <TableCell className="text-right font-medium text-primary">
                                     {voter.totalHivePower || (() => {
@@ -353,6 +365,14 @@ export default function WitnessProfile() {
         open={loginModalOpen} 
         onClose={() => setLoginModalOpen(false)} 
       />
+
+      {selectedUser && (
+        <ProxyAccountsModal
+          open={proxyModalOpen}
+          onOpenChange={setProxyModalOpen}
+          username={selectedUser}
+        />
+      )}
     </section>
   );
 }
