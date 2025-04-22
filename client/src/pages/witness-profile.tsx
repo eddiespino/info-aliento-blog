@@ -228,7 +228,7 @@ export default function WitnessProfile() {
                   
                   <TabsContent value="voters" className="mt-0">
                     <div>
-                      <h3 className="text-xl font-semibold mb-4">Voters ({voters.length})</h3>
+                      <h3 className="text-xl font-semibold mb-4">Voters</h3>
                       
                       {isLoadingVoters ? (
                         <div className="space-y-4">
