@@ -762,10 +762,26 @@ export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]
           if (responseData.result.accounts && 
               responseData.result.accounts[0] && 
               responseData.result.accounts[0].proxied_vsf_votes) {
-            console.log("This account has proxied votes:", responseData.result.accounts[0].proxied_vsf_votes);
+            const proxiedVotes = responseData.result.accounts[0].proxied_vsf_votes;
+            console.log("This account has proxied votes:", proxiedVotes);
             
-            // We found the account has proxied votes, but we still need to find which accounts
-            // are using it as proxy - we'll rely on our other methods for that
+            // Calculate the total proxied HP
+            let totalProxiedHP = 0;
+            for (const vests of proxiedVotes) {
+              if (vests) {
+                // Convert VESTS to HP (divide by 1,000,000 as per Hive standard)
+                totalProxiedHP += parseFloat(vests) / 1000000 * (vestToHpRatio || 0.0005);
+              }
+            }
+            
+            // If we have proxied power but can't find specific accounts,
+            // we'll create placeholder entries for stats display
+            if (totalProxiedHP > 5000) { // Only for significant proxy power (5000+ HP)
+              console.log(`Account has significant proxy power (${formatHivePower(totalProxiedHP)}) but specific accounts unknown`);
+              
+              // We'll return to this logic after trying other methods
+              // (this is just preparation for fallback logic)
+            }
           }
         }
       }
@@ -932,6 +948,58 @@ export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]
     }
     
     console.log(`Discovery found ${proxyAccounts.length} accounts using ${username} as proxy`);
+    
+    // If we found no accounts but we know there's proxied voting power (from earlier checks)
+    // Create a special placeholder entry to show this information
+    if (proxyAccounts.length === 0) {
+      try {
+        // Do a final check to see if this account has proxied voting power
+        const accountResponse = await fetch(apiNode, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "jsonrpc": "2.0",
+            "method": "condenser_api.get_accounts",
+            "params": [[username]],
+            "id": 7
+          })
+        });
+        
+        if (accountResponse.ok) {
+          const accountData = await accountResponse.json();
+          if (accountData.result && accountData.result[0] && 
+              accountData.result[0].proxied_vsf_votes) {
+            const proxiedVotes = accountData.result[0].proxied_vsf_votes;
+            
+            // Calculate the total proxied HP
+            let totalProxiedHP = 0;
+            for (const vests of proxiedVotes) {
+              if (vests) {
+                // Convert VESTS to HP (divide by 1,000,000 as per Hive standard)
+                totalProxiedHP += parseFloat(vests) / 1000000 * (vestToHpRatio || 0.0005);
+              }
+            }
+            
+            if (totalProxiedHP > 0) {
+              console.log(`Found proxied power of ${formatHivePower(totalProxiedHP)} but couldn't identify specific accounts`);
+              
+              // Create a special proxy account entry that represents the unknown accounts
+              proxyAccounts.push({
+                username: 'unknown_accounts',
+                hivePower: formatHivePower(totalProxiedHP),
+                profileImage: `https://images.hive.blog/u/${username}/avatar`,
+                isUnknownProxies: true,
+                proxyTotal: formatHivePower(totalProxiedHP)
+              });
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error checking for proxied power:", error);
+      }
+    }
     
     // Sort by HP descending
     return proxyAccounts.sort((a, b) => {

@@ -43,6 +43,8 @@ export interface ProxyAccount {
   hivePower: string;
   profileImage: string;
   children?: ProxyAccount[];
+  isUnknownProxies?: boolean;
+  proxyTotal?: string;
 }
 
 export interface WitnessVoter {

@@ -42,7 +42,28 @@ export default function ProxyAccountsModal({ open, onOpenChange, username }: Pro
           ) : proxyAccounts.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2">
               {proxyAccounts.map((account) => (
-                <ProxyAccountCard key={account.username} account={account} />
+                account.isUnknownProxies ? (
+                  <Card key={account.username}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-4">
+                        <div className="bg-primary/10 h-10 w-10 rounded-full flex items-center justify-center">
+                          <span className="text-primary text-sm font-bold">?</span>
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-medium">Undiscovered Accounts</div>
+                          <div className="text-sm text-muted-foreground">
+                            Total proxy power: {account.proxyTotal}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-2 text-xs text-muted-foreground">
+                        This account has proxied votes, but we couldn't identify specific accounts. The Hive blockchain doesn't provide a direct way to query this relationship.
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <ProxyAccountCard key={account.username} account={account} />
+                )
               ))}
             </div>
           ) : (
