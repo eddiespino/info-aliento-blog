@@ -19,9 +19,9 @@ export default function ProxyAccountsModal({ open, onOpenChange, username }: Pro
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Proxy Accounts for @{username}</DialogTitle>
+          <DialogTitle>Accounts that have chosen @{username} as their proxy</DialogTitle>
           <DialogDescription>
-            These accounts have delegated their voting power to @{username}
+            These accounts have set @{username} as their proxy for governance votes
           </DialogDescription>
         </DialogHeader>
 
@@ -46,7 +46,7 @@ export default function ProxyAccountsModal({ open, onOpenChange, username }: Pro
             </div>
           ) : (
             <p className="text-center text-muted-foreground py-8">
-              No accounts are currently proxying their voting power to @{username}
+              No accounts are currently using @{username} as their proxy
             </p>
           )}
         </div>
