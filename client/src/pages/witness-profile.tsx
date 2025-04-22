@@ -251,7 +251,7 @@ export default function WitnessProfile() {
                                 <TableHead>Username</TableHead>
                                 <TableHead className="text-right">Own HP</TableHead>
                                 <TableHead className="text-right">Proxied HP</TableHead>
-                                <TableHead className="text-right">Total HP</TableHead>
+                                <TableHead className="text-right">Total governance vote</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -270,13 +270,13 @@ export default function WitnessProfile() {
                                   </TableCell>
                                   <TableCell className="text-right font-medium text-primary">
                                     {voter.totalHivePower || (() => {
-                                      // Calculate total HP (own + proxied) if not already provided
+                                      // Calculate total governance vote (own + proxied) if not already provided
                                       const ownHP = parseFloat(voter.hivePower.replace(/[^0-9.]/g, ''));
                                       const proxiedHP = voter.proxiedHivePower ? 
                                         parseFloat(voter.proxiedHivePower.replace(/[^0-9.]/g, '')) : 0;
                                       
                                       const totalHP = ownHP + proxiedHP;
-                                      return totalHP.toLocaleString() + ' HP';
+                                      return totalHP.toLocaleString() + ' governance vote';
                                     })()}
                                   </TableCell>
                                 </TableRow>
