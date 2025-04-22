@@ -42,6 +42,7 @@ export interface WitnessVoter {
   username: string;
   profileImage: string;
   hivePower: string;
+  proxiedHivePower?: string;
 }
 
 export type VoteWitnessResponse = {

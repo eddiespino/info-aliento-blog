@@ -770,12 +770,14 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
           {
             username: 'blocktrades',
             profileImage: 'https://images.hive.blog/u/blocktrades/avatar',
-            hivePower: '2,500,000 HP'
+            hivePower: '2,500,000 HP',
+            proxiedHivePower: '150,000 HP'
           },
           {
             username: 'therealwolf',
             profileImage: 'https://images.hive.blog/u/therealwolf/avatar',
-            hivePower: '1,870,000 HP'
+            hivePower: '1,870,000 HP',
+            proxiedHivePower: '120,000 HP'
           }
         ];
       }
@@ -816,10 +818,30 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
         // Calculate Hive Power
         const hivePower = effectiveVestingShares * (vestToHpRatio || 0.0005);
         
+        // Calculate proxied Hive Power if available
+        let proxiedHivePower = undefined;
+        if (account.proxied_vsf_votes && Array.isArray(account.proxied_vsf_votes)) {
+          let totalProxiedVests = 0;
+          
+          // Sum all the proxied VSF votes
+          for (const vests of account.proxied_vsf_votes) {
+            totalProxiedVests += parseFloat(vests) / 1000000; // Divide by 1M to get VESTS value
+          }
+          
+          // Calculate proxied Hive Power
+          const proxiedHp = totalProxiedVests * (vestToHpRatio || 0.0005);
+          
+          // Only include if there's actual proxied power
+          if (proxiedHp > 0) {
+            proxiedHivePower = formatHivePower(proxiedHp);
+          }
+        }
+        
         return {
           username: account.name,
           profileImage: `https://images.hive.blog/u/${account.name}/avatar`,
-          hivePower: formatHivePower(hivePower)
+          hivePower: formatHivePower(hivePower),
+          proxiedHivePower
         };
       });
     
@@ -829,17 +851,20 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
         {
           username: 'blocktrades',
           profileImage: 'https://images.hive.blog/u/blocktrades/avatar',
-          hivePower: '2,500,000 HP'
+          hivePower: '2,500,000 HP',
+          proxiedHivePower: '150,000 HP'
         },
         {
           username: 'good-karma',
           profileImage: 'https://images.hive.blog/u/good-karma/avatar',
-          hivePower: '250,000 HP'
+          hivePower: '250,000 HP',
+          proxiedHivePower: '25,000 HP'
         },
         {
           username: 'therealwolf',
           profileImage: 'https://images.hive.blog/u/therealwolf/avatar',
-          hivePower: '1,870,000 HP'
+          hivePower: '1,870,000 HP',
+          proxiedHivePower: '120,000 HP'
         }
       ];
     }

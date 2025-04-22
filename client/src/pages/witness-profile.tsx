@@ -250,6 +250,7 @@ export default function WitnessProfile() {
                                 <TableHead className="w-[100px]">Account</TableHead>
                                 <TableHead>Username</TableHead>
                                 <TableHead className="text-right">Hive Power</TableHead>
+                                <TableHead className="text-right">Proxied Power</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -263,6 +264,9 @@ export default function WitnessProfile() {
                                   </TableCell>
                                   <TableCell>@{voter.username}</TableCell>
                                   <TableCell className="text-right font-medium">{voter.hivePower}</TableCell>
+                                  <TableCell className="text-right font-medium">
+                                    {voter.proxiedHivePower ? voter.proxiedHivePower : "-"}
+                                  </TableCell>
                                 </TableRow>
                               ))}
                             </TableBody>
