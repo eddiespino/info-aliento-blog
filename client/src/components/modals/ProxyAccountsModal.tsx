@@ -41,30 +41,32 @@ export default function ProxyAccountsModal({ open, onOpenChange, username }: Pro
             </div>
           ) : proxyAccounts.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2">
-              {proxyAccounts.map((account) => (
-                account.isUnknownProxies ? (
-                  <Card key={account.username}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-4">
-                        <div className="bg-primary/10 h-10 w-10 rounded-full flex items-center justify-center">
-                          <span className="text-primary text-sm font-bold">?</span>
-                        </div>
-                        <div className="flex-1">
-                          <div className="font-medium">Undiscovered Accounts</div>
-                          <div className="text-sm text-muted-foreground">
-                            Total proxy power: {account.proxyTotal}
+              {proxyAccounts.map((account) => {
+                if (account.isUnknownProxies) {
+                  return (
+                    <Card key={account.username || 'unknown'}>
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-4">
+                          <div className="bg-primary/10 h-10 w-10 rounded-full flex items-center justify-center">
+                            <span className="text-primary text-sm font-bold">?</span>
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium">Undiscovered Accounts</div>
+                            <div className="text-sm text-muted-foreground">
+                              Total proxy power: {account.proxyTotal || account.hivePower || 'Unknown'}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="mt-2 text-xs text-muted-foreground">
-                        This account has proxied votes, but we couldn't identify specific accounts. The Hive blockchain doesn't provide a direct way to query this relationship.
-                      </div>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  <ProxyAccountCard key={account.username} account={account} />
-                )
-              ))}
+                        <div className="mt-2 text-xs text-muted-foreground">
+                          This account has proxied votes, but we couldn't identify specific accounts. The Hive blockchain doesn't provide a direct way to query this relationship.
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                } else {
+                  return <ProxyAccountCard key={account.username} account={account} />;
+                }
+              })}
             </div>
           ) : (
             <div className="text-center text-muted-foreground py-8 space-y-2">
@@ -79,13 +81,23 @@ export default function ProxyAccountsModal({ open, onOpenChange, username }: Pro
 }
 
 function ProxyAccountCard({ account }: { account: ProxyAccount }) {
+  // Safety check - ensure we have a valid account
+  if (!account || !account.username) {
+    return null;
+  }
+
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex items-center gap-4">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={account.profileImage} alt={account.username} />
-            <AvatarFallback>{account.username.substring(0, 2).toUpperCase()}</AvatarFallback>
+            <AvatarImage 
+              src={account.profileImage} 
+              alt={account.username} 
+            />
+            <AvatarFallback>
+              {account.username.substring(0, 2).toUpperCase()}
+            </AvatarFallback>
           </Avatar>
           <div>
             <div className="font-medium">@{account.username}</div>
