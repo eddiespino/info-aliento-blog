@@ -1,4 +1,4 @@
-import { HiveNode, NetworkStats, Witness, UserData, WitnessVoter } from '@/types/hive';
+import { HiveNode, NetworkStats, Witness, UserData, WitnessVoter, ProxyAccount } from '@/types/hive';
 import { formatNumberWithCommas, formatHivePower, formatLargeNumber } from '@/lib/utils';
 
 // Default API node to use if we can't fetch the best nodes
@@ -713,6 +713,88 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
 // Use the WitnessVoter type from types/hive.ts
 
 // Get voters for a specific witness
+export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]> => {
+  try {
+    const apiNode = await getBestHiveNode();
+    
+    // Get the VESTS to HP ratio
+    await ensureVestToHpRatio();
+    
+    // Fetch accounts that have this user as their proxy
+    const response = await fetch(apiNode, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "jsonrpc": "2.0",
+        "method": "condenser_api.lookup_accounts",
+        "params": ["", 1000],
+        "id": 7
+      })
+    });
+    
+    if (!response.ok) {
+      return [];
+    }
+    
+    const data = await response.json();
+    const accountNames = data.result || [];
+    
+    // Map to store proxy accounts
+    const proxyAccounts: ProxyAccount[] = [];
+    
+    // Process in batches of 50
+    const batchSize = 50;
+    for (let i = 0; i < accountNames.length; i += batchSize) {
+      const batch = accountNames.slice(i, i + batchSize);
+      
+      const accountsResponse = await fetch(apiNode, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "jsonrpc": "2.0",
+          "method": "condenser_api.get_accounts",
+          "params": [batch],
+          "id": 8
+        })
+      });
+      
+      if (accountsResponse.ok) {
+        const accountsData = await accountsResponse.json();
+        const accounts = accountsData.result || [];
+        
+        // Find accounts that have this user as their proxy
+        for (const account of accounts) {
+          if (account.proxy === username) {
+            // Calculate Hive Power
+            const vestingShares = parseFloat(account.vesting_shares.split(' ')[0]);
+            const hivePower = vestingShares * (vestToHpRatio || 0.0005);
+            
+            proxyAccounts.push({
+              username: account.name,
+              hivePower: formatHivePower(hivePower),
+              profileImage: `https://images.hive.blog/u/${account.name}/avatar`
+            });
+          }
+        }
+      }
+    }
+    
+    // Sort by HP descending
+    return proxyAccounts.sort((a, b) => {
+      const aHP = parseFloat(a.hivePower.replace(/[^0-9.]/g, ''));
+      const bHP = parseFloat(b.hivePower.replace(/[^0-9.]/g, ''));
+      return bHP - aHP;
+    });
+  } catch (error) {
+    console.error(`Error fetching proxy accounts for ${username}:`, error);
+    return [];
+  }
+};
+
 export const getWitnessVoters = async (witnessName: string): Promise<WitnessVoter[]> => {
   try {
     const apiNode = await getBestHiveNode();

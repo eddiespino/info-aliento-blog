@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { getWitnesses, getWitnessByName, getWitnessVoters } from '@/api/hive';
-import { Witness, WitnessVoter } from '@/types/hive';
+import { getWitnesses, getWitnessByName, getWitnessVoters, getProxyAccounts } from '@/api/hive';
+import { Witness, WitnessVoter, ProxyAccount } from '@/types/hive';
 import { useState, useMemo } from 'react';
 
 export function useWitnesses(searchTerm: string = '', sortBy: 'rank' | 'votes' | 'name' | 'lastBlock' = 'rank') {
@@ -78,6 +78,22 @@ export function useWitnessVoters(witnessName: string) {
 
 export function useAlientoWitness() {
   return useWitness('aliento');
+}
+
+export function useProxyAccounts(username: string) {
+  const { data: proxyAccounts = [], isLoading, isError, error } = useQuery({
+    queryKey: ['proxy-accounts', username],
+    queryFn: () => getProxyAccounts(username),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    enabled: !!username,
+  });
+
+  return {
+    proxyAccounts,
+    isLoading,
+    isError,
+    error
+  };
 }
 
 export function usePagination<T>(items: T[], pageSize: number = 10) {

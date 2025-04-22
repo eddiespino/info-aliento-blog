@@ -38,12 +38,20 @@ export interface UserData {
   witnessVotes?: string[];
 }
 
+export interface ProxyAccount {
+  username: string;
+  hivePower: string;
+  profileImage: string;
+  children?: ProxyAccount[];
+}
+
 export interface WitnessVoter {
   username: string;
   profileImage: string;
   hivePower: string;
   proxiedHivePower?: string;
   totalHivePower?: string;
+  proxyAccounts?: ProxyAccount[];
 }
 
 export type VoteWitnessResponse = {
