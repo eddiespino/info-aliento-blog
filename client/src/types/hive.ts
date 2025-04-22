@@ -33,6 +33,7 @@ export interface UserData {
   profileImage?: string;
   hivePower?: string;
   effectiveHivePower?: string;
+  proxiedHivePower?: string;
   freeWitnessVotes?: number;
   witnessVotes?: string[];
 }

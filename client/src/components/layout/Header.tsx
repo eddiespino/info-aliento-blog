@@ -117,6 +117,13 @@ export default function Header() {
                         </div>
                       </div>
                       <div className="flex flex-col space-y-1 mb-2">
+                        <div className="text-muted-foreground">Proxied Hive Power:</div>
+                        <div className="font-medium">{user?.proxiedHivePower}</div>
+                        <div className="text-xs text-muted-foreground">
+                          (power proxied to this account)
+                        </div>
+                      </div>
+                      <div className="flex flex-col space-y-1 mb-2">
                         <div className="text-muted-foreground">Witness Votes:</div>
                         <div className="flex items-center gap-2">
                           <span className="bg-primary/20 text-primary font-medium px-2 py-0.5 rounded-full text-xs">
@@ -231,11 +238,14 @@ export default function Header() {
                       </Avatar>
                       <div className="flex flex-col">
                         <div className="font-medium">@{user?.username}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {user?.hivePower} <span className="opacity-70">(own)</span>
-                        </div>
-                        <div className="text-xs mt-1">
-                          <span className="bg-primary/20 text-primary font-medium px-2 py-0.5 rounded-full">
+                        <div className="text-xs text-muted-foreground flex flex-col gap-1">
+                          <div>
+                            {user?.hivePower} <span className="opacity-70">(own)</span>
+                          </div>
+                          <div>
+                            {user?.proxiedHivePower} <span className="opacity-70">(proxied)</span>
+                          </div>
+                          <span className="bg-primary/20 text-primary font-medium px-2 py-0.5 rounded-full inline-block mt-1 w-fit">
                             {user?.freeWitnessVotes} free votes
                           </span>
                         </div>

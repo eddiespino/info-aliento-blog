@@ -548,6 +548,38 @@ export const getFreeWitnessVotes = async (username: string): Promise<number> => 
   }
 };
 
+// Calculate proxied Hive Power (HP proxied to account)
+export const calculateProxiedHivePower = async (username: string): Promise<string> => {
+  try {
+    const account = await getUserAccount(username);
+    
+    if (!account) {
+      return '0 HP';
+    }
+    
+    // Ensure we have the vests to HP ratio before processing
+    await ensureVestToHpRatio();
+    
+    // proxied_vsf_votes is an array with up to 4 elements that contains the total VESTS proxied to the account
+    const proxiedVsf = account.proxied_vsf_votes || [0, 0, 0, 0];
+    let totalProxiedVests = 0;
+    
+    // Sum all the proxied VSF votes
+    for (const vests of proxiedVsf) {
+      totalProxiedVests += parseFloat(vests) / 1000000; // Divide by 1M to get VESTS value
+    }
+    
+    // Calculate Hive Power
+    const proxiedHivePower = totalProxiedVests * (vestToHpRatio || 0.0005);
+    
+    // Format Hive Power
+    return formatHivePower(proxiedHivePower);
+  } catch (error) {
+    console.error(`Error calculating proxied Hive Power for ${username}:`, error);
+    return '0 HP';
+  }
+};
+
 // Get complete user data including profile, Hive Power and witness votes
 export const getUserData = async (username: string): Promise<UserData> => {
   try {
@@ -556,6 +588,9 @@ export const getUserData = async (username: string): Promise<UserData> => {
     
     // Get user's effective Hive Power (including delegations)
     const effectiveHivePower = await calculateEffectiveHivePower(username);
+    
+    // Get user's proxied Hive Power
+    const proxiedHivePower = await calculateProxiedHivePower(username);
     
     // Get user's witness votes
     const witnessVotes = await getUserWitnessVotes(username);
@@ -569,6 +604,7 @@ export const getUserData = async (username: string): Promise<UserData> => {
       profileImage: `https://images.hive.blog/u/${username}/avatar`,
       hivePower,
       effectiveHivePower,
+      proxiedHivePower,
       freeWitnessVotes,
       witnessVotes
     };
