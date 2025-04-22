@@ -682,14 +682,13 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
     const apiNode = await getBestHiveNode();
     console.log(`Fetching voters for witness ${witnessName} from:`, apiNode);
     
-    // First, we need to get list of accounts that have voted for this witness
-    // Since there's no direct API call, we need to use find_accounts method with regex pattern
-    // This is an approximation - in a production app, you'd use a specialized API
-    
-    // Using hive-js API wrapper to get witness voters
-    // We'll simulate this for now by getting the top accounts by vesting (HP)
+    // First, we need to get a more targeted list of accounts that might have voted for this witness
+    // Getting the top accounts by vesting shares (HP) is more likely to include witness voters
     let result;
     try {
+      // For a real application, this would be replaced with a specialized API call
+      // that directly gets witness voters. For now, we'll get accounts with significant stake
+      // as they're more likely to vote for witnesses
       result = await fetch(apiNode, {
         method: 'POST',
         headers: {
@@ -697,8 +696,8 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
         },
         body: JSON.stringify({
           "jsonrpc": "2.0",
-          "method": "condenser_api.lookup_accounts",
-          "params": ["", 100], // Get top 100 accounts
+          "method": "condenser_api.get_vesting_delegations",
+          "params": ["null", "", 50], // Get top delegations as a proxy for large accounts
           "id": 1
         })
       });
@@ -708,8 +707,9 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
       }
     } catch (fetchError) {
       console.error(`Error fetching accounts:`, fetchError);
-      if (apiNode !== DEFAULT_API_NODE) {
-        result = await fetch(DEFAULT_API_NODE, {
+      try {
+        // Fallback approach - get accounts directly
+        result = await fetch(apiNode, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -717,17 +717,60 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
           body: JSON.stringify({
             "jsonrpc": "2.0",
             "method": "condenser_api.lookup_accounts",
-            "params": ["", 100],
+            "params": ["", 200], // Increase from 100 to 200 to get more accounts
             "id": 1
           })
         });
-      } else {
-        throw fetchError;
+      } catch (error) {
+        // If that fails too, try the default node
+        if (apiNode !== DEFAULT_API_NODE) {
+          result = await fetch(DEFAULT_API_NODE, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              "jsonrpc": "2.0",
+              "method": "condenser_api.lookup_accounts",
+              "params": ["", 200],
+              "id": 1
+            })
+          });
+        } else {
+          throw fetchError;
+        }
       }
     }
     
-    const accounts = await result.json();
-    const accountNames = accounts.result;
+    // Process the result - if it's get_vesting_delegations, extract delegator names
+    // otherwise use lookup_accounts result directly
+    const resultData = await result.json();
+    let accountNames = [];
+    
+    if (resultData.result && Array.isArray(resultData.result)) {
+      if (resultData.result[0] && resultData.result[0].delegator) {
+        // It's vesting delegations response
+        accountNames = resultData.result.map((item: any) => item.delegator);
+        
+        // Add well-known Hive accounts for testing and demonstration
+        const knownAccounts = [
+          'blocktrades', 'good-karma', 'therealwolf', 'smooth', 'steemitblog',
+          'arcange', 'ausbitbank', 'followbtcnews', 'themarkymark', 'someguy123'
+        ];
+        
+        // Create a unique array without duplicates (avoiding Set spreading issues in TypeScript)
+        const combined = [...accountNames];
+        for (const account of knownAccounts) {
+          if (!combined.includes(account)) {
+            combined.push(account);
+          }
+        }
+        accountNames = combined;
+      } else {
+        // It's lookup_accounts response
+        accountNames = resultData.result;
+      }
+    }
     
     if (!accountNames || accountNames.length === 0) {
       return [];
