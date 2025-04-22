@@ -724,9 +724,22 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
     
     // These are well-known accounts on Hive that likely have voted for witnesses
     const knownUsers = [
-      'blocktrades', 'good-karma', 'therealwolf', 'smooth', 'steemitblog',
-      'arcange', 'ausbitbank', 'followbtcnews', 'themarkymark', 'someguy123',
-      'drakos', 'gtg', 'anyx', 'steempeak', 'roelandp', 'justyy', 'innerhive'
+      // Major exchanges and services
+      'blocktrades', 'deepcrypto8', 'threespeak', 'openledger', 'binance-hot', 'steemitblog', 
+      // Witnesses and major stakeholders
+      'good-karma', 'therealwolf', 'smooth', 'gtg', 'ausbitbank', 'arcange', 'someguy123',
+      'themarkymark', 'drakos', 'anyx', 'steempeak', 'roelandp', 'justyy', 'followbtcnews',
+      'innerhive', 'ocd-witness', 'steempress', 'aggroed', 'timcliff', 'yabapmatt', 'lukestokes',
+      // More top stakeholders
+      'freedom', 'dan', 'ned', 'jesta', 'reggaemuffin', 'busy.witness', 'utopian-io',
+      'liondani', 'arhag', 'neoxian', 'tombstone', 'procuration', 'timcliff', 'cervantes',
+      'stoodkev', 'curie', 'holger80', 'pharesim', 'howo', 'steempty', 'thecryptodrive',
+      // HIVE ecosystem accounts
+      'peakd', 'ecency', 'hive.fund', 'leofinance', 'hive.blog', 'splinterlands',
+      // Spanish and international witnesses
+      'eddiespino', 'aliento', 'ura-soul', 'louis.witness', 'keys-defender', 'la-colmena',
+      // Added specifically to catch accounts with proxied power
+      'eddiespino', 'cervantes', 'tombstone'
     ];
     
     // Fetch the account details for these users to check their witness votes
@@ -793,7 +806,8 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
           username: 'blocktrades',
           profileImage: 'https://images.hive.blog/u/blocktrades/avatar',
           hivePower: '2,500,000 HP',
-          proxiedHivePower: '150,000 HP'
+          proxiedHivePower: '150,000 HP',
+          totalHivePower: '2,650,000 HP'
         }
       ];
     }
@@ -821,6 +835,7 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
         
         // Calculate proxied Hive Power if available
         let proxiedHivePower = undefined;
+        let proxiedHp = 0;
         if (account.proxied_vsf_votes && Array.isArray(account.proxied_vsf_votes)) {
           let totalProxiedVests = 0;
           
@@ -830,7 +845,7 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
           }
           
           // Calculate proxied Hive Power
-          const proxiedHp = totalProxiedVests * (vestToHpRatio || 0.0005);
+          proxiedHp = totalProxiedVests * (vestToHpRatio || 0.0005);
           
           // Only include if there's actual proxied power
           if (proxiedHp > 0) {
@@ -838,11 +853,15 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
           }
         }
         
+        // Calculate total Hive Power (own + proxied)
+        const totalHp = hivePower + proxiedHp;
+        
         return {
           username: account.name,
           profileImage: `https://images.hive.blog/u/${account.name}/avatar`,
           hivePower: formatHivePower(hivePower),
-          proxiedHivePower
+          proxiedHivePower,
+          totalHivePower: formatHivePower(totalHp)
         };
       });
     
@@ -853,28 +872,37 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
           username: 'blocktrades',
           profileImage: 'https://images.hive.blog/u/blocktrades/avatar',
           hivePower: '2,500,000 HP',
-          proxiedHivePower: '150,000 HP'
+          proxiedHivePower: '150,000 HP',
+          totalHivePower: '2,650,000 HP'
         },
         {
           username: 'good-karma',
           profileImage: 'https://images.hive.blog/u/good-karma/avatar',
           hivePower: '250,000 HP',
-          proxiedHivePower: '25,000 HP'
+          proxiedHivePower: '25,000 HP',
+          totalHivePower: '275,000 HP'
         },
         {
           username: 'therealwolf',
           profileImage: 'https://images.hive.blog/u/therealwolf/avatar',
           hivePower: '1,870,000 HP',
-          proxiedHivePower: '120,000 HP'
+          proxiedHivePower: '120,000 HP',
+          totalHivePower: '1,990,000 HP'
         }
       ];
     }
     
-    // Sort by Hive Power in descending order
+    // Sort by Total Hive Power (own + proxied) in descending order
     return voters.sort((a: WitnessVoter, b: WitnessVoter) => {
-      const aHP = parseFloat(a.hivePower.replace(/[^0-9.]/g, ''));
-      const bHP = parseFloat(b.hivePower.replace(/[^0-9.]/g, ''));
-      return bHP - aHP;
+      const aOwnHP = parseFloat(a.hivePower.replace(/[^0-9.]/g, ''));
+      const aProxiedHP = a.proxiedHivePower ? parseFloat(a.proxiedHivePower.replace(/[^0-9.]/g, '')) : 0;
+      const aTotalHP = aOwnHP + aProxiedHP;
+      
+      const bOwnHP = parseFloat(b.hivePower.replace(/[^0-9.]/g, ''));
+      const bProxiedHP = b.proxiedHivePower ? parseFloat(b.proxiedHivePower.replace(/[^0-9.]/g, '')) : 0;
+      const bTotalHP = bOwnHP + bProxiedHP;
+      
+      return bTotalHP - aTotalHP;
     });
     
   } catch (error) {

@@ -43,6 +43,7 @@ export interface WitnessVoter {
   profileImage: string;
   hivePower: string;
   proxiedHivePower?: string;
+  totalHivePower?: string;
 }
 
 export type VoteWitnessResponse = {

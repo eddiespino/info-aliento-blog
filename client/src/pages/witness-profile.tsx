@@ -249,8 +249,9 @@ export default function WitnessProfile() {
                               <TableRow>
                                 <TableHead className="w-[100px]">Account</TableHead>
                                 <TableHead>Username</TableHead>
-                                <TableHead className="text-right">Hive Power</TableHead>
-                                <TableHead className="text-right">Proxied Power</TableHead>
+                                <TableHead className="text-right">Own HP</TableHead>
+                                <TableHead className="text-right">Proxied HP</TableHead>
+                                <TableHead className="text-right">Total HP</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -266,6 +267,17 @@ export default function WitnessProfile() {
                                   <TableCell className="text-right font-medium">{voter.hivePower}</TableCell>
                                   <TableCell className="text-right font-medium">
                                     {voter.proxiedHivePower ? voter.proxiedHivePower : "-"}
+                                  </TableCell>
+                                  <TableCell className="text-right font-medium text-primary">
+                                    {voter.totalHivePower || (() => {
+                                      // Calculate total HP (own + proxied) if not already provided
+                                      const ownHP = parseFloat(voter.hivePower.replace(/[^0-9.]/g, ''));
+                                      const proxiedHP = voter.proxiedHivePower ? 
+                                        parseFloat(voter.proxiedHivePower.replace(/[^0-9.]/g, '')) : 0;
+                                      
+                                      const totalHP = ownHP + proxiedHP;
+                                      return totalHP.toLocaleString() + ' HP';
+                                    })()}
                                   </TableCell>
                                 </TableRow>
                               ))}
