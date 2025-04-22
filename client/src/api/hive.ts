@@ -827,11 +827,12 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
         const delegatedVestingShares = parseFloat(account.delegated_vesting_shares ? account.delegated_vesting_shares.split(' ')[0] : '0');
         const receivedVestingShares = parseFloat(account.received_vesting_shares ? account.received_vesting_shares.split(' ')[0] : '0');
         
-        // Calculate effective vesting shares (own + received - delegated)
-        const effectiveVestingShares = vestingShares - delegatedVestingShares + receivedVestingShares;
+        // Calculate Hive Power from only own vesting shares, ignoring delegations in or out
+        // This matches the calculateUserHivePower function
+        const hivePower = vestingShares * (vestToHpRatio || 0.0005);
         
-        // Calculate Hive Power
-        const hivePower = effectiveVestingShares * (vestToHpRatio || 0.0005);
+        // Calculate the effective vesting shares for the UI display
+        const effectiveVestingShares = vestingShares - delegatedVestingShares + receivedVestingShares;
         
         // Calculate proxied Hive Power if available
         let proxiedHivePower = undefined;
