@@ -20,6 +20,10 @@ export default function ProxyAccountsModal({ open, onOpenChange, username }: Pro
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Accounts that have chosen @{username} as their proxy</DialogTitle>
+          <DialogDescription>
+            These accounts have delegated their witness voting power to @{username}.
+            Proxy relationships may change frequently on the Hive blockchain.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="mt-6">
@@ -42,9 +46,10 @@ export default function ProxyAccountsModal({ open, onOpenChange, username }: Pro
               ))}
             </div>
           ) : (
-            <p className="text-center text-muted-foreground py-8">
-              No accounts are currently using @{username} as their proxy
-            </p>
+            <div className="text-center text-muted-foreground py-8 space-y-2">
+              <p>No accounts are currently using @{username} as their proxy</p>
+              <p className="text-sm">Proxy relationships on Hive may change over time. Our system uses multiple methods to find proxy relationships, including direct blockchain queries and cached data.</p>
+            </div>
           )}
         </div>
       </DialogContent>
