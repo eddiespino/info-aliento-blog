@@ -67,7 +67,7 @@ export default function WitnessProfile() {
                 <CardTitle className="text-2xl flex justify-between items-center">
                   <span>Witness Profile</span>
                   {!isLoading && witness && (
-                    <Badge variant="secondary" className="ml-2">
+                    <Badge variant="secondary" className="ml-2 text-secondary-foreground">
                       Rank #{witness.rank}
                     </Badge>
                   )}

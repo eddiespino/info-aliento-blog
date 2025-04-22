@@ -12,21 +12,22 @@
   }
 
   :root {
-    --background: 0 0% 100%;
+    /* Light blue background instead of pure white */
+    --background: 210 50% 98%; 
     --foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
+    --muted: 210 40% 94%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --popover: 0 0% 100%;
+    --popover: 210 50% 98%;
     --popover-foreground: 222.2 47.4% 11.2%;
-    --card: 0 0% 100%;
+    --card: 210 50% 99%;
     --card-foreground: 222.2 47.4% 11.2%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 214.3 31.8% 88%;
+    --input: 214.3 31.8% 88%;
     --primary: 221.2 83.2% 53.3%;
     --primary-foreground: 210 40% 98%;
     --secondary: 250 95.2% 41.8%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --accent: 210 40% 96.1%;
+    --secondary-foreground: 210 40% 98%; /* Changed to light color for better contrast */
+    --accent: 210 40% 92%;
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 100% 50%;
     --destructive-foreground: 210 40% 98%;
