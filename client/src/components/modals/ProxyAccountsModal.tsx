@@ -20,9 +20,6 @@ export default function ProxyAccountsModal({ open, onOpenChange, username }: Pro
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Accounts that have chosen @{username} as their proxy</DialogTitle>
-          <DialogDescription>
-            These accounts have set @{username} as their proxy for governance votes
-          </DialogDescription>
         </DialogHeader>
 
         <div className="mt-6">

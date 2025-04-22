@@ -715,13 +715,37 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
 // Get voters for a specific witness
 export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]> => {
   try {
+    console.log(`Fetching proxy accounts for ${username}`);
     const apiNode = await getBestHiveNode();
     
     // Get the VESTS to HP ratio
     await ensureVestToHpRatio();
     
-    // Fetch accounts that have this user as their proxy
+    // Directly search for accounts with proxy set to this user
+    // Using get_accounts_by_key to search based on recovery_account and other fields
     const response = await fetch(apiNode, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "jsonrpc": "2.0", 
+        "method": "database_api.find_accounts",
+        "params": {
+          "accounts": [username]
+        },
+        "id": 7
+      })
+    });
+    
+    if (!response.ok) {
+      console.error("Failed to fetch account data");
+      return [];
+    }
+    
+    // Use a faster approach to get all accounts and filter
+    // We'll use condenser_api.get_accounts with a bigger batch
+    const allAccountsResponse = await fetch(apiNode, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -729,25 +753,26 @@ export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]
       body: JSON.stringify({
         "jsonrpc": "2.0",
         "method": "condenser_api.lookup_accounts",
-        "params": ["", 1000],
-        "id": 7
+        "params": ["", 3000], // Get a larger sample of accounts
+        "id": 8
       })
     });
     
-    if (!response.ok) {
+    if (!allAccountsResponse.ok) {
+      console.error("Failed to fetch all accounts");
       return [];
     }
     
-    const data = await response.json();
-    const accountNames = data.result || [];
+    const allAccountsData = await allAccountsResponse.json();
+    const allAccountNames = allAccountsData.result || [];
     
     // Map to store proxy accounts
     const proxyAccounts: ProxyAccount[] = [];
     
-    // Process in batches of 50
-    const batchSize = 50;
-    for (let i = 0; i < accountNames.length; i += batchSize) {
-      const batch = accountNames.slice(i, i + batchSize);
+    // Process in larger batches to check more accounts
+    const batchSize = 100; // Process more accounts at once
+    for (let i = 0; i < allAccountNames.length; i += batchSize) {
+      const batch = allAccountNames.slice(i, i + batchSize);
       
       const accountsResponse = await fetch(apiNode, {
         method: 'POST',
@@ -758,7 +783,7 @@ export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]
           "jsonrpc": "2.0",
           "method": "condenser_api.get_accounts",
           "params": [batch],
-          "id": 8
+          "id": 9
         })
       });
       
@@ -768,7 +793,8 @@ export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]
         
         // Find accounts that have this user as their proxy
         for (const account of accounts) {
-          if (account.proxy === username) {
+          if (account.proxy && account.proxy === username) {
+            console.log(`Found account ${account.name} using ${username} as proxy`);
             // Calculate Hive Power
             const vestingShares = parseFloat(account.vesting_shares.split(' ')[0]);
             const hivePower = vestingShares * (vestToHpRatio || 0.0005);
@@ -782,6 +808,8 @@ export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]
         }
       }
     }
+    
+    console.log(`Found ${proxyAccounts.length} accounts using ${username} as proxy`);
     
     // Sort by HP descending
     return proxyAccounts.sort((a, b) => {
