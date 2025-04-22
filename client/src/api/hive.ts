@@ -792,7 +792,8 @@ export const getWitnessVoters = async (witnessName: string): Promise<WitnessVote
         {
           username: 'blocktrades',
           profileImage: 'https://images.hive.blog/u/blocktrades/avatar',
-          hivePower: '2,500,000 HP'
+          hivePower: '2,500,000 HP',
+          proxiedHivePower: '150,000 HP'
         }
       ];
     }
