@@ -721,6 +721,18 @@ export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]
     // Get the VESTS to HP ratio
     await ensureVestToHpRatio();
     
+    // Define a list of known active accounts on the Hive blockchain for discovery
+    // This is more reliable than trying to fetch from external APIs that might be unstable
+    const activeHiveAccounts = [
+      'blocktrades', 'smooth', 'theycallmedan', 'arcange', 'neoxian',
+      'actifit', 'hiveio', 'peakd', 'likwid', 'steemchiller', 'hivewatchers',
+      'ausbitbank', 'hivetrending', 'travelfeed', 'pinmapple', 'hivelist',
+      'good-karma', 'therealwolf', 'quochuy', 'stoodkev', 'cadawg',
+      'themarkymark', 'jongolson', 'gtg', 'steempress', 'yabapmatt',
+      'blocktrades.com', 'neoxiancity', 'libertycrypto27', 'cryptomancer',
+      'bitrocker2020', 'cryptoandcoffee'
+    ];
+    
     // Try a direct API approach to find proxy accounts
     console.log(`Attempting to find accounts using ${username} as proxy using direct API`);
     
@@ -758,29 +770,7 @@ export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]
         }
       }
       
-      // Second approach is to use a targeted account lookup approach
-      // We'll first look for accounts that are likely to be using proxy voting
-      const accountTagsResponse = await fetch('https://bridge.hivesigner.com/api/find_active_accounts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          tag: "hive-witness",
-          limit: 50
-        })
-      });
-      
-      if (accountTagsResponse.ok) {
-        const accountsData = await accountTagsResponse.json();
-        if (accountsData.accounts && accountsData.accounts.length > 0) {
-          const accountNames = accountsData.accounts.map((a: any) => a.name);
-          console.log(`Found ${accountNames.length} active accounts in witness discussions`);
-          
-          // Check these accounts to see if any use our username as proxy
-          // We'll check these in the later processBatch function
-        }
-      }
+      console.log(`Using ${activeHiveAccounts.length} known active accounts for proxy discovery`);
     } catch (directApiError) {
       console.log("Direct API approach failed:", directApiError);
       // Continue to fallback methods
@@ -923,28 +913,20 @@ export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]
     // Process targeted accounts first
     await processBatch(targetedAccountNames);
     
-    // If we still don't have results, try a broader search with active accounts
+    // If we still don't have results, use our predefined list of active Hive accounts
     if (proxyAccounts.length === 0) {
-      const activeAccountsResponse = await fetch(apiNode, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          "jsonrpc": "2.0",
-          "method": "condenser_api.get_active_votes",
-          "params": [username, "recent-post"],
-          "id": 6
-        })
-      });
-      
-      if (activeAccountsResponse.ok) {
-        const activeAccountsData = await activeAccountsResponse.json();
-        if (activeAccountsData.result && Array.isArray(activeAccountsData.result)) {
-          const voterNames = activeAccountsData.result.map((vote: any) => vote.voter);
-          if (voterNames.length > 0) {
-            await processBatch(voterNames);
-          }
+      // Use the activeHiveAccounts list we defined earlier
+      console.log(`Checking ${activeHiveAccounts.length} known active accounts for proxy relationships`);
+      // Process them in small batches to avoid overwhelming the API
+      const batchSize = 20;
+      for (let i = 0; i < activeHiveAccounts.length; i += batchSize) {
+        const batch = activeHiveAccounts.slice(i, i + batchSize);
+        await processBatch(batch);
+        
+        // If we found some accounts, we can stop searching
+        if (proxyAccounts.length > 0) {
+          console.log(`Found ${proxyAccounts.length} accounts using ${username} as proxy, stopping further lookups`);
+          break;
         }
       }
     }
