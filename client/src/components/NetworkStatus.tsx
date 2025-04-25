@@ -40,7 +40,7 @@ export default function NetworkStatus() {
             <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-full">bolt</span>
               <div>
-                <h3 className="text-sm font-medium text-muted-foreground">Transactions/Day</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">{t('network.transactions')}</h3>
                 {statsLoading ? (
                   <Skeleton className="h-8 w-24 mt-1" />
                 ) : (
@@ -56,7 +56,7 @@ export default function NetworkStatus() {
             <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-full">account_balance</span>
               <div>
-                <h3 className="text-sm font-medium text-muted-foreground">Active Witnesses</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">{t('network.activeWitnesses')}</h3>
                 {statsLoading ? (
                   <Skeleton className="h-8 w-10 mt-1" />
                 ) : (
@@ -72,7 +72,7 @@ export default function NetworkStatus() {
             <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-full">trending_up</span>
               <div>
-                <h3 className="text-sm font-medium text-muted-foreground">HIVE Price</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">{t('network.hivePrice')}</h3>
                 {statsLoading ? (
                   <Skeleton className="h-8 w-16 mt-1" />
                 ) : (
@@ -86,7 +86,7 @@ export default function NetworkStatus() {
       
       {/* API Nodes Status */}
       <div className="mt-12">
-        <h3 className="text-lg font-medium text-foreground mb-4">API Nodes Status</h3>
+        <h3 className="text-lg font-medium text-foreground mb-4">{t('network.apiNodes')}</h3>
         
         {/* Desktop View - Table */}
         <div className="hidden md:block">
@@ -95,9 +95,9 @@ export default function NetworkStatus() {
               <Table>
                 <TableHeader className="bg-muted/50">
                   <TableRow>
-                    <TableHead className="font-medium">Node URL</TableHead>
-                    <TableHead className="font-medium">Version</TableHead>
-                    <TableHead className="font-medium text-right">Score</TableHead>
+                    <TableHead className="font-medium">{t('network.nodeUrl')}</TableHead>
+                    <TableHead className="font-medium">{t('network.version')}</TableHead>
+                    <TableHead className="font-medium text-right">{t('network.score')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -170,7 +170,7 @@ export default function NetworkStatus() {
                   </div>
                   <div className="p-4 text-sm">
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                      <div className="text-muted-foreground">Version:</div>
+                      <div className="text-muted-foreground">{t('network.version')}:</div>
                       <div>{node.version}</div>
                     </div>
                   </div>

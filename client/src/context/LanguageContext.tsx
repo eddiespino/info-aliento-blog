@@ -63,13 +63,19 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'home.title': 'Welcome to Hive Witness Explorer',
       'home.description': 'Discover Hive blockchain witnesses, their profiles, and voting power.',
       'home.featured': 'Featured Witness',
-      'home.network': 'Network Status',
-      'home.networkDesc': 'Current state of the Hive blockchain',
-      'home.networkHeight': 'Block Height',
-      'home.networkTx': 'Transactions / Day',
-      'home.networkWitnesses': 'Active Witnesses',
-      'home.networkPrice': 'Hive Price',
       'home.viewAll': 'View All Witnesses',
+      
+      // Network Status
+      'network.title': 'Hive Network Status',
+      'network.subtitle': 'Current state of the Hive blockchain network',
+      'network.blockHeight': 'Block Height',
+      'network.transactions': 'Transactions/Day',
+      'network.activeWitnesses': 'Active Witnesses',
+      'network.hivePrice': 'HIVE Price',
+      'network.apiNodes': 'API Nodes Status',
+      'network.nodeUrl': 'Node URL',
+      'network.version': 'Version',
+      'network.score': 'Score',
       
       // Witnesses page
       'witnesses.title': 'Hive Witnesses',
@@ -172,13 +178,19 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'home.title': 'Bienvenido al Explorador de Testigos de Hive',
       'home.description': 'Descubre los testigos de la blockchain Hive, sus perfiles y poder de voto.',
       'home.featured': 'Testigo Destacado',
-      'home.network': 'Estado de la Red',
-      'home.networkDesc': 'Estado actual de la blockchain Hive',
-      'home.networkHeight': 'Altura del Bloque',
-      'home.networkTx': 'Transacciones / Día',
-      'home.networkWitnesses': 'Testigos Activos',
-      'home.networkPrice': 'Precio de Hive',
       'home.viewAll': 'Ver Todos los Testigos',
+      
+      // Network Status
+      'network.title': 'Estado de la Red Hive',
+      'network.subtitle': 'Estado actual de la red blockchain Hive',
+      'network.blockHeight': 'Altura del Bloque',
+      'network.transactions': 'Transacciones/Día',
+      'network.activeWitnesses': 'Testigos Activos',
+      'network.hivePrice': 'Precio de HIVE',
+      'network.apiNodes': 'Estado de Nodos API',
+      'network.nodeUrl': 'URL del Nodo',
+      'network.version': 'Versión',
+      'network.score': 'Puntuación',
       
       // Witnesses page
       'witnesses.title': 'Testigos de Hive',
