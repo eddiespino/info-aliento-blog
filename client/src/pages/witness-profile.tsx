@@ -114,39 +114,39 @@ export default function WitnessProfile() {
             {!isLoading && witness && (
               <Card>
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-xl">Witness Stats</CardTitle>
+                  <CardTitle className="text-xl">{t('profile.stats')}</CardTitle>
                 </CardHeader>
                 
                 <CardContent>
                   <dl className="grid grid-cols-1 gap-y-4">
                     <div>
-                      <dt className="text-sm text-muted-foreground">Total Votes</dt>
+                      <dt className="text-sm text-muted-foreground">{t('profile.votes')}</dt>
                       <dd className="mt-1 text-lg font-medium">{witness.votesHivePower}</dd>
                     </div>
                     
                     <div>
-                      <dt className="text-sm text-muted-foreground">Last Block</dt>
+                      <dt className="text-sm text-muted-foreground">{t('profile.lastBlock')}</dt>
                       <dd className="mt-1 text-lg font-medium">{witness.lastBlock}</dd>
                     </div>
                     
                     <div>
-                      <dt className="text-sm text-muted-foreground">Missed Blocks</dt>
+                      <dt className="text-sm text-muted-foreground">{t('profile.missedBlocks')}</dt>
                       <dd className="mt-1 text-lg font-medium">{witness.missedBlocks.toLocaleString()}</dd>
                     </div>
                     
                     <div>
-                      <dt className="text-sm text-muted-foreground">Price Feed</dt>
+                      <dt className="text-sm text-muted-foreground">{t('witnesses.fee')}</dt>
                       <dd className="mt-1 text-lg font-medium">{witness.priceFeed}</dd>
                     </div>
                     
                     <div>
-                      <dt className="text-sm text-muted-foreground">Version</dt>
+                      <dt className="text-sm text-muted-foreground">{t('witnesses.version')}</dt>
                       <dd className="mt-1 text-lg font-medium">{witness.version}</dd>
                     </div>
                     
                     {witness.url && (
                       <div>
-                        <dt className="text-sm text-muted-foreground">Website</dt>
+                        <dt className="text-sm text-muted-foreground">{t('witnesses.website')}</dt>
                         <dd className="mt-1 text-lg font-medium">
                           <a
                             href={witness.url.startsWith('http') ? witness.url : `http://${witness.url}`}
@@ -154,7 +154,7 @@ export default function WitnessProfile() {
                             rel="noopener noreferrer"
                             className="text-primary hover:underline"
                           >
-                            Visit Website
+                            {t('profile.visitWebsite')}
                           </a>
                         </dd>
                       </div>
@@ -180,7 +180,7 @@ export default function WitnessProfile() {
                   <TabsContent value="profile" className="mt-0">
                     <div className="space-y-6">
                       <div>
-                        <h3 className="text-xl font-semibold mb-4">About {witnessName}</h3>
+                        <h3 className="text-xl font-semibold mb-4">{t('profile.about')} {witnessName}</h3>
                         
                         {isLoading ? (
                           <div className="space-y-3">
@@ -191,26 +191,26 @@ export default function WitnessProfile() {
                         ) : witness ? (
                           <div>
                             <p className="text-muted-foreground mb-4">
-                              {witnessName} is a Hive witness currently ranked #{witness.rank} with {witness.votesHivePower} of support from the community.
+                              {witnessName} {t('profile.isWitness')} #{witness.rank} {t('profile.withVotes')} {witness.votesHivePower} {t('profile.fromCommunity')}
                             </p>
                             
                             <p className="text-muted-foreground mb-4">
-                              As a Hive witness, {witnessName} is responsible for validating transactions, securing the blockchain, and participating in blockchain governance decisions.
+                              {t('profile.asWitness')} {witnessName} {t('profile.responsible')}
                             </p>
                             
                             <p className="text-muted-foreground">
-                              Witnesses are elected by Hive stakeholders and provide critical infrastructure for the Hive blockchain's operation.
+                              {t('profile.elected')}
                             </p>
                           </div>
                         ) : (
-                          <p className="text-muted-foreground">Failed to load witness data.</p>
+                          <p className="text-muted-foreground">{t('profile.failed')}</p>
                         )}
                       </div>
                       
                       <Separator />
                       
                       <div>
-                        <h3 className="text-xl font-semibold mb-4">Block Production</h3>
+                        <h3 className="text-xl font-semibold mb-4">{t('profile.blockProduction')}</h3>
                         
                         {isLoading ? (
                           <div className="space-y-3">
@@ -219,11 +219,11 @@ export default function WitnessProfile() {
                           </div>
                         ) : witness ? (
                           <p className="text-muted-foreground">
-                            This witness has produced blocks up to number {witness.lastBlock} and has missed a total of {witness.missedBlocks.toLocaleString()} blocks throughout their history.
-                            A lower number of missed blocks indicates better reliability and uptime.
+                            {t('profile.hasProduced')} {witness.lastBlock} {t('profile.andMissed')} {witness.missedBlocks.toLocaleString()} {t('profile.throughHistory')}
+                            {t('profile.reliability.desc')}
                           </p>
                         ) : (
-                          <p className="text-muted-foreground">Failed to load witness data.</p>
+                          <p className="text-muted-foreground">{t('profile.failed')}</p>
                         )}
                       </div>
                     </div>
