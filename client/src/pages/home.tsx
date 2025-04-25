@@ -17,7 +17,6 @@ export default function Home() {
               <div className="text-center">
                 <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
                   <span className="block">{t('home.title')}</span>
-                  <span className="block text-primary">Hive Blockchain</span>
                 </h1>
                 <p className="mt-3 max-w-md mx-auto text-base text-muted-foreground sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
                   {t('home.description')}
@@ -70,7 +69,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
             <a 
-              href="https://peakd.com" 
+              href="https://holahive.com" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md bg-card text-primary hover:bg-card/90 focus:outline-none focus:ring-2 focus:ring-primary w-full"

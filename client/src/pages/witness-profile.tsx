@@ -110,59 +110,6 @@ export default function WitnessProfile() {
                 )}
               </CardContent>
             </Card>
-            
-            {!isLoading && witness && (
-              <Card>
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-xl">{t('profile.stats')}</CardTitle>
-                </CardHeader>
-                
-                <CardContent>
-                  <dl className="grid grid-cols-1 gap-y-4">
-                    <div>
-                      <dt className="text-sm text-muted-foreground">{t('profile.votes')}</dt>
-                      <dd className="mt-1 text-lg font-medium">{witness.votesHivePower}</dd>
-                    </div>
-                    
-                    <div>
-                      <dt className="text-sm text-muted-foreground">{t('profile.lastBlock')}</dt>
-                      <dd className="mt-1 text-lg font-medium">{witness.lastBlock}</dd>
-                    </div>
-                    
-                    <div>
-                      <dt className="text-sm text-muted-foreground">{t('profile.missedBlocks')}</dt>
-                      <dd className="mt-1 text-lg font-medium">{witness.missedBlocks.toLocaleString()}</dd>
-                    </div>
-                    
-                    <div>
-                      <dt className="text-sm text-muted-foreground">{t('witnesses.fee')}</dt>
-                      <dd className="mt-1 text-lg font-medium">{witness.priceFeed}</dd>
-                    </div>
-                    
-                    <div>
-                      <dt className="text-sm text-muted-foreground">{t('witnesses.version')}</dt>
-                      <dd className="mt-1 text-lg font-medium">{witness.version}</dd>
-                    </div>
-                    
-                    {witness.url && (
-                      <div>
-                        <dt className="text-sm text-muted-foreground">{t('witnesses.website')}</dt>
-                        <dd className="mt-1 text-lg font-medium">
-                          <a
-                            href={witness.url.startsWith('http') ? witness.url : `http://${witness.url}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline"
-                          >
-                            {t('profile.visitWebsite')}
-                          </a>
-                        </dd>
-                      </div>
-                    )}
-                  </dl>
-                </CardContent>
-              </Card>
-            )}
           </div>
           
           {/* Right column with tabs for additional info */}
@@ -170,8 +117,9 @@ export default function WitnessProfile() {
             <Card>
               <Tabs defaultValue="profile" onValueChange={setActiveTab} value={activeTab}>
                 <CardHeader className="pb-0">
-                  <TabsList className="grid grid-cols-2">
+                  <TabsList className="grid grid-cols-3">
                     <TabsTrigger value="profile">{t('profile.about')}</TabsTrigger>
+                    <TabsTrigger value="stats">{t('profile.stats')}</TabsTrigger>
                     <TabsTrigger value="voters">{t('profile.voters')}</TabsTrigger>
                   </TabsList>
                 </CardHeader>
@@ -226,6 +174,65 @@ export default function WitnessProfile() {
                           <p className="text-muted-foreground">{t('profile.failed')}</p>
                         )}
                       </div>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="stats" className="mt-0">
+                    <div>
+                      <h3 className="text-xl font-semibold mb-4">{t('profile.witnessInfo')}</h3>
+                      
+                      {isLoading ? (
+                        <div className="space-y-4">
+                          {[...Array(5)].map((_, i) => (
+                            <Skeleton key={i} className="h-4 w-full" />
+                          ))}
+                        </div>
+                      ) : witness ? (
+                        <dl className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="bg-muted/30 p-4 rounded-lg">
+                            <dt className="text-sm text-muted-foreground">{t('profile.votes')}</dt>
+                            <dd className="mt-1 text-lg font-medium">{witness.votesHivePower}</dd>
+                          </div>
+                          
+                          <div className="bg-muted/30 p-4 rounded-lg">
+                            <dt className="text-sm text-muted-foreground">{t('profile.lastBlock')}</dt>
+                            <dd className="mt-1 text-lg font-medium">{witness.lastBlock}</dd>
+                          </div>
+                          
+                          <div className="bg-muted/30 p-4 rounded-lg">
+                            <dt className="text-sm text-muted-foreground">{t('profile.missedBlocks')}</dt>
+                            <dd className="mt-1 text-lg font-medium">{witness.missedBlocks.toLocaleString()}</dd>
+                          </div>
+                          
+                          <div className="bg-muted/30 p-4 rounded-lg">
+                            <dt className="text-sm text-muted-foreground">{t('witnesses.fee')}</dt>
+                            <dd className="mt-1 text-lg font-medium">{witness.priceFeed}</dd>
+                          </div>
+                          
+                          <div className="bg-muted/30 p-4 rounded-lg">
+                            <dt className="text-sm text-muted-foreground">{t('witnesses.version')}</dt>
+                            <dd className="mt-1 text-lg font-medium">{witness.version}</dd>
+                          </div>
+                          
+                          {witness.url && (
+                            <div className="bg-muted/30 p-4 rounded-lg">
+                              <dt className="text-sm text-muted-foreground">{t('witnesses.website')}</dt>
+                              <dd className="mt-1 text-lg font-medium">
+                                <a
+                                  href={witness.url.startsWith('http') ? witness.url : `http://${witness.url}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:underline"
+                                >
+                                  {t('profile.visitWebsite')}
+                                </a>
+                              </dd>
+                            </div>
+                          )}
+                        </dl>
+                      ) : (
+                        <p className="text-muted-foreground">{t('profile.failed')}</p>
+                      )}
                     </div>
                   </TabsContent>
                   
