@@ -137,7 +137,10 @@ export default function WitnessList() {
           ) : (
             <ul className="divide-y divide-border bg-card shadow rounded-lg border border-border">
               {visibleItems.map((witness: any) => (
-                <li key={witness.id} className={`px-4 py-4 ${witness.name === 'aliento' ? 'bg-primary/10' : ''}`}>
+                <li 
+                  key={witness.id} 
+                  className={`px-4 py-4 ${witness.name === 'aliento' ? 'bg-primary/10' : ''} ${!witness.isActive ? 'bg-muted opacity-75' : ''}`}
+                >
                   <div className="flex justify-between items-start">
                     <Link href={`/witness/${witness.name}`} className="flex items-center hover:opacity-90 transition-opacity">
                       <div className="mr-4 flex-shrink-0">
@@ -147,7 +150,23 @@ export default function WitnessList() {
                         </Avatar>
                       </div>
                       <div>
-                        <h3 className="text-base font-medium text-foreground">@{witness.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-base font-medium text-foreground">@{witness.name}</h3>
+                          {!witness.isActive && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Badge variant="outline" className="bg-destructive/10 text-destructive text-xs">
+                                    Inactive
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="text-xs">No blocks signed in last 72 hours</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                        </div>
                         <p className="mt-1 text-sm text-muted-foreground">{t('witnesses.rank')}: #{witness.rank}</p>
                       </div>
                     </Link>
@@ -221,7 +240,10 @@ export default function WitnessList() {
                     {visibleItems.map((witness: any) => (
                       <TableRow 
                         key={witness.id} 
-                        className={witness.name === 'aliento' ? 'bg-primary/10' : 'hover:bg-muted/50'}
+                        className={`
+                          ${witness.name === 'aliento' ? 'bg-primary/10' : 'hover:bg-muted/50'}
+                          ${!witness.isActive ? 'bg-muted/60 opacity-80' : ''}
+                        `}
                       >
                         <TableCell className="text-sm text-muted-foreground">
                           #{witness.rank}
@@ -233,7 +255,23 @@ export default function WitnessList() {
                               <AvatarFallback>{witness.name.substring(0, 2).toUpperCase()}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <div className="text-sm font-medium text-foreground">@{witness.name}</div>
+                              <div className="flex items-center gap-2">
+                                <div className="text-sm font-medium text-foreground">@{witness.name}</div>
+                                {!witness.isActive && (
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Badge variant="outline" className="bg-destructive/10 text-destructive text-xs">
+                                          Inactive
+                                        </Badge>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p className="text-xs">No blocks signed in last 72 hours</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                )}
+                              </div>
                               <div className="text-sm text-muted-foreground">{t('witnesses.version')}: {witness.version}</div>
                             </div>
                           </Link>
