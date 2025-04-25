@@ -12,6 +12,7 @@ import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { KeychainProvider } from "./context/KeychainContext";
+import { LanguageProvider } from "./context/LanguageContext";
 
 function Router() {
   return (
@@ -29,18 +30,20 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <KeychainProvider>
-        <ThemeProvider defaultTheme="system">
-          <TooltipProvider>
-            <div className="min-h-screen flex flex-col">
-              <Header />
-              <main className="flex-1">
-                <Router />
-              </main>
-              <Footer />
-            </div>
-            <Toaster />
-          </TooltipProvider>
-        </ThemeProvider>
+        <LanguageProvider>
+          <ThemeProvider defaultTheme="system">
+            <TooltipProvider>
+              <div className="min-h-screen flex flex-col">
+                <Header />
+                <main className="flex-1">
+                  <Router />
+                </main>
+                <Footer />
+              </div>
+              <Toaster />
+            </TooltipProvider>
+          </ThemeProvider>
+        </LanguageProvider>
       </KeychainProvider>
     </QueryClientProvider>
   );

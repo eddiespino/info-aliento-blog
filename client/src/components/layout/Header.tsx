@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useKeychain } from '@/context/KeychainContext';
+import { useLanguage } from '@/context/LanguageContext';
 import LoginModal from '../modals/LoginModal';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from '../ThemeToggle';
+import { LanguageToggle } from '../LanguageToggle';
 import alientoLogo from '@/assets/aliento-logo.png';
 
 export default function Header() {

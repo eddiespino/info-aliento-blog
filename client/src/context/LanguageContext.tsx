@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 type Language = 'en' | 'es';
 
@@ -8,10 +8,23 @@ interface LanguageContextType {
   t: (key: string) => string;
 }
 
-const defaultLanguage: Language = 'en';
+// Get browser language or default to English
+const getBrowserLanguage = (): Language => {
+  const browserLang = navigator.language.split('-')[0];
+  return browserLang === 'es' ? 'es' : 'en';  
+};
+
+// Get language from localStorage or from browser settings
+const getInitialLanguage = (): Language => {
+  const savedLanguage = localStorage.getItem('language') as Language;
+  if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'es')) {
+    return savedLanguage;
+  }
+  return getBrowserLanguage();
+};
 
 const LanguageContext = createContext<LanguageContextType>({
-  language: defaultLanguage,
+  language: 'en',
   setLanguage: () => {},
   t: (key: string) => key,
 });
@@ -25,7 +38,13 @@ interface LanguageProviderProps {
 }
 
 export function LanguageProvider({ children }: LanguageProviderProps) {
-  const [language, setLanguage] = useState<Language>(defaultLanguage);
+  const [language, setLanguageState] = useState<Language>(getInitialLanguage);
+  
+  // Update language and save to localStorage
+  const setLanguage = (newLanguage: Language) => {
+    setLanguageState(newLanguage);
+    localStorage.setItem('language', newLanguage);
+  };
 
   // Load translations only once to avoid recreating this object on every render
   const translations = {
@@ -250,8 +269,29 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
   };
 
   const translate = (key: string): string => {
-    return translations[language][key as keyof typeof translations[typeof language]] || key;
+    // Get translation or fallback to English or the key itself
+    const translation = translations[language][key as keyof typeof translations[typeof language]];
+    
+    if (translation) {
+      return translation;
+    }
+    
+    // If missing in current language, try English as fallback
+    if (language !== 'en') {
+      const englishTranslation = translations['en'][key as keyof typeof translations['en']];
+      if (englishTranslation) {
+        return englishTranslation;
+      }
+    }
+    
+    // If all fails, return the key itself
+    return key;
   };
+
+  // Update html lang attribute when language changes
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t: translate }}>
