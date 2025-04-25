@@ -94,6 +94,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'witnesses.showing': 'Showing',
       'witnesses.of': 'of',
       'witnesses.website': 'Website',
+      'witnesses.action': 'Action',
       
       // Sort
       'sort.by': 'Sort by',
@@ -238,6 +239,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'witnesses.showing': 'Mostrando',
       'witnesses.of': 'de',
       'witnesses.website': 'Sitio Web',
+      'witnesses.action': 'Acción',
       
       // Sort
       'sort.by': 'Ordenar por',

@@ -147,7 +147,7 @@ export default function WitnessList() {
                       </div>
                       <div>
                         <h3 className="text-base font-medium text-foreground">@{witness.name}</h3>
-                        <p className="mt-1 text-sm text-muted-foreground">Rank: #{witness.rank}</p>
+                        <p className="mt-1 text-sm text-muted-foreground">{t('witnesses.rank')}: #{witness.rank}</p>
                       </div>
                     </Link>
                     <Button 
@@ -155,16 +155,16 @@ export default function WitnessList() {
                       className="ml-2"
                       onClick={() => handleVoteClick(witness.name)}
                     >
-                      Vote
+                      {t('witnesses.vote')}
                     </Button>
                   </div>
                   <div className="mt-2 grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <dt className="text-muted-foreground">Votes</dt>
+                      <dt className="text-muted-foreground">{t('witnesses.votes')}</dt>
                       <dd className="font-medium text-foreground">{witness.votesHivePower}</dd>
                     </div>
                     <div>
-                      <dt className="text-muted-foreground">Last Block</dt>
+                      <dt className="text-muted-foreground">{t('witnesses.lastBlock')}</dt>
                       <dd className="font-medium text-foreground">{witness.lastBlock}</dd>
                     </div>
                   </div>
@@ -187,12 +187,12 @@ export default function WitnessList() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Rank</TableHead>
-                  <TableHead>Witness</TableHead>
-                  <TableHead>Votes</TableHead>
-                  <TableHead>Last Block</TableHead>
-                  <TableHead>Price Feed</TableHead>
-                  <TableHead>Action</TableHead>
+                  <TableHead>{t('witnesses.rank')}</TableHead>
+                  <TableHead>{t('witnesses.name')}</TableHead>
+                  <TableHead>{t('witnesses.votes')}</TableHead>
+                  <TableHead>{t('witnesses.lastBlock')}</TableHead>
+                  <TableHead>{t('witnesses.fee')}</TableHead>
+                  <TableHead>{t('witnesses.action')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -233,7 +233,7 @@ export default function WitnessList() {
                             </Avatar>
                             <div>
                               <div className="text-sm font-medium text-foreground">@{witness.name}</div>
-                              <div className="text-sm text-muted-foreground">Version: {witness.version}</div>
+                              <div className="text-sm text-muted-foreground">{t('witnesses.version')}: {witness.version}</div>
                             </div>
                           </Link>
                         </TableCell>
@@ -252,7 +252,7 @@ export default function WitnessList() {
                             className="text-primary hover:text-primary/80 p-0"
                             onClick={() => handleVoteClick(witness.name)}
                           >
-                            Vote
+                            {t('witnesses.vote')}
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -279,8 +279,8 @@ export default function WitnessList() {
             {/* Display loading progress */}
             <div className="flex flex-wrap items-center justify-between">
               <p className="text-sm text-muted-foreground mb-3 sm:mb-0">
-                Showing <span className="font-medium text-foreground">{visibleItems.length}</span> of{' '}
-                <span className="font-medium text-foreground">{witnesses.length}</span> witnesses
+                {t('witnesses.showing')} <span className="font-medium text-foreground">{visibleItems.length}</span> {t('witnesses.of')}{' '}
+                <span className="font-medium text-foreground">{witnesses.length}</span> {t('nav.witnesses').toLowerCase()}
               </p>
               
               <div className="w-full sm:w-1/2 flex items-center gap-3">
