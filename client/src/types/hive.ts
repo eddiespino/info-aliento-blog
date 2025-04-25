@@ -26,6 +26,7 @@ export interface Witness {
   version: string;
   created: string;
   profileImage: string;
+  isActive: boolean; // Flag to indicate if the witness is active (has signed a block in the last 72 hours)
 }
 
 export interface UserData {

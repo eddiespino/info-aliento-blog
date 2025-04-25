@@ -350,6 +350,39 @@ export const getWitnesses = async (): Promise<Witness[]> => {
     
     // Ensure we have the vests to HP ratio before processing
     await ensureVestToHpRatio();
+    
+    // Get dynamic global properties to determine current block number
+    let globalProps;
+    try {
+      const propsResponse = await fetch(apiNode, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "jsonrpc": "2.0",
+          "method": "condenser_api.get_dynamic_global_properties",
+          "params": [],
+          "id": 1
+        })
+      });
+      
+      if (!propsResponse.ok) {
+        throw new Error(`Global props HTTP error status: ${propsResponse.status}`);
+      }
+      
+      const propsData = await propsResponse.json();
+      globalProps = propsData.result;
+    } catch (error) {
+      console.error('Error fetching global properties:', error);
+      // Use a fallback approach if we can't get the current block
+      globalProps = { head_block_number: 0 };
+    }
+    
+    // Calculate the block number from 72 hours ago (assuming 3 second block time)
+    const currentBlockNum = globalProps.head_block_number;
+    const blocksIn72Hours = (72 * 60 * 60) / 3; // 72 hours in blocks
+    const blockFrom72HoursAgo = currentBlockNum - blocksIn72Hours;
       
     // Format the witness data
     return witnesses.map((witness: any, index: number) => {
@@ -365,6 +398,9 @@ export const getWitnesses = async (): Promise<Witness[]> => {
       const blockNum = parseInt(witness.last_confirmed_block_num);
       const formattedBlockNum = formatNumberWithCommas(blockNum);
       
+      // Check if the witness is active (has signed a block in the last 72 hours)
+      const isActive = blockNum > blockFrom72HoursAgo;
+      
       return {
         id: witness.id,
         name: witness.owner,
@@ -377,7 +413,8 @@ export const getWitnesses = async (): Promise<Witness[]> => {
         priceFeed: `$${parseFloat(witness.hbd_exchange_rate.base).toFixed(3)}`,
         version: witness.running_version,
         created: witness.created,
-        profileImage: `https://images.hive.blog/u/${witness.owner}/avatar`
+        profileImage: `https://images.hive.blog/u/${witness.owner}/avatar`,
+        isActive: isActive
       };
     });
   } catch (error) {

@@ -15,6 +15,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import LoginModal from '../modals/LoginModal';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'wouter';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type SortOption = 'rank' | 'votes' | 'name' | 'lastBlock';
 
