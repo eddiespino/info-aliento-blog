@@ -22,11 +22,18 @@ export default function WitnessProfile() {
   const witnessName = params.name?.replace('@', '');
   const { witness, isLoading } = useWitness(witnessName);
   const { voters, isLoading: isLoadingVoters } = useWitnessVoters(witnessName);
-  const { isLoggedIn } = useKeychain();
+  const { isLoggedIn, user } = useKeychain();
   const { t } = useLanguage();
   const [voteModalOpen, setVoteModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
+  const [isUnvoteAction, setIsUnvoteAction] = useState(false);
+  
+  // Helper function to check if the user has already voted for this witness
+  const hasVotedForWitness = (): boolean => {
+    if (!user || !user.witnessVotes) return false;
+    return user.witnessVotes.includes(witnessName);
+  };
 
   // Pagination for voters list
   const { paginatedItems: paginatedVoters, currentPage, totalPages, nextPage, prevPage, goToPage } = usePagination(voters, 10);
@@ -37,6 +44,13 @@ export default function WitnessProfile() {
       return;
     }
     
+    // Check if the user has already voted for this witness
+    const hasVoted = hasVotedForWitness();
+    
+    // Set the action type (vote or unvote)
+    setIsUnvoteAction(hasVoted);
+    
+    // Open vote/unvote confirmation modal
     setVoteModalOpen(true);
   };
   
@@ -98,11 +112,12 @@ export default function WitnessProfile() {
                     <p className="text-muted-foreground">{t('profile.activeSince')} {new Date(witness.created).toLocaleDateString()}</p>
                     
                     <Button 
-                      className="w-full mt-6"
+                      className={`w-full mt-6 ${hasVotedForWitness() ? 'bg-muted text-muted-foreground hover:bg-muted/80' : ''}`}
                       onClick={handleVoteClick}
+                      variant={hasVotedForWitness() ? "outline" : "default"}
                     >
                       <span className="material-symbols-outlined mr-2">how_to_vote</span>
-                      {t('profile.voteFor')}
+                      {hasVotedForWitness() ? t('witnesses.unvote') : t('profile.voteFor')}
                     </Button>
                   </div>
                 ) : (
@@ -354,7 +369,8 @@ export default function WitnessProfile() {
         <VoteModal 
           open={voteModalOpen} 
           onClose={() => setVoteModalOpen(false)} 
-          witness={witnessName} 
+          witness={witnessName}
+          unvote={isUnvoteAction}
         />
       )}
       
