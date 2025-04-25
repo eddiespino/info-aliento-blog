@@ -354,6 +354,10 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'about.tech': 'Tecnología',
       'about.techDesc': 'Construido con React, Vite e integrado con la blockchain Hive a través de llamadas API directas y autenticación Hive Keychain.',
       
+      // NotFound page
+      'notFound.title': '404 Página No Encontrada',
+      'notFound.message': '¿Olvidaste agregar la página al enrutador?',
+      
       // Footer
       'footer.description': 'Apoyando el ecosistema de la blockchain Hive a través de operaciones de testigo confiables y desarrollo comunitario.',
       'footer.quickLinks': 'Enlaces Rápidos',
