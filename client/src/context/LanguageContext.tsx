@@ -289,6 +289,8 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'modal.login.keychainDesc': 'Necesitas instalar la extensión de navegador Hive Keychain para iniciar sesión.',
       'modal.login.install': 'Instalar Keychain',
       'modal.login.cancel': 'Cancelar',
+      'modal.login.devMode': 'El modo de desarrollo está activo. Puedes iniciar sesión con cualquier nombre de usuario para pruebas.',
+      'modal.login.logging': 'Iniciando sesión...',
       
       'modal.vote.title': 'Votar por Testigo',
       'modal.vote.desc': 'Estás a punto de votar por',

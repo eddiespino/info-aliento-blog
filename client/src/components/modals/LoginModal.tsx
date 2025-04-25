@@ -113,7 +113,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
             </div>
           ) : (
             <div className="flex flex-col items-center">
-              <p className="text-sm text-muted-foreground mb-3">Hive Keychain extension is required</p>
+              <p className="text-sm text-muted-foreground mb-3">{t('modal.login.keychain')}</p>
               <a 
                 href="https://hive-keychain.com" 
                 target="_blank" 
@@ -121,7 +121,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
                 className="inline-flex items-center text-sm text-primary hover:text-primary/80"
               >
                 <Download className="mr-1 h-4 w-4" />
-                Install Hive Keychain
+                {t('modal.login.install')}
               </a>
             </div>
           )}
@@ -133,14 +133,14 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
             variant="secondary"
             onClick={onClose}
           >
-            Cancel
+            {t('modal.login.cancel')}
           </Button>
           <Button
             type="button"
             onClick={handleLogin}
             disabled={(!isKeychainInstalled && !isDevelopmentMode) || !username.trim() || isSubmitting}
           >
-            {isSubmitting ? 'Logging in...' : 'Login'}
+            {isSubmitting ? t('modal.login.logging') : t('login')}
           </Button>
         </DialogFooter>
       </DialogContent>
