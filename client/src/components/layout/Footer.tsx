@@ -44,11 +44,11 @@ export default function Footer() {
           
           {/* Quick Links section */}
           <div>
-            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Quick Links</h3>
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">{t('footer.quickLinks')}</h3>
             <ul className="grid grid-cols-2 sm:grid-cols-1 gap-x-4 gap-y-2">
-              <li><Link href="/" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">Home</Link></li>
-              <li><Link href="/witnesses" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">Witnesses</Link></li>
-              <li><Link href="/about" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">About Aliento</Link></li>
+              <li><Link href="/" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">{t('nav.home')}</Link></li>
+              <li><Link href="/witnesses" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">{t('nav.witnesses')}</Link></li>
+              <li><Link href="/about" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">{t('footer.aboutAliento')}</Link></li>
               <li><a href="https://peakd.com" target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">PeakD</a></li>
               <li><a href="https://hive.io" target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">Hive Blockchain</a></li>
             </ul>
@@ -56,13 +56,13 @@ export default function Footer() {
           
           {/* Resources section */}
           <div>
-            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Resources</h3>
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">{t('footer.resources')}</h3>
             <ul className="grid grid-cols-2 sm:grid-cols-1 gap-x-4 gap-y-2">
-              <li><a href="https://developers.hive.io" target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">Developer Portal</a></li>
-              <li><a href="https://github.com/hive-keychain/keychain-sdk" target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">Keychain SDK</a></li>
-              <li><a href="https://beacon.peakd.com" target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">Beacon API</a></li>
-              <li><a href="https://hiveblocks.com" target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">Block Explorer</a></li>
-              <li><a href="https://hivedocs.info" target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">Documentation</a></li>
+              <li><a href="https://developers.hive.io" target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">{t('footer.developerPortal')}</a></li>
+              <li><a href="https://github.com/hive-keychain/keychain-sdk" target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">{t('footer.keychainSDK')}</a></li>
+              <li><a href="https://beacon.peakd.com" target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">{t('footer.beaconAPI')}</a></li>
+              <li><a href="https://hiveblocks.com" target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">{t('footer.blockExplorer')}</a></li>
+              <li><a href="https://hivedocs.info" target="_blank" rel="noopener noreferrer" className="text-sm sm:text-base text-muted-foreground hover:text-primary transition-colors">{t('footer.documentation')}</a></li>
             </ul>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default function Footer() {
         {/* Copyright section */}
         <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-border text-center">
           <p className="text-xs sm:text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Aliento Witness. All rights reserved.
+            &copy; {new Date().getFullYear()} Aliento Witness. {t('footer.copyright')}
           </p>
         </div>
       </div>
