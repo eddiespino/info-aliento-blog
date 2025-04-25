@@ -2,8 +2,11 @@ import NetworkStatus from '@/components/NetworkStatus';
 import FeaturedWitness from '@/components/FeaturedWitness';
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function Home() {
+  const { t } = useLanguage();
+  
   return (
     <div>
       {/* Hero Section with Featured Witness */}
@@ -13,22 +16,22 @@ export default function Home() {
             <div className="px-4 sm:px-6 lg:px-8">
               <div className="text-center">
                 <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-                  <span className="block">Empower the</span>
+                  <span className="block">{t('home.title')}</span>
                   <span className="block text-primary">Hive Blockchain</span>
                 </h1>
                 <p className="mt-3 max-w-md mx-auto text-base text-muted-foreground sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-                  Vote for trusted witnesses to secure the network and support the Aliento project's vision for a decentralized future.
+                  {t('home.description')}
                 </p>
 
                 <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center px-4">
                   <Link href="/witnesses" className="w-full sm:w-auto">
                     <Button className="rounded-md px-5 py-3 font-medium w-full sm:w-auto">
-                      View Top Witnesses
+                      {t('home.viewAll')}
                     </Button>
                   </Link>
                   <Link href="/about" className="w-full sm:w-auto">
                     <Button variant="outline" className="rounded-md px-5 py-3 font-medium w-full sm:w-auto">
-                      About Aliento
+                      {t('nav.about')}
                     </Button>
                   </Link>
                 </div>
@@ -61,9 +64,9 @@ export default function Home() {
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-primary/80 to-secondary/80 py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-primary-foreground mb-6">Join the Hive Blockchain Community</h2>
+          <h2 className="text-3xl font-bold text-primary-foreground mb-6">{t('home.title')}</h2>
           <p className="text-xl text-primary-foreground/90 mb-8 max-w-3xl mx-auto">
-            Participate in a truly decentralized ecosystem, support witnesses, and help shape the future of the blockchain.
+            {t('home.description')}
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
             <a 
@@ -72,7 +75,7 @@ export default function Home() {
               rel="noopener noreferrer" 
               className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md bg-card text-primary hover:bg-card/90 focus:outline-none focus:ring-2 focus:ring-primary w-full"
             >
-              Join Hive
+              {t('home.viewAll')}
             </a>
             <a 
               href="https://hive.io/whitepaper.pdf" 
@@ -80,7 +83,7 @@ export default function Home() {
               rel="noopener noreferrer" 
               className="inline-flex items-center justify-center px-5 py-3 border border-primary-foreground text-base font-medium rounded-md text-primary-foreground hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary-foreground w-full"
             >
-              Read the Whitepaper
+              {t('nav.about')}
             </a>
           </div>
         </div>

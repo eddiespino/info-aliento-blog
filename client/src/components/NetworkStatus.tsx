@@ -3,16 +3,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function NetworkStatus() {
   const { stats, isLoading: statsLoading } = useNetworkStats();
   const { nodes, isLoading: nodesLoading } = useHiveNodes();
+  const { t } = useLanguage();
 
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-foreground">Hive Network Status</h2>
-        <p className="mt-2 text-muted-foreground">Current state of the Hive blockchain network</p>
+        <h2 className="text-3xl font-bold text-foreground">{t('network.title')}</h2>
+        <p className="mt-2 text-muted-foreground">{t('network.subtitle')}</p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -22,7 +24,7 @@ export default function NetworkStatus() {
             <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-full">speed</span>
               <div>
-                <h3 className="text-sm font-medium text-muted-foreground">Block Height</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">{t('network.blockHeight')}</h3>
                 {statsLoading ? (
                   <Skeleton className="h-8 w-24 mt-1" />
                 ) : (
