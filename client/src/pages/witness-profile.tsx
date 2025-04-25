@@ -1,6 +1,7 @@
 import { useParams } from 'wouter';
 import { useWitness, useWitnessVoters, usePagination } from '@/hooks/useWitnesses';
 import { useKeychain } from '@/context/KeychainContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -22,6 +23,7 @@ export default function WitnessProfile() {
   const { witness, isLoading } = useWitness(witnessName);
   const { voters, isLoading: isLoadingVoters } = useWitnessVoters(witnessName);
   const { isLoggedIn } = useKeychain();
+  const { t } = useLanguage();
   const [voteModalOpen, setVoteModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
@@ -44,12 +46,12 @@ export default function WitnessProfile() {
       <section className="py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl font-bold text-foreground mb-6">Witness Not Found</h1>
+            <h1 className="text-3xl font-bold text-foreground mb-6">{t('profile.notFound')}</h1>
             <p className="text-lg text-muted-foreground mb-8">
-              The witness <span className="font-medium">@{witnessName}</span> was not found on the Hive blockchain.
+              {t('profile.notFoundDesc')} <span className="font-medium">@{witnessName}</span>.
             </p>
             <Button asChild>
-              <Link href="/witnesses">View All Witnesses</Link>
+              <Link href="/witnesses">{t('profile.viewAll')}</Link>
             </Button>
           </div>
         </div>
@@ -66,10 +68,10 @@ export default function WitnessProfile() {
             <Card className="mb-8">
               <CardHeader className="pb-4">
                 <CardTitle className="text-2xl flex justify-between items-center">
-                  <span>Witness Profile</span>
+                  <span>{t('profile.title')}</span>
                   {!isLoading && witness && (
                     <Badge variant="secondary" className="ml-2 text-secondary-foreground">
-                      Rank #{witness.rank}
+                      {t('profile.rank')} #{witness.rank}
                     </Badge>
                   )}
                 </CardTitle>
@@ -93,14 +95,14 @@ export default function WitnessProfile() {
                     </Avatar>
                     
                     <h2 className="text-xl font-bold mt-4">@{witness.name}</h2>
-                    <p className="text-muted-foreground">Active since {new Date(witness.created).toLocaleDateString()}</p>
+                    <p className="text-muted-foreground">{t('profile.activeSince')} {new Date(witness.created).toLocaleDateString()}</p>
                     
                     <Button 
                       className="w-full mt-6"
                       onClick={handleVoteClick}
                     >
                       <span className="material-symbols-outlined mr-2">how_to_vote</span>
-                      Vote for Witness
+                      {t('profile.voteFor')}
                     </Button>
                   </div>
                 ) : (
@@ -169,8 +171,8 @@ export default function WitnessProfile() {
               <Tabs defaultValue="profile" onValueChange={setActiveTab} value={activeTab}>
                 <CardHeader className="pb-0">
                   <TabsList className="grid grid-cols-2">
-                    <TabsTrigger value="profile">About</TabsTrigger>
-                    <TabsTrigger value="voters">Voters</TabsTrigger>
+                    <TabsTrigger value="profile">{t('profile.about')}</TabsTrigger>
+                    <TabsTrigger value="voters">{t('profile.voters')}</TabsTrigger>
                   </TabsList>
                 </CardHeader>
                 
@@ -248,11 +250,11 @@ export default function WitnessProfile() {
                           <Table>
                             <TableHeader>
                               <TableRow>
-                                <TableHead className="w-[100px]">Account</TableHead>
-                                <TableHead>Username</TableHead>
-                                <TableHead className="text-right">Own HP</TableHead>
-                                <TableHead className="text-right">Proxied HP</TableHead>
-                                <TableHead className="text-right">Total governance vote</TableHead>
+                                <TableHead className="w-[100px]">{t('profile.account')}</TableHead>
+                                <TableHead>{t('profile.username')}</TableHead>
+                                <TableHead className="text-right">{t('profile.ownHP')}</TableHead>
+                                <TableHead className="text-right">{t('profile.proxiedHP')}</TableHead>
+                                <TableHead className="text-right">{t('profile.totalGov')}</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
