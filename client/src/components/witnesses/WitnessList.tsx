@@ -78,6 +78,9 @@ export default function WitnessList() {
     setSortBy(value as SortOption);
   };
 
+  // State to track if action is an unvote
+  const [isUnvoteAction, setIsUnvoteAction] = useState(false);
+  
   // Handle vote or unvote action
   const handleVoteClick = (witnessName: string, unvote: boolean = false) => {
     // If user is not logged in, show login modal
@@ -99,6 +102,9 @@ export default function WitnessList() {
       console.log(`User hasn't voted for ${witnessName}, can't unvote`);
       return;
     }
+    
+    // Set the action type (vote or unvote)
+    setIsUnvoteAction(unvote);
     
     // Open vote/unvote confirmation modal
     setSelectedWitness(witnessName);
@@ -391,7 +397,8 @@ export default function WitnessList() {
         <VoteModal 
           open={voteModalOpen} 
           onClose={() => setVoteModalOpen(false)} 
-          witness={selectedWitness} 
+          witness={selectedWitness}
+          unvote={isUnvoteAction}
         />
       )}
       

@@ -73,7 +73,7 @@ export default function VoteModal({ open, onClose, witness, unvote = false }: Vo
                 {t('modal.vote.approval')}
               </dt>
               <dd className="mt-1 text-sm font-medium">
-                {t('modal.vote.approve')}
+                {unvote ? t('modal.vote.remove') : t('modal.vote.approve')}
               </dd>
             </div>
           </dl>
