@@ -77,7 +77,7 @@ export default function FeaturedWitness() {
             onClick={handleVoteClick}
           >
             <span className="material-symbols-outlined">how_to_vote</span>
-            {isLoggedIn ? 'Vote for Aliento' : 'Login to Vote'}
+            {isLoggedIn ? t('profile.voteFor') : t('login.loginToVote')}
           </Button>
         </div>
       </div>
@@ -110,11 +110,11 @@ export default function FeaturedWitness() {
             )}
             <div>
               <h4 className="font-medium text-foreground">@aliento</h4>
-              <p className="text-xs sm:text-sm text-muted-foreground">Witness since 2021</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">{t('profile.since')} 2021</p>
             </div>
           </div>
           <p className="text-xs sm:text-sm text-muted-foreground">
-            "Our mission is to support and strengthen the Hive ecosystem through reliable infrastructure and community-focused initiatives."
+            "{t('about.mission')}"
           </p>
         </div>
       </div>
