@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useKeychain } from '@/context/KeychainContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface VoteModalProps {
   open: boolean;
@@ -12,6 +13,7 @@ interface VoteModalProps {
 export default function VoteModal({ open, onClose, witness }: VoteModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { voteWitness } = useKeychain();
+  const { t } = useLanguage();
 
   const [voteError, setVoteError] = useState<string | null>(null);
 
@@ -44,10 +46,10 @@ export default function VoteModal({ open, onClose, witness }: VoteModalProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <span className="material-symbols-outlined text-amber-500">how_to_vote</span>
-            Confirm Witness Vote
+            {t('modal.vote.title')}
           </DialogTitle>
           <DialogDescription>
-            You are about to vote for witness <strong>@{witness}</strong>. This action will be broadcast to the Hive blockchain.
+            {t('modal.vote.desc')} <strong>@{witness}</strong>. {t('modal.vote.broadcast')}
           </DialogDescription>
         </DialogHeader>
         
@@ -55,7 +57,7 @@ export default function VoteModal({ open, onClose, witness }: VoteModalProps) {
           <dl className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
             <div className="sm:col-span-1">
               <dt className="text-sm font-medium text-muted-foreground">
-                Witness
+                {t('witnesses.name')}
               </dt>
               <dd className="mt-1 text-sm font-medium">
                 @{witness}
@@ -63,10 +65,10 @@ export default function VoteModal({ open, onClose, witness }: VoteModalProps) {
             </div>
             <div className="sm:col-span-1">
               <dt className="text-sm font-medium text-muted-foreground">
-                Approval
+                {t('modal.vote.approval')}
               </dt>
               <dd className="mt-1 text-sm font-medium">
-                Approve
+                {t('modal.vote.approve')}
               </dd>
             </div>
           </dl>
@@ -74,7 +76,7 @@ export default function VoteModal({ open, onClose, witness }: VoteModalProps) {
         
         {voteError && (
           <div className="mt-3 text-sm text-destructive bg-destructive/10 p-2 rounded-md">
-            <span className="font-medium">Error:</span> {voteError}
+            <span className="font-medium">{t('error')}:</span> {voteError}
           </div>
         )}
         
@@ -84,14 +86,14 @@ export default function VoteModal({ open, onClose, witness }: VoteModalProps) {
             variant="secondary"
             onClick={onClose}
           >
-            Cancel
+            {t('modal.vote.cancel')}
           </Button>
           <Button
             type="button"
             onClick={handleVote}
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Confirming...' : 'Confirm Vote'}
+            {isSubmitting ? t('modal.vote.confirming') : t('modal.vote.confirm')}
           </Button>
         </DialogFooter>
       </DialogContent>

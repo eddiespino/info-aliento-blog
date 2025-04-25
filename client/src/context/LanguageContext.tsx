@@ -152,6 +152,8 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       
       'modal.vote.title': 'Vote for Witness',
       'modal.vote.desc': 'You are about to vote for',
+      'modal.vote.broadcast': 'This action will be broadcast to the Hive blockchain',
+      'modal.vote.approval': 'Approval',
       'modal.vote.approve': 'Approve',
       'modal.vote.remove': 'Remove Vote',
       'modal.vote.cancel': 'Cancel',
@@ -285,6 +287,8 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       
       'modal.vote.title': 'Votar por Testigo',
       'modal.vote.desc': 'Estás a punto de votar por',
+      'modal.vote.broadcast': 'Esta acción se transmitirá a la blockchain de Hive',
+      'modal.vote.approval': 'Aprobación',
       'modal.vote.approve': 'Aprobar',
       'modal.vote.remove': 'Eliminar Voto',
       'modal.vote.cancel': 'Cancelar',

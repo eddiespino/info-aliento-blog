@@ -231,7 +231,7 @@ export default function WitnessProfile() {
                   
                   <TabsContent value="voters" className="mt-0">
                     <div>
-                      <h3 className="text-xl font-semibold mb-4">Main Voters</h3>
+                      <h3 className="text-xl font-semibold mb-4">{t('profile.votersTitle')}</h3>
                       
                       {isLoadingVoters ? (
                         <div className="space-y-4">
@@ -331,7 +331,7 @@ export default function WitnessProfile() {
                           )}
                         </>
                       ) : (
-                        <p className="text-muted-foreground">No voters found for this witness.</p>
+                        <p className="text-muted-foreground">{t('profile.noVoters')}</p>
                       )}
                     </div>
                   </TabsContent>
