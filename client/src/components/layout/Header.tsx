@@ -14,6 +14,7 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const { isLoggedIn, user, logout } = useKeychain();
+  const { t } = useLanguage();
   const [location] = useLocation();
 
   const toggleMobileMenu = () => {
@@ -54,20 +55,21 @@ export default function Header() {
               {/* Desktop Navigation */}
               <nav className="hidden md:ml-8 md:flex md:space-x-8">
                 <Link href="/" className={`px-3 py-2 text-sm font-medium ${isActive('/') ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}>
-                  Home
+                  {t('nav.home')}
                 </Link>
                 <Link href="/witnesses" className={`px-3 py-2 text-sm font-medium ${isActive('/witnesses') ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}>
-                  Witnesses
+                  {t('nav.witnesses')}
                 </Link>
                 <Link href="/about" className={`px-3 py-2 text-sm font-medium ${isActive('/about') ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}>
-                  About Aliento
+                  {t('nav.about')}
                 </Link>
               </nav>
             </div>
             
             {/* Authentication */}
             <div className="flex items-center gap-2">
-              <div className="ml-auto mr-2">
+              <div className="ml-auto flex items-center gap-2">
+                <LanguageToggle />
                 <ThemeToggle />
               </div>
               
@@ -79,8 +81,8 @@ export default function Header() {
                   className="inline-flex items-center justify-center px-2 py-1 h-8 text-xs"
                 >
                   <span className="material-symbols-outlined text-xs mr-1">login</span>
-                  <span className="hidden sm:inline">Login with Keychain</span>
-                  <span className="sm:hidden">Login</span>
+                  <span className="hidden sm:inline">{t('login')} with Keychain</span>
+                  <span className="sm:hidden">{t('login')}</span>
                 </Button>
               ) : (
                 <DropdownMenu>
@@ -138,7 +140,7 @@ export default function Header() {
                       </div>
                       <div className="mt-4 border-t border-border pt-2">
                         <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
-                          Logout
+                          {t('logout')}
                         </DropdownMenuItem>
                       </div>
                     </div>
@@ -171,7 +173,7 @@ export default function Header() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center px-4 py-5 border-b border-border">
-              <span className="text-lg font-semibold">Menu</span>
+              <span className="text-lg font-semibold">{t('language')}</span>
               <button 
                 type="button" 
                 className="text-muted-foreground hover:text-foreground focus:outline-none"
@@ -187,7 +189,7 @@ export default function Header() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <span className="material-symbols-outlined align-bottom mr-2">home</span>
-                Home
+                {t('nav.home')}
               </Link>
               <Link 
                 href="/witnesses" 
@@ -195,7 +197,7 @@ export default function Header() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <span className="material-symbols-outlined align-bottom mr-2">supervised_user_circle</span>
-                Witnesses
+                {t('nav.witnesses')}
               </Link>
               <Link 
                 href="/about" 
@@ -203,7 +205,7 @@ export default function Header() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <span className="material-symbols-outlined align-bottom mr-2">info</span>
-                About Aliento
+                {t('nav.about')}
               </Link>
               
               {/* Divider */}
@@ -213,7 +215,7 @@ export default function Header() {
               <div className="px-4 py-3">
                 {!isLoggedIn ? (
                   <div>
-                    <p className="text-sm text-muted-foreground mb-3">Log in with Hive Keychain to vote for witnesses</p>
+                    <p className="text-sm text-muted-foreground mb-3">{t('login')} with Hive Keychain to vote for witnesses</p>
                     <Button
                       onClick={() => {
                         setMobileMenuOpen(false);
@@ -223,7 +225,7 @@ export default function Header() {
                       className="w-full"
                     >
                       <span className="material-symbols-outlined mr-2">login</span>
-                      Login with Keychain
+                      {t('login')} with Keychain
                     </Button>
                   </div>
                 ) : (
@@ -260,7 +262,7 @@ export default function Header() {
                             handleLogout();
                           }}
                         >
-                          Sign out
+                          {t('logout')}
                         </Button>
                       </div>
                     </div>
