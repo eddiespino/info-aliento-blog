@@ -78,20 +78,29 @@ export default function WitnessList() {
     setSortBy(value as SortOption);
   };
 
-  const handleVoteClick = (witnessName: string) => {
+  // Handle vote or unvote action
+  const handleVoteClick = (witnessName: string, unvote: boolean = false) => {
     // If user is not logged in, show login modal
     if (!isLoggedIn) {
       setLoginModalOpen(true);
       return;
     }
     
+    // For voting (not unvoting):
     // Don't proceed if user has already voted for this witness
-    if (hasVotedForWitness(witnessName)) {
+    if (!unvote && hasVotedForWitness(witnessName)) {
       console.log(`User has already voted for ${witnessName}`);
       return;
     }
     
-    // Open vote confirmation modal
+    // For unvoting:
+    // Don't proceed if user hasn't voted for this witness
+    if (unvote && !hasVotedForWitness(witnessName)) {
+      console.log(`User hasn't voted for ${witnessName}, can't unvote`);
+      return;
+    }
+    
+    // Open vote/unvote confirmation modal
     setSelectedWitness(witnessName);
     setVoteModalOpen(true);
   };
@@ -191,16 +200,17 @@ export default function WitnessList() {
                     </Link>
                     {/* Vote button for mobile view */}
                     {hasVotedForWitness(witness.name) ? (
-                      // If user has already voted for this witness, show disabled button
+                      // If user has already voted for this witness, show unvote button
                       <Button 
                         size="sm"
-                        className="ml-2 bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground cursor-not-allowed"
-                        disabled
+                        variant="outline"
+                        className="ml-2 text-muted-foreground"
+                        onClick={() => handleVoteClick(witness.name, true)}
                       >
-                        {t('witnesses.voted')}
+                        {t('witnesses.unvote')}
                       </Button>
                     ) : (
-                      // If user hasn't voted for this witness, show active button
+                      // If user hasn't voted for this witness, show vote button
                       <Button 
                         size="sm"
                         className="ml-2"
@@ -320,16 +330,16 @@ export default function WitnessList() {
                         <TableCell className="text-sm">
                           {/* Vote button for desktop view */}
                           {hasVotedForWitness(witness.name) ? (
-                            // If user has already voted for this witness
+                            // If user has already voted for this witness, show unvote button
                             <Button 
                               variant="link"
-                              className="text-muted-foreground hover:text-muted-foreground cursor-not-allowed p-0"
-                              disabled
+                              className="text-muted-foreground hover:text-destructive/80 p-0"
+                              onClick={() => handleVoteClick(witness.name, true)}
                             >
-                              {t('witnesses.voted')}
+                              {t('witnesses.unvote')}
                             </Button>
                           ) : (
-                            // If user hasn't voted for this witness
+                            // If user hasn't voted for this witness, show vote button
                             <Button 
                               variant="link"
                               className="text-primary hover:text-primary/80 p-0"

@@ -8,21 +8,25 @@ interface VoteModalProps {
   open: boolean;
   onClose: () => void;
   witness: string;
+  unvote?: boolean; // Flag to indicate if this is an unvote operation
 }
 
-export default function VoteModal({ open, onClose, witness }: VoteModalProps) {
+export default function VoteModal({ open, onClose, witness, unvote = false }: VoteModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { voteWitness } = useKeychain();
   const { t } = useLanguage();
 
   const [voteError, setVoteError] = useState<string | null>(null);
 
-  const handleVote = async () => {
+  // Handle both vote and unvote operations
+  const handleVoteAction = async () => {
     setIsSubmitting(true);
     setVoteError(null);
     try {
-      const result = await voteWitness(witness, true);
-      console.log('Vote result:', result);
+      // For unvoting, we pass false as the second parameter
+      // For voting, we pass true
+      const result = await voteWitness(witness, !unvote);
+      console.log(`${unvote ? 'Unvote' : 'Vote'} result:`, result);
       
       if (result.success) {
         onClose();
@@ -30,11 +34,12 @@ export default function VoteModal({ open, onClose, witness }: VoteModalProps) {
         setVoteError(result.error);
       } else {
         // Generic error if no specific error was provided
-        setVoteError('Failed to vote for witness. Please try again.');
+        const actionType = unvote ? 'unvote' : 'vote for';
+        setVoteError(`Failed to ${actionType} witness. Please try again.`);
       }
     } catch (error) {
-      console.error('Error voting for witness:', error);
-      setVoteError(typeof error === 'string' ? error : 'An unexpected error occurred during voting.');
+      console.error(`Error ${unvote ? 'unvoting' : 'voting for'} witness:`, error);
+      setVoteError(typeof error === 'string' ? error : `An unexpected error occurred during ${unvote ? 'unvoting' : 'voting'}.`);
     } finally {
       setIsSubmitting(false);
     }
@@ -46,10 +51,10 @@ export default function VoteModal({ open, onClose, witness }: VoteModalProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <span className="material-symbols-outlined text-amber-500">how_to_vote</span>
-            {t('modal.vote.title')}
+            {unvote ? t('modal.vote.remove') : t('modal.vote.title')}
           </DialogTitle>
           <DialogDescription>
-            {t('modal.vote.desc')} <strong>@{witness}</strong>. {t('modal.vote.broadcast')}
+            {unvote ? t('modal.vote.remove') : t('modal.vote.desc')} <strong>@{witness}</strong>. {t('modal.vote.broadcast')}
           </DialogDescription>
         </DialogHeader>
         
@@ -90,10 +95,13 @@ export default function VoteModal({ open, onClose, witness }: VoteModalProps) {
           </Button>
           <Button
             type="button"
-            onClick={handleVote}
+            onClick={handleVoteAction}
             disabled={isSubmitting}
+            variant={unvote ? "destructive" : "default"}
           >
-            {isSubmitting ? t('modal.vote.confirming') : t('modal.vote.confirm')}
+            {isSubmitting 
+              ? t('modal.vote.confirming') 
+              : (unvote ? t('modal.vote.remove') : t('modal.vote.confirm'))}
           </Button>
         </DialogFooter>
       </DialogContent>
