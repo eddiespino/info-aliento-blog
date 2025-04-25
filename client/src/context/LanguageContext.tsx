@@ -192,6 +192,18 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'about.feature4': 'Vote for witnesses securely using Hive Keychain',
       'about.tech': 'Technology',
       'about.techDesc': 'Built with React, Vite, and integrated with the Hive blockchain through direct API calls and Hive Keychain authentication.',
+      
+      // Footer
+      'footer.description': 'Supporting the Hive blockchain ecosystem through reliable witness operations and community development.',
+      'footer.quickLinks': 'Quick Links',
+      'footer.aboutAliento': 'About Aliento',
+      'footer.resources': 'Resources',
+      'footer.developerPortal': 'Developer Portal',
+      'footer.keychainSDK': 'Keychain SDK',
+      'footer.beaconAPI': 'Beacon API',
+      'footer.blockExplorer': 'Block Explorer',
+      'footer.documentation': 'Documentation',
+      'footer.copyright': 'All rights reserved.',
     },
     es: {
       // Header
@@ -337,6 +349,18 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'about.feature4': 'Votar por testigos de forma segura usando Hive Keychain',
       'about.tech': 'Tecnología',
       'about.techDesc': 'Construido con React, Vite e integrado con la blockchain Hive a través de llamadas API directas y autenticación Hive Keychain.',
+      
+      // Footer
+      'footer.description': 'Apoyando el ecosistema de la blockchain Hive a través de operaciones de testigo confiables y desarrollo comunitario.',
+      'footer.quickLinks': 'Enlaces Rápidos',
+      'footer.aboutAliento': 'Acerca de Aliento',
+      'footer.resources': 'Recursos',
+      'footer.developerPortal': 'Portal de Desarrolladores',
+      'footer.keychainSDK': 'SDK de Keychain',
+      'footer.beaconAPI': 'API Beacon',
+      'footer.blockExplorer': 'Explorador de Bloques',
+      'footer.documentation': 'Documentación',
+      'footer.copyright': 'Todos los derechos reservados.',
     }
   };
 

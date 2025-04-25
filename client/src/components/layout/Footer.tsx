@@ -1,6 +1,8 @@
 import { Link } from 'wouter';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function Footer() {
+  const { t } = useLanguage();
   return (
     <footer className="bg-card text-card-foreground py-8 sm:py-12 border-t border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -15,7 +17,7 @@ export default function Footer() {
               <h3 className="text-lg sm:text-xl font-semibold">Aliento Witness</h3>
             </div>
             <p className="text-sm sm:text-base text-muted-foreground mb-4">
-              Supporting the Hive blockchain ecosystem through reliable witness operations and community development.
+              {t('footer.description')}
             </p>
             {/* Social media icons */}
             <div className="flex space-x-4">
