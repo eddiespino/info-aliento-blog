@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useKeychain } from '@/context/KeychainContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Download } from 'lucide-react';
 
@@ -17,6 +18,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
   const [username, setUsername] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { isKeychainInstalled, login, isDevelopmentMode } = useKeychain();
+  const { t } = useLanguage();
   const [loginError, setLoginError] = useState<string | null>(null);
 
   const handleLogin = async () => {
@@ -62,10 +64,10 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <span className="material-symbols-outlined text-primary">login</span>
-            Login with Hive Keychain
+            {t('modal.login.title')}
           </DialogTitle>
           <DialogDescription>
-            Please ensure you have Hive Keychain extension installed to login. This will allow you to vote for witnesses and interact with the Hive blockchain.
+            {t('modal.login.desc')}
           </DialogDescription>
         </DialogHeader>
         
@@ -74,7 +76,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
             <Alert className="mb-4 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                Development mode is active. You can log in with any username for testing.
+                {t('modal.login.devMode')}
               </AlertDescription>
             </Alert>
           )}
@@ -91,7 +93,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
           {isKeychainInstalled || isDevelopmentMode ? (
             <div>
               <Label htmlFor="usernameInput" className="block text-sm font-medium mb-1">
-                Hive Username
+                {t('modal.login.username')}
               </Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
@@ -99,7 +101,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
                   id="usernameInput"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="username"
+                  placeholder={t('modal.login.enterUsername')}
                   className="w-full pl-7"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && username.trim()) {
