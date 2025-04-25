@@ -16,6 +16,7 @@ import LoginModal from '../modals/LoginModal';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'wouter';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 type SortOption = 'rank' | 'votes' | 'name' | 'lastBlock';
 
@@ -28,8 +29,18 @@ export default function WitnessList() {
   const [selectedWitness, setSelectedWitness] = useState<string | null>(null);
   const [voteModalOpen, setVoteModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
-  const { isLoggedIn } = useKeychain();
+  // Access user data from the Keychain context to get witness votes
+  const { isLoggedIn, user } = useKeychain();
   const { t } = useLanguage();
+  
+  // Check if the user has voted for a specific witness
+  const hasVotedForWitness = (witnessName: string): boolean => {
+    // Return false if user is not logged in or has no witness votes
+    if (!isLoggedIn || !user || !user.witnessVotes) return false;
+    
+    // Check if the witness name is in the user's witness votes array
+    return user.witnessVotes.includes(witnessName);
+  };
   
   // References to observe for intersection - separate refs for different element types
   const liRef = useRef<HTMLLIElement>(null);
@@ -68,11 +79,19 @@ export default function WitnessList() {
   };
 
   const handleVoteClick = (witnessName: string) => {
+    // If user is not logged in, show login modal
     if (!isLoggedIn) {
       setLoginModalOpen(true);
       return;
     }
     
+    // Don't proceed if user has already voted for this witness
+    if (hasVotedForWitness(witnessName)) {
+      console.log(`User has already voted for ${witnessName}`);
+      return;
+    }
+    
+    // Open vote confirmation modal
     setSelectedWitness(witnessName);
     setVoteModalOpen(true);
   };
@@ -170,13 +189,26 @@ export default function WitnessList() {
                         <p className="mt-1 text-sm text-muted-foreground">{t('witnesses.rank')}: #{witness.rank}</p>
                       </div>
                     </Link>
-                    <Button 
-                      size="sm"
-                      className="ml-2"
-                      onClick={() => handleVoteClick(witness.name)}
-                    >
-                      {t('witnesses.vote')}
-                    </Button>
+                    {/* Vote button for mobile view */}
+                    {hasVotedForWitness(witness.name) ? (
+                      // If user has already voted for this witness, show disabled button
+                      <Button 
+                        size="sm"
+                        className="ml-2 bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground cursor-not-allowed"
+                        disabled
+                      >
+                        {t('witnesses.voted')}
+                      </Button>
+                    ) : (
+                      // If user hasn't voted for this witness, show active button
+                      <Button 
+                        size="sm"
+                        className="ml-2"
+                        onClick={() => handleVoteClick(witness.name)}
+                      >
+                        {t('witnesses.vote')}
+                      </Button>
+                    )}
                   </div>
                   <div className="mt-2 grid grid-cols-2 gap-4 text-sm">
                     <div>
@@ -286,13 +318,26 @@ export default function WitnessList() {
                           {witness.priceFeed}
                         </TableCell>
                         <TableCell className="text-sm">
-                          <Button 
-                            variant="link"
-                            className="text-primary hover:text-primary/80 p-0"
-                            onClick={() => handleVoteClick(witness.name)}
-                          >
-                            {t('witnesses.vote')}
-                          </Button>
+                          {/* Vote button for desktop view */}
+                          {hasVotedForWitness(witness.name) ? (
+                            // If user has already voted for this witness
+                            <Button 
+                              variant="link"
+                              className="text-muted-foreground hover:text-muted-foreground cursor-not-allowed p-0"
+                              disabled
+                            >
+                              {t('witnesses.voted')}
+                            </Button>
+                          ) : (
+                            // If user hasn't voted for this witness
+                            <Button 
+                              variant="link"
+                              className="text-primary hover:text-primary/80 p-0"
+                              onClick={() => handleVoteClick(witness.name)}
+                            >
+                              {t('witnesses.vote')}
+                            </Button>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
