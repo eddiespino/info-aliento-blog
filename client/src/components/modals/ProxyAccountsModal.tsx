@@ -19,10 +19,9 @@ export default function ProxyAccountsModal({ open, onOpenChange, username }: Pro
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Accounts that have chosen @{username} as their proxy</DialogTitle>
+          <DialogTitle>Proxy Accounts for @{username}</DialogTitle>
           <DialogDescription>
-            These accounts have delegated their witness voting power to @{username}.
-            Proxy relationships may change frequently on the Hive blockchain.
+            These accounts have delegated their voting power to @{username}
           </DialogDescription>
         </DialogHeader>
 
@@ -41,38 +40,14 @@ export default function ProxyAccountsModal({ open, onOpenChange, username }: Pro
             </div>
           ) : proxyAccounts.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2">
-              {proxyAccounts.map((account) => {
-                if (account.isUnknownProxies) {
-                  return (
-                    <Card key={account.username || 'unknown'}>
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-4">
-                          <div className="bg-primary/10 h-10 w-10 rounded-full flex items-center justify-center">
-                            <span className="text-primary text-sm font-bold">?</span>
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium">Undiscovered Accounts</div>
-                            <div className="text-sm text-muted-foreground">
-                              Total proxy power: {account.proxyTotal || account.hivePower || 'Unknown'}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="mt-2 text-xs text-muted-foreground">
-                          This account has proxied votes, but we couldn't identify specific accounts. The Hive blockchain doesn't provide a direct way to query this relationship.
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                } else {
-                  return <ProxyAccountCard key={account.username} account={account} />;
-                }
-              })}
+              {proxyAccounts.map((account) => (
+                <ProxyAccountCard key={account.username} account={account} />
+              ))}
             </div>
           ) : (
-            <div className="text-center text-muted-foreground py-8 space-y-2">
-              <p>No accounts are currently using @{username} as their proxy</p>
-              <p className="text-sm">Proxy relationships on Hive may change over time. Our system uses multiple methods to find proxy relationships, including direct blockchain queries and cached data.</p>
-            </div>
+            <p className="text-center text-muted-foreground py-8">
+              No accounts are currently proxying their voting power to @{username}
+            </p>
           )}
         </div>
       </DialogContent>
@@ -81,23 +56,13 @@ export default function ProxyAccountsModal({ open, onOpenChange, username }: Pro
 }
 
 function ProxyAccountCard({ account }: { account: ProxyAccount }) {
-  // Safety check - ensure we have a valid account
-  if (!account || !account.username) {
-    return null;
-  }
-
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex items-center gap-4">
           <Avatar className="h-10 w-10">
-            <AvatarImage 
-              src={account.profileImage} 
-              alt={account.username} 
-            />
-            <AvatarFallback>
-              {account.username.substring(0, 2).toUpperCase()}
-            </AvatarFallback>
+            <AvatarImage src={account.profileImage} alt={account.username} />
+            <AvatarFallback>{account.username.substring(0, 2).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div>
             <div className="font-medium">@{account.username}</div>

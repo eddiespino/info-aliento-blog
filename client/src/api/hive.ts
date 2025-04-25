@@ -712,158 +712,16 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
 
 // Use the WitnessVoter type from types/hive.ts
 
-// Get accounts that use a specific user as their proxy
+// Get voters for a specific witness
 export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]> => {
   try {
-    console.log(`Fetching proxy accounts for ${username}`);
     const apiNode = await getBestHiveNode();
     
     // Get the VESTS to HP ratio
     await ensureVestToHpRatio();
     
-    // Define a list of known active accounts on the Hive blockchain for discovery
-    // This is more reliable than trying to fetch from external APIs that might be unstable
-    const activeHiveAccounts = [
-      'blocktrades', 'smooth', 'theycallmedan', 'arcange', 'neoxian',
-      'actifit', 'hiveio', 'peakd', 'likwid', 'steemchiller', 'hivewatchers',
-      'ausbitbank', 'hivetrending', 'travelfeed', 'pinmapple', 'hivelist',
-      'good-karma', 'therealwolf', 'quochuy', 'stoodkev', 'cadawg',
-      'themarkymark', 'jongolson', 'gtg', 'steempress', 'yabapmatt',
-      'blocktrades.com', 'neoxiancity', 'libertycrypto27', 'cryptomancer',
-      'bitrocker2020', 'cryptoandcoffee'
-    ];
-    
-    // Try a direct API approach to find proxy accounts
-    console.log(`Attempting to find accounts using ${username} as proxy using direct API`);
-    
-    try {
-      // Try a targeted API call on a specific service that indexes proxy relationships
-      // First approach is to use hive.blog API with find_accounts
-      const directResponse = await fetch('https://api.hive.blog', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          "jsonrpc": "2.0",
-          "method": "database_api.find_accounts",
-          "params": {"accounts": [username]},
-          "id": 1
-        })
-      });
-      
-      if (directResponse.ok) {
-        const responseData = await directResponse.json();
-        // Check if we got a valid response with data
-        if (responseData.result && !responseData.error) {
-          console.log("Successfully retrieved account data directly");
-          
-          // If this account has proxied vests, it means other accounts are using it as proxy
-          if (responseData.result.accounts && 
-              responseData.result.accounts[0] && 
-              responseData.result.accounts[0].proxied_vsf_votes) {
-            const proxiedVotes = responseData.result.accounts[0].proxied_vsf_votes;
-            console.log("This account has proxied votes:", proxiedVotes);
-            
-            // Calculate the total proxied HP
-            let totalProxiedHP = 0;
-            for (const vests of proxiedVotes) {
-              if (vests) {
-                // Convert VESTS to HP (divide by 1,000,000 as per Hive standard)
-                totalProxiedHP += parseFloat(vests) / 1000000 * (vestToHpRatio || 0.0005);
-              }
-            }
-            
-            // If we have proxied power but can't find specific accounts,
-            // we'll create placeholder entries for stats display
-            if (totalProxiedHP > 5000) { // Only for significant proxy power (5000+ HP)
-              console.log(`Account has significant proxy power (${formatHivePower(totalProxiedHP)}) but specific accounts unknown`);
-              
-              // We'll return to this logic after trying other methods
-              // (this is just preparation for fallback logic)
-            }
-          }
-        }
-      }
-      
-      console.log(`Using ${activeHiveAccounts.length} known active accounts for proxy discovery`);
-    } catch (directApiError) {
-      console.log("Direct API approach failed:", directApiError);
-      // Continue to fallback methods
-    }
-    
-    // FALLBACK: Use known proxy relationships for popular accounts
-    // This data is regularly updated based on blockchain state
-    const knownProxies: Record<string, string[]> = {
-      'neoxian': ['neoxiancity'],
-      'smooth': ['libertycrypto27', 'cryptomancer', 'bitrocker2020', 'cryptoandcoffee'],
-      'blocktrades': ['actifit', 'hiveio', 'peakd', 'likwid'],
-      'good-karma': ['travelfeed', 'pinmapple', 'hivelist']
-    };
-    
-    if (knownProxies[username]) {
-      // For known accounts, fetch their real data from the blockchain
-      console.log(`Using optimized approach for known proxy: ${username}`);
-      const knownProxiedAccounts = knownProxies[username];
-      
-      const accountsResponse = await fetch(apiNode, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          "jsonrpc": "2.0",
-          "method": "condenser_api.get_accounts",
-          "params": [knownProxiedAccounts],
-          "id": 3
-        })
-      });
-      
-      if (accountsResponse.ok) {
-        const accountsData = await accountsResponse.json();
-        const accounts = accountsData.result || [];
-        
-        const proxyAccounts: ProxyAccount[] = [];
-        
-        for (const account of accounts) {
-          // Verify that these accounts actually use this proxy
-          // This ensures we're showing accurate data
-          if (account && account.proxy === username) {
-            console.log(`Verified account ${account.name} using ${username} as proxy`);
-            // Calculate Hive Power from vesting shares
-            const vestingShares = parseFloat(account.vesting_shares.split(' ')[0]);
-            const hivePower = vestingShares * (vestToHpRatio || 0.0005);
-            
-            proxyAccounts.push({
-              username: account.name,
-              hivePower: formatHivePower(hivePower),
-              profileImage: `https://images.hive.blog/u/${account.name}/avatar`
-            });
-          } else if (account) {
-            // Check if the account has changed its proxy
-            console.log(`Account ${account.name} no longer uses ${username} as proxy`);
-          }
-        }
-        
-        if (proxyAccounts.length > 0) {
-          console.log(`Found ${proxyAccounts.length} accounts using ${username} as proxy`);
-          
-          // Sort by HP descending
-          return proxyAccounts.sort((a, b) => {
-            const aHP = parseFloat(a.hivePower.replace(/[^0-9.]/g, ''));
-            const bHP = parseFloat(b.hivePower.replace(/[^0-9.]/g, ''));
-            return bHP - aHP;
-          });
-        }
-      }
-    }
-    
-    // Last resort: Search through recent accounts
-    // This approach is more resource-intensive but can catch new proxy relationships
-    console.log("Using discovery approach to find proxy accounts");
-    
-    // First try a targeted search with accounts that might be using proxies
-    const targetedAccountsResponse = await fetch(apiNode, {
+    // Fetch accounts that have this user as their proxy
+    const response = await fetch(apiNode, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -871,26 +729,26 @@ export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]
       body: JSON.stringify({
         "jsonrpc": "2.0",
         "method": "condenser_api.lookup_accounts",
-        "params": [username, 50], // Get accounts alphabetically after this username
-        "id": 4
+        "params": ["", 1000],
+        "id": 7
       })
     });
     
-    // If targeted search fails, we'll do a more general search
-    if (!targetedAccountsResponse.ok) {
-      console.error("Failed to fetch targeted accounts");
+    if (!response.ok) {
       return [];
     }
     
-    // Try to find accounts with proxy settings
-    const targetedAccountsData = await targetedAccountsResponse.json();
-    const targetedAccountNames = targetedAccountsData.result || [];
+    const data = await response.json();
+    const accountNames = data.result || [];
     
     // Map to store proxy accounts
     const proxyAccounts: ProxyAccount[] = [];
     
-    // Helper function to process batches of accounts
-    const processBatch = async (batch: string[]) => {
+    // Process in batches of 50
+    const batchSize = 50;
+    for (let i = 0; i < accountNames.length; i += batchSize) {
+      const batch = accountNames.slice(i, i + batchSize);
+      
       const accountsResponse = await fetch(apiNode, {
         method: 'POST',
         headers: {
@@ -900,104 +758,28 @@ export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]
           "jsonrpc": "2.0",
           "method": "condenser_api.get_accounts",
           "params": [batch],
-          "id": 5
+          "id": 8
         })
       });
       
-      if (!accountsResponse.ok) return;
-      
-      const accountsData = await accountsResponse.json();
-      const accounts = accountsData.result || [];
-      
-      // Find accounts that have this user as their proxy
-      for (const account of accounts) {
-        if (account && account.proxy && account.proxy === username) {
-          console.log(`Found account ${account.name} using ${username} as proxy`);
-          // Calculate Hive Power
-          const vestingShares = parseFloat(account.vesting_shares.split(' ')[0]);
-          const hivePower = vestingShares * (vestToHpRatio || 0.0005);
-          
-          proxyAccounts.push({
-            username: account.name,
-            hivePower: formatHivePower(hivePower),
-            profileImage: `https://images.hive.blog/u/${account.name}/avatar`
-          });
-        }
-      }
-    };
-    
-    // Process targeted accounts first
-    await processBatch(targetedAccountNames);
-    
-    // If we still don't have results, use our predefined list of active Hive accounts
-    if (proxyAccounts.length === 0) {
-      // Use the activeHiveAccounts list we defined earlier
-      console.log(`Checking ${activeHiveAccounts.length} known active accounts for proxy relationships`);
-      // Process them in small batches to avoid overwhelming the API
-      const batchSize = 20;
-      for (let i = 0; i < activeHiveAccounts.length; i += batchSize) {
-        const batch = activeHiveAccounts.slice(i, i + batchSize);
-        await processBatch(batch);
+      if (accountsResponse.ok) {
+        const accountsData = await accountsResponse.json();
+        const accounts = accountsData.result || [];
         
-        // If we found some accounts, we can stop searching
-        if (proxyAccounts.length > 0) {
-          console.log(`Found ${proxyAccounts.length} accounts using ${username} as proxy, stopping further lookups`);
-          break;
-        }
-      }
-    }
-    
-    console.log(`Discovery found ${proxyAccounts.length} accounts using ${username} as proxy`);
-    
-    // If we found no accounts but we know there's proxied voting power (from earlier checks)
-    // Create a special placeholder entry to show this information
-    if (proxyAccounts.length === 0) {
-      try {
-        // Do a final check to see if this account has proxied voting power
-        const accountResponse = await fetch(apiNode, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            "jsonrpc": "2.0",
-            "method": "condenser_api.get_accounts",
-            "params": [[username]],
-            "id": 7
-          })
-        });
-        
-        if (accountResponse.ok) {
-          const accountData = await accountResponse.json();
-          if (accountData.result && accountData.result[0] && 
-              accountData.result[0].proxied_vsf_votes) {
-            const proxiedVotes = accountData.result[0].proxied_vsf_votes;
+        // Find accounts that have this user as their proxy
+        for (const account of accounts) {
+          if (account.proxy === username) {
+            // Calculate Hive Power
+            const vestingShares = parseFloat(account.vesting_shares.split(' ')[0]);
+            const hivePower = vestingShares * (vestToHpRatio || 0.0005);
             
-            // Calculate the total proxied HP
-            let totalProxiedHP = 0;
-            for (const vests of proxiedVotes) {
-              if (vests) {
-                // Convert VESTS to HP (divide by 1,000,000 as per Hive standard)
-                totalProxiedHP += parseFloat(vests) / 1000000 * (vestToHpRatio || 0.0005);
-              }
-            }
-            
-            if (totalProxiedHP > 0) {
-              console.log(`Found proxied power of ${formatHivePower(totalProxiedHP)} but couldn't identify specific accounts`);
-              
-              // Create a special proxy account entry that represents the unknown accounts
-              proxyAccounts.push({
-                username: 'unknown_accounts',
-                hivePower: formatHivePower(totalProxiedHP),
-                profileImage: `https://images.hive.blog/u/${username}/avatar`,
-                isUnknownProxies: true,
-                proxyTotal: formatHivePower(totalProxiedHP)
-              });
-            }
+            proxyAccounts.push({
+              username: account.name,
+              hivePower: formatHivePower(hivePower),
+              profileImage: `https://images.hive.blog/u/${account.name}/avatar`
+            });
           }
         }
-      } catch (error) {
-        console.error("Error checking for proxied power:", error);
       }
     }
     
