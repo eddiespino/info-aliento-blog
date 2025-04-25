@@ -1,5 +1,6 @@
 import { useAlientoWitness } from '@/hooks/useWitnesses';
 import { useKeychain } from '@/context/KeychainContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState } from 'react';
@@ -11,6 +12,7 @@ import alientoLogo from '@/assets/aliento-logo.png';
 export default function FeaturedWitness() {
   const { witness, isLoading } = useAlientoWitness();
   const { isLoggedIn } = useKeychain();
+  const { t } = useLanguage();
   const [voteModalOpen, setVoteModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
 
@@ -27,17 +29,16 @@ export default function FeaturedWitness() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
       <div>
         <Badge variant="secondary" className="mb-4">
-          Featured Witness
+          {t('home.featured')}
         </Badge>
         <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 sm:mb-6">Aliento Witness</h2>
         <p className="text-base sm:text-lg text-muted-foreground mb-4 sm:mb-6">
-          The Aliento project is dedicated to supporting the Hive blockchain ecosystem through reliable witness operations, 
-          community development, and innovative tools that enhance the blockchain experience for all users.
+          {t('about.purposeDesc')}
         </p>
         
         <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <div className="flex flex-col">
-            <dt className="text-xs sm:text-sm font-medium text-muted-foreground">Witness Rank</dt>
+            <dt className="text-xs sm:text-sm font-medium text-muted-foreground">{t('profile.rank')}</dt>
             {isLoading ? (
               <Skeleton className="h-7 sm:h-8 w-16 mt-1" />
             ) : (
@@ -45,7 +46,7 @@ export default function FeaturedWitness() {
             )}
           </div>
           <div className="flex flex-col">
-            <dt className="text-xs sm:text-sm font-medium text-muted-foreground">Total Votes</dt>
+            <dt className="text-xs sm:text-sm font-medium text-muted-foreground">{t('profile.votes')}</dt>
             {isLoading ? (
               <Skeleton className="h-7 sm:h-8 w-24 mt-1" />
             ) : (
@@ -53,7 +54,7 @@ export default function FeaturedWitness() {
             )}
           </div>
           <div className="flex flex-col">
-            <dt className="text-xs sm:text-sm font-medium text-muted-foreground">Last Block</dt>
+            <dt className="text-xs sm:text-sm font-medium text-muted-foreground">{t('profile.lastBlock')}</dt>
             {isLoading ? (
               <Skeleton className="h-7 sm:h-8 w-28 mt-1" />
             ) : (
@@ -61,7 +62,7 @@ export default function FeaturedWitness() {
             )}
           </div>
           <div className="flex flex-col">
-            <dt className="text-xs sm:text-sm font-medium text-muted-foreground">Uptime</dt>
+            <dt className="text-xs sm:text-sm font-medium text-muted-foreground">{t('profile.uptime')}</dt>
             {isLoading ? (
               <Skeleton className="h-7 sm:h-8 w-16 mt-1" />
             ) : (
