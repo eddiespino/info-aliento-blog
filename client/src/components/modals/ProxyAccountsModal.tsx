@@ -5,6 +5,7 @@ import { useProxyAccounts } from '@/hooks/useWitnesses';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProxyAccount } from '@/types/hive';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface ProxyAccountsModalProps {
   open: boolean;
@@ -14,14 +15,15 @@ interface ProxyAccountsModalProps {
 
 export default function ProxyAccountsModal({ open, onOpenChange, username }: ProxyAccountsModalProps) {
   const { proxyAccounts, isLoading } = useProxyAccounts(username);
+  const { t } = useLanguage();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Proxy Accounts for @{username}</DialogTitle>
+          <DialogTitle>{t('modal.proxy.title')} @{username}</DialogTitle>
           <DialogDescription>
-            These accounts have delegated their voting power to @{username}
+            {t('modal.proxy.desc')} @{username}
           </DialogDescription>
         </DialogHeader>
 
@@ -46,7 +48,7 @@ export default function ProxyAccountsModal({ open, onOpenChange, username }: Pro
             </div>
           ) : (
             <p className="text-center text-muted-foreground py-8">
-              No accounts are currently proxying their voting power to @{username}
+              {t('modal.proxy.noAccounts')} @{username} {t('modal.proxy.asProxy')}
             </p>
           )}
         </div>
@@ -56,6 +58,7 @@ export default function ProxyAccountsModal({ open, onOpenChange, username }: Pro
 }
 
 function ProxyAccountCard({ account }: { account: ProxyAccount }) {
+  const { t } = useLanguage();
   return (
     <Card>
       <CardContent className="p-4">

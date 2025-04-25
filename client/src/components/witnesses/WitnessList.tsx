@@ -11,6 +11,7 @@ import { useIsMobile as useMobile } from '@/hooks/use-mobile';
 import { Skeleton } from '@/components/ui/skeleton';
 import VoteModal from '../modals/VoteModal';
 import { useKeychain } from '@/context/KeychainContext';
+import { useLanguage } from '@/context/LanguageContext';
 import LoginModal from '../modals/LoginModal';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'wouter';
@@ -27,6 +28,7 @@ export default function WitnessList() {
   const [voteModalOpen, setVoteModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const { isLoggedIn } = useKeychain();
+  const { t } = useLanguage();
   
   // References to observe for intersection - separate refs for different element types
   const liRef = useRef<HTMLLIElement>(null);
@@ -81,7 +83,7 @@ export default function WitnessList() {
         <div className="relative w-full sm:w-64">
           <Input
             type="text"
-            placeholder="Search witnesses..."
+            placeholder={t('witnesses.search')}
             value={searchTerm}
             onChange={handleSearchChange}
             className="w-full pl-4 pr-10"
@@ -92,16 +94,16 @@ export default function WitnessList() {
         </div>
         
         <div className="flex items-center gap-4">
-          <span className="text-sm text-muted-foreground">Sort by:</span>
+          <span className="text-sm text-muted-foreground">{t('sort.by')}:</span>
           <Select value={sortBy} onValueChange={handleSortChange}>
             <SelectTrigger className="w-36">
-              <SelectValue placeholder="Sort by..." />
+              <SelectValue placeholder={t('sort.placeholder')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="rank">Rank</SelectItem>
-              <SelectItem value="votes">Total Votes</SelectItem>
-              <SelectItem value="name">Name</SelectItem>
-              <SelectItem value="lastBlock">Last Block</SelectItem>
+              <SelectItem value="rank">{t('witnesses.rank')}</SelectItem>
+              <SelectItem value="votes">{t('witnesses.votes')}</SelectItem>
+              <SelectItem value="name">{t('witnesses.name')}</SelectItem>
+              <SelectItem value="lastBlock">{t('witnesses.lastBlock')}</SelectItem>
             </SelectContent>
           </Select>
         </div>

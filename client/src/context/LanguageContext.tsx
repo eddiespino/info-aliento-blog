@@ -95,6 +95,10 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'witnesses.of': 'of',
       'witnesses.website': 'Website',
       
+      // Sort
+      'sort.by': 'Sort by',
+      'sort.placeholder': 'Sort by...',
+      
       // Witness profile page
       'profile.notFound': 'Witness Not Found',
       'profile.wasNotFound': 'The witness',
@@ -234,6 +238,10 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'witnesses.showing': 'Mostrando',
       'witnesses.of': 'de',
       'witnesses.website': 'Sitio Web',
+      
+      // Sort
+      'sort.by': 'Ordenar por',
+      'sort.placeholder': 'Ordenar por...',
       
       // Witness profile page
       'profile.notFound': 'Testigo No Encontrado',
