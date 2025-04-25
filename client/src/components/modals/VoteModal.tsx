@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useKeychain } from '@/context/KeychainContext';
@@ -13,10 +13,30 @@ interface VoteModalProps {
 
 export default function VoteModal({ open, onClose, witness, unvote = false }: VoteModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { voteWitness } = useKeychain();
+  const { voteWitness, keychain, isKeychainInstalled, user, isLoggedIn } = useKeychain();
   const { t } = useLanguage();
 
   const [voteError, setVoteError] = useState<string | null>(null);
+  
+  // Check if Keychain is ready for voting
+  useEffect(() => {
+    if (open) {
+      console.log('VoteModal opened, checking Keychain status:', {
+        isKeychainInstalled,
+        keychain: !!keychain,
+        isLoggedIn,
+        user: !!user
+      });
+      
+      if (!isKeychainInstalled) {
+        setVoteError('Hive Keychain extension is not installed');
+      } else if (!keychain) {
+        setVoteError('Hive Keychain extension is not initialized properly');
+      } else {
+        setVoteError(null);
+      }
+    }
+  }, [open, isKeychainInstalled, keychain, isLoggedIn, user]);
 
   // Handle both vote and unvote operations
   const handleVoteAction = async () => {

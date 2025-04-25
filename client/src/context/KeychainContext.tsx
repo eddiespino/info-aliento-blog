@@ -46,14 +46,20 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
   // Check if Keychain is installed
   useEffect(() => {
     const checkKeychain = () => {
-      // Check if window.hive_keychain exists
-      if (typeof window !== 'undefined' && 'hive_keychain' in window) {
-        console.log('Hive Keychain extension detected');
-        setKeychain((window as any).hive_keychain);
+      // Check if window.hive_keychain exists and is a valid object
+      if (
+        typeof window !== 'undefined' && 
+        'hive_keychain' in window && 
+        window.hive_keychain && 
+        typeof window.hive_keychain === 'object' &&
+        typeof window.hive_keychain.requestWitnessVote === 'function'
+      ) {
+        console.log('Hive Keychain extension detected and validated');
+        setKeychain(window.hive_keychain);
         setIsKeychainInstalled(true);
         return true;
       } else {
-        console.log('Hive Keychain extension not detected');
+        console.log('Hive Keychain extension not properly detected');
         return false;
       }
     };
@@ -258,32 +264,46 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   // Vote witness implementation using direct Keychain API
   const voteWitness = async (witness: string, approve: boolean): Promise<VoteWitnessResponse> => {
-    if (useDevelopmentMode) {
-      const response = await mockVoteWitness(witness, approve);
-      
-      // In development mode, update user data after voting
-      if (response.success && user) {
-        try {
-          console.log('Development mode: Updating user data after witness vote');
-          const userData = await getUserData(user.username);
-          setUser(userData);
-        } catch (dataError) {
-          console.error('Development mode: Error updating user data after vote:', dataError);
+    console.log('Vote witness called with parameters:', { witness, approve });
+    console.log('Current state:', { 
+      useDevelopmentMode, 
+      isKeychainInstalled, 
+      keychain: !!keychain, 
+      isLoggedIn, 
+      user: !!user 
+    });
+    
+    // Check if real Keychain can be used
+    if (!isKeychainInstalled || !keychain || !isLoggedIn || !user) {
+      if (useDevelopmentMode) {
+        console.log('Using development mode for voting');
+        const response = await mockVoteWitness(witness, approve);
+        
+        // In development mode, update user data after voting
+        if (response.success && user) {
+          try {
+            console.log('Development mode: Updating user data after witness vote');
+            const userData = await getUserData(user.username);
+            setUser(userData);
+          } catch (dataError) {
+            console.error('Development mode: Error updating user data after vote:', dataError);
+          }
         }
+        
+        return response;
+      } else {
+        return { success: false, error: 'Not logged in or Keychain not available' };
       }
-      
-      return response;
     }
     
-    if (!isKeychainInstalled || !keychain || !isLoggedIn || !user) {
-      return { success: false, error: 'Not logged in or Keychain not available' };
-    }
-
+    // At this point, we know we can use the real Keychain
+    console.log('Using real Keychain for voting');
+    
     try {
       console.log('Voting for witness:', witness, approve);
       
       const response = await new Promise<VoteWitnessResponse>((resolve) => {
-        keychain.requestWitnessVote(
+        keychain!.requestWitnessVote(
           user.username,
           witness,
           approve,
