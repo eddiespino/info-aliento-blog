@@ -43,6 +43,22 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
   const isDevelopmentMode = import.meta.env.DEV || import.meta.env.MODE === 'development';
   const [useDevelopmentMode, setUseDevelopmentMode] = useState(isDevelopmentMode);
 
+  // Load saved user data from localStorage if it exists
+  useEffect(() => {
+    const savedUser = localStorage.getItem('hive_user');
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        console.log('Found saved user data in localStorage:', userData.username);
+        setUser(userData);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error('Error parsing saved user data:', error);
+        localStorage.removeItem('hive_user');
+      }
+    }
+  }, []);
+
   // Check if Keychain is installed
   useEffect(() => {
     const checkKeychain = () => {
@@ -143,9 +159,16 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
           console.log('Development mode: Fetching user data for:', cleanedUsername);
           const userData = await getUserData(cleanedUsername);
           setUser(userData);
+          
+          // Save user data to localStorage for persistence in development mode
+          localStorage.setItem('hive_user', JSON.stringify(userData));
         } catch (dataError) {
           console.error('Development mode: Error fetching user data:', dataError);
-          setUser({ username: cleanedUsername });
+          const userData = { username: cleanedUsername };
+          setUser(userData);
+          
+          // Save minimal user data to localStorage
+          localStorage.setItem('hive_user', JSON.stringify(userData));
         }
         setIsLoggedIn(true);
       }
@@ -237,6 +260,9 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
           const userData = await getUserData(cleanedUsername);
           setUser(userData);
           setIsLoggedIn(true);
+          
+          // Save user data to localStorage for persistence across page reloads
+          localStorage.setItem('hive_user', JSON.stringify(userData));
         } catch (dataError) {
           console.error('Error fetching user data:', dataError);
           // Set minimal user data if fetching complete data fails
@@ -258,8 +284,13 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
       mockLogout();
     }
     
+    // Clear user data from state
     setUser(null);
     setIsLoggedIn(false);
+    
+    // Remove saved user data from localStorage
+    localStorage.removeItem('hive_user');
+    console.log('User logged out, data cleared from localStorage');
   };
 
   // Vote witness implementation using direct Keychain API
@@ -285,6 +316,9 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
             console.log('Development mode: Updating user data after witness vote');
             const userData = await getUserData(user.username);
             setUser(userData);
+            
+            // Update localStorage with the latest user data
+            localStorage.setItem('hive_user', JSON.stringify(userData));
           } catch (dataError) {
             console.error('Development mode: Error updating user data after vote:', dataError);
           }
@@ -327,6 +361,9 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
           console.log('Updating user data after witness vote');
           const userData = await getUserData(user.username);
           setUser(userData);
+          
+          // Update localStorage with the latest user data after voting
+          localStorage.setItem('hive_user', JSON.stringify(userData));
         } catch (dataError) {
           console.error('Error updating user data after vote:', dataError);
         }
