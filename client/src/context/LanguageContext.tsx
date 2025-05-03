@@ -194,6 +194,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'about.feature4': 'Vote for witnesses securely using Hive Keychain',
       'about.tech': 'Technology',
       'about.techDesc': 'Built with React, Vite, and integrated with the Hive blockchain through direct API calls and Hive Keychain authentication.',
+      'about.mission': 'Empowering Hive users with reliable blockchain infrastructure and governance while promoting decentralization through community engagement.',
 
       // NotFound page
       'notFound.title': '404 Page Not Found',
@@ -357,6 +358,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'about.feature4': 'Votar por testigos de forma segura usando Hive Keychain',
       'about.tech': 'Tecnología',
       'about.techDesc': 'Construido con React, Vite e integrado con la blockchain Hive a través de llamadas API directas y autenticación Hive Keychain.',
+      'about.mission': 'Empoderar a los usuarios de Hive con infraestructura blockchain confiable y gobernanza mientras se promueve la descentralización a través de la participación comunitaria.',
       
       // NotFound page
       'notFound.title': '404 Página No Encontrada',
