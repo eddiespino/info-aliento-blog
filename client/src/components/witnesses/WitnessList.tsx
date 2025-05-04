@@ -172,27 +172,27 @@ export default function WitnessList() {
               {witnesses.map((witness: any, index: number) => (
                 <li 
                   key={`${witness.name}-${index}`} 
-                  className={`px-4 py-4 
+                  className={`px-4 py-4 overflow-hidden
                     ${witness.name === 'aliento' ? 'bg-primary/10' : ''} 
                     ${!witness.isActive ? 'bg-muted opacity-75' : ''} 
                     ${witness.name === currentBlockProducer ? 'animate-pulse bg-green-400/20 dark:bg-green-600/20' : ''}
                   `}
                 >
-                  <div className="flex justify-between items-start">
+                  <div className="flex flex-wrap justify-between items-start gap-2">
                     <Link href={`/witness/${witness.name}`} className="flex items-center hover:opacity-90 transition-opacity">
-                      <div className="mr-4 flex-shrink-0">
-                        <Avatar className="h-12 w-12">
+                      <div className="mr-3 flex-shrink-0">
+                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
                           <AvatarImage src={witness.profileImage} alt={witness.name} />
                           <AvatarFallback>{witness.name.substring(0, 2).toUpperCase()}</AvatarFallback>
                         </Avatar>
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-base font-medium text-foreground">@{witness.name}</h3>
+                      <div className="min-w-0 max-w-[60%]">
+                        <div className="flex items-center gap-1">
+                          <h3 className="text-sm sm:text-base font-medium text-foreground truncate">@{witness.name}</h3>
                         </div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <p className="text-sm text-muted-foreground">{t('witnesses.rank')}: #{witness.rank}</p>
-                          <p className="text-xs text-muted-foreground">{witness.version}</p>
+                        <div className="flex flex-wrap items-center gap-1 mt-1">
+                          <p className="text-xs sm:text-sm text-muted-foreground">#{witness.rank}</p>
+                          <p className="text-xs text-muted-foreground hidden sm:inline">{witness.version}</p>
                           {witness.name === currentBlockProducer && (
                             <TooltipProvider>
                               <Tooltip>
@@ -225,35 +225,37 @@ export default function WitnessList() {
                       </div>
                     </Link>
                     {/* Vote button for mobile view */}
-                    {hasVotedForWitness(witness.name) ? (
-                      // If user has already voted for this witness, show unvote button
-                      <Button 
-                        size="sm"
-                        variant="outline"
-                        className="ml-2 text-muted-foreground"
-                        onClick={() => handleVoteClick(witness.name, true)}
-                      >
-                        {t('witnesses.unvote')}
-                      </Button>
-                    ) : (
-                      // If user hasn't voted for this witness, show vote button
-                      <Button 
-                        size="sm"
-                        className="ml-2"
-                        onClick={() => handleVoteClick(witness.name)}
-                      >
-                        {t('witnesses.vote')}
-                      </Button>
-                    )}
-                  </div>
-                  <div className="mt-2 grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <dt className="text-muted-foreground">{t('witnesses.votes')}</dt>
-                      <dd className="font-medium text-foreground">{witness.votesHivePower}</dd>
+                    <div className="flex-shrink-0">
+                      {hasVotedForWitness(witness.name) ? (
+                        // If user has already voted for this witness, show unvote button
+                        <Button 
+                          size="sm"
+                          variant="outline"
+                          className="text-muted-foreground text-xs"
+                          onClick={() => handleVoteClick(witness.name, true)}
+                        >
+                          {t('witnesses.unvote')}
+                        </Button>
+                      ) : (
+                        // If user hasn't voted for this witness, show vote button
+                        <Button 
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => handleVoteClick(witness.name)}
+                        >
+                          {t('witnesses.vote')}
+                        </Button>
+                      )}
                     </div>
-                    <div>
-                      <dt className="text-muted-foreground">{t('witnesses.lastBlock')}</dt>
-                      <dd className="font-medium text-foreground">{witness.lastBlock}</dd>
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:text-sm">
+                    <div className="overflow-hidden">
+                      <dt className="text-muted-foreground truncate">{t('witnesses.votes')}</dt>
+                      <dd className="font-medium text-foreground truncate">{witness.votesHivePower}</dd>
+                    </div>
+                    <div className="overflow-hidden">
+                      <dt className="text-muted-foreground truncate">{t('witnesses.lastBlock')}</dt>
+                      <dd className="font-medium text-foreground truncate">{witness.lastBlock}</dd>
                     </div>
                   </div>
                 </li>
