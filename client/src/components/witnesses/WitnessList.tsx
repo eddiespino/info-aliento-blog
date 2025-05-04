@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { useWitnesses } from '@/hooks/useWitnesses';
-import WitnessCard from './WitnessCard';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -43,7 +42,8 @@ export default function WitnessList() {
     currentBlockProducer, 
     hasMoreWitnesses, 
     loadMoreWitnesses, 
-    isFetching 
+    isFetching,
+    totalWitnessesLoaded
   } = useWitnesses(searchTerm, sortBy, hideInactive);
   
   // Check if the user has voted for a specific witness
@@ -55,40 +55,16 @@ export default function WitnessList() {
     return user.witnessVotes.includes(witnessName);
   };
   
-  // References to observe for intersection - separate refs for different element types
-  const liRef = useRef<HTMLLIElement>(null);
-  const trRef = useRef<HTMLTableRowElement>(null);
-
-  // Implement intersection observer for infinite scrolling
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          loadMore();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    // Observe both possible ref targets
-    const liTarget = liRef.current;
-    const trTarget = trRef.current;
-    
-    if (liTarget) observer.observe(liTarget);
-    if (trTarget) observer.observe(trTarget);
-
-    return () => {
-      if (liTarget) observer.unobserve(liTarget);
-      if (trTarget) observer.unobserve(trTarget);
-    };
-  }, [loadMore, hasMore, liRef, trRef]);
-
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
   const handleSortChange = (value: string) => {
     setSortBy(value as SortOption);
+  };
+
+  const handleHideInactiveChange = (checked: boolean) => {
+    setHideInactive(checked);
   };
 
   // Handle vote or unvote action
@@ -180,7 +156,7 @@ export default function WitnessList() {
             </div>
           ) : (
             <ul className="divide-y divide-border bg-card shadow rounded-lg border border-border">
-              {visibleItems.map((witness: any) => (
+              {witnesses.map((witness: any) => (
                 <li 
                   key={witness.id} 
                   className={`px-4 py-4 
@@ -266,11 +242,6 @@ export default function WitnessList() {
                   </div>
                 </li>
               ))}
-              {hasMore && (
-                <li ref={liRef} className="p-4 flex justify-center">
-                  <Skeleton className="h-12 w-12 rounded-full" />
-                </li>
-              )}
             </ul>
           )}
         </div>
@@ -313,7 +284,7 @@ export default function WitnessList() {
                   ))
                 ) : (
                   <>
-                    {visibleItems.map((witness: any) => (
+                    {witnesses.map((witness: any) => (
                       <TableRow 
                         key={witness.id} 
                         className={`
@@ -363,21 +334,14 @@ export default function WitnessList() {
                                   </TooltipProvider>
                                 )}
                               </div>
-                              <div className="text-sm text-muted-foreground">{t('witnesses.version')}: {witness.version}</div>
+                              <p className="text-xs text-muted-foreground mt-1">{witness.version}</p>
                             </div>
                           </Link>
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {witness.votesHivePower}
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {witness.lastBlock}
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {witness.priceFeed}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {/* Vote button for desktop view */}
+                        <TableCell className="text-sm font-medium">{witness.votesHivePower}</TableCell>
+                        <TableCell className="text-sm">{witness.lastBlock}</TableCell>
+                        <TableCell className="text-sm">{witness.priceFeed}</TableCell>
+                        <TableCell>
                           {hasVotedForWitness(witness.name) ? (
                             // If user has already voted for this witness, show unvote button
                             <Button 
@@ -400,13 +364,6 @@ export default function WitnessList() {
                         </TableCell>
                       </TableRow>
                     ))}
-                    {hasMore && (
-                      <TableRow ref={trRef}>
-                        <TableCell colSpan={6} className="text-center p-4">
-                          <Skeleton className="h-10 w-10 rounded-full mx-auto" />
-                        </TableCell>
-                      </TableRow>
-                    )}
                   </>
                 )}
               </TableBody>
@@ -415,51 +372,68 @@ export default function WitnessList() {
         </div>
       )}
 
-      {/* Loading Progress */}
-      {!isLoading && hasMore && (
-        <div className="mt-6">
-          <div className="border-t border-border bg-card px-4 py-3 sm:px-6 rounded-md shadow-sm">
-            {/* Display loading progress */}
-            <div className="flex flex-wrap items-center justify-between">
-              <p className="text-sm text-muted-foreground mb-3 sm:mb-0">
-                {t('witnesses.showing')} <span className="font-medium text-foreground">{visibleItems.length}</span> {t('witnesses.of')}{' '}
-                <span className="font-medium text-foreground">{witnesses.length}</span> {t('nav.witnesses').toLowerCase()}
-              </p>
-              
-              <div className="w-full sm:w-1/2 flex items-center gap-3">
-                <Progress value={percent} className="h-2" />
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{percent}%</span>
-              </div>
-            </div>
-            
-            {/* Load More Button */}
-            <div className="mt-4 flex justify-center">
-              <Button 
-                onClick={loadMore}
-                variant="outline"
-                className="gap-2"
+      {/* Load More Button and Hide Inactive Toggle */}
+      {!isLoading && (
+        <div className="mt-8 border-t border-border pt-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            {/* Hide Inactive Toggle */}
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="hide-inactive"
+                checked={hideInactive}
+                onCheckedChange={handleHideInactiveChange}
+              />
+              <Label 
+                htmlFor="hide-inactive" 
+                className="text-sm cursor-pointer"
               >
-                <span className="material-symbols-outlined text-sm">expand_more</span>
-                {t('witnesses.loadMore')}
-              </Button>
+                Hide Inactive Witnesses
+              </Label>
             </div>
+
+            {/* Load More Button */}
+            <div>
+              {hasMoreWitnesses && (
+                <Button 
+                  onClick={loadMoreWitnesses}
+                  disabled={isFetching}
+                  className="gap-2"
+                >
+                  {isFetching ? (
+                    <span className="animate-spin mr-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                      </svg>
+                    </span>
+                  ) : (
+                    <span className="material-symbols-outlined text-sm">expand_more</span>
+                  )}
+                  {isFetching ? 'Loading...' : 'Load More Witnesses'}
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Show witness count */}
+          <div className="mt-4 text-sm text-muted-foreground text-center">
+            Showing {witnesses.length} witnesses {hideInactive ? '(active only)' : ''}
           </div>
         </div>
       )}
 
       {/* Modals */}
       {selectedWitness && (
-        <VoteModal 
-          open={voteModalOpen} 
-          onClose={() => setVoteModalOpen(false)} 
+        <VoteModal
+          open={voteModalOpen}
+          onClose={() => setVoteModalOpen(false)}
           witness={selectedWitness}
           unvote={isUnvoteAction}
         />
       )}
-      
-      <LoginModal 
-        open={loginModalOpen} 
-        onClose={() => setLoginModalOpen(false)} 
+
+      <LoginModal
+        open={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
       />
     </div>
   );
