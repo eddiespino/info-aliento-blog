@@ -299,14 +299,45 @@ export const getNetworkStats = async (): Promise<NetworkStats> => {
 };
 
 // Get witness information
-export const getWitnesses = async (): Promise<Witness[]> => {
+export const getWitnesses = async (offset: number = 0, limit: number = 100): Promise<Witness[]> => {
   try {
     const apiNode = await getBestHiveNode();
-    console.log('Fetching witnesses from:', apiNode);
+    console.log(`Fetching witnesses from: ${apiNode} (offset: ${offset}, limit: ${limit})`);
     
-    // Request witness data - fetch only 100 witnesses
+    // Request witness data with pagination
     let result;
     try {
+      // For pagination, we need to get the last witness name from the previous batch
+      // For the first batch (offset=0), we use empty string
+      let startFrom = "";
+      
+      // If we're requesting a subsequent batch, first fetch just the witness at position offset-1
+      if (offset > 0) {
+        // First get the previous witness to use as a starting point
+        const prevResult = await fetch(apiNode, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "jsonrpc": "2.0",
+            "method": "condenser_api.get_witnesses_by_vote",
+            "params": ["", offset],
+            "id": 1
+          })
+        });
+        
+        if (prevResult.ok) {
+          const prevData = await prevResult.json();
+          const witnesses = prevData.result;
+          if (witnesses && witnesses.length > 0) {
+            // Get the last witness from previous batch
+            startFrom = witnesses[witnesses.length - 1].owner;
+          }
+        }
+      }
+      
+      // Now fetch the actual witnesses we want to display
       result = await fetch(apiNode, {
         method: 'POST',
         headers: {
@@ -315,7 +346,7 @@ export const getWitnesses = async (): Promise<Witness[]> => {
         body: JSON.stringify({
           "jsonrpc": "2.0",
           "method": "condenser_api.get_witnesses_by_vote",
-          "params": ["", 100], // Only fetch 100 witnesses as requested
+          "params": [startFrom, limit], // Fetch witnesses with pagination
           "id": 1
         })
       });
@@ -336,7 +367,7 @@ export const getWitnesses = async (): Promise<Witness[]> => {
           body: JSON.stringify({
             "jsonrpc": "2.0",
             "method": "condenser_api.get_witnesses_by_vote",
-            "params": ["", 100], // Only fetch 100 witnesses as requested
+            "params": ["", limit], // Fallback to first batch
             "id": 1
           })
         });

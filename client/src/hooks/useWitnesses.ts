@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { getWitnesses, getWitnessByName, getWitnessVoters, getProxyAccounts, getBestHiveNode } from '@/api/hive';
 import { Witness, WitnessVoter, ProxyAccount } from '@/types/hive';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 
 // State to track the current block producer
 export const useCurrentBlockProducer = () => {
@@ -60,33 +60,93 @@ export const useCurrentBlockProducer = () => {
   return currentBlockProducer;
 };
 
-export function useWitnesses(searchTerm: string = '', sortBy: 'rank' | 'votes' | 'name' | 'lastBlock' = 'rank') {
-  const { data: witnesses = [], isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['witnesses'],
-    queryFn: getWitnesses,
+// Updated witnesses hook with pagination and inactive filter
+export function useWitnesses(
+  searchTerm: string = '', 
+  sortBy: 'rank' | 'votes' | 'name' | 'lastBlock' = 'rank',
+  hideInactive: boolean = false
+) {
+  // Track current page/offset for pagination
+  const [currentPage, setCurrentPage] = useState(0);
+  // Track if we have more witnesses to load
+  const [hasMoreWitnesses, setHasMoreWitnesses] = useState(true);
+  // Track the total number of witnesses loaded so far
+  const [loadedCount, setLoadedCount] = useState(0);
+  // Track all witnesses loaded so far (accumulate)
+  const [allWitnesses, setAllWitnesses] = useState<Witness[]>([]);
+  
+  // This function will be used by useQuery to fetch witness data
+  const fetchWitnesses = async () => {
+    // Fetch witnesses with the current offset
+    const result = await getWitnesses(currentPage * 100, 100);
+    
+    // If we received fewer than 100 witnesses, we've reached the end
+    if (result.length < 100) {
+      setHasMoreWitnesses(false);
+    } else {
+      setHasMoreWitnesses(true);
+    }
+    
+    // Add the new witnesses to our accumulated list
+    if (currentPage === 0) {
+      // Reset on first page
+      setAllWitnesses(result);
+    } else {
+      // Append for subsequent pages
+      setAllWitnesses(prev => [...prev, ...result]);
+    }
+    
+    // Update the total count
+    setLoadedCount((currentPage + 1) * 100);
+    
+    return result;
+  };
+  
+  const { 
+    data: currentWitnesses = [], 
+    isLoading, 
+    isError, 
+    error, 
+    refetch,
+    isFetching
+  } = useQuery({
+    queryKey: ['witnesses', currentPage],
+    queryFn: fetchWitnesses,
     staleTime: 1000 * 60, // 1 minute
   });
   
   // Track current block producer
   const currentBlockProducer = useCurrentBlockProducer();
   
-  // Set up automatic refreshing of witness data every 3 seconds
+  // Set up automatic refreshing of witness data every 3 seconds - only for the first page
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      refetch();
-    }, 3000); // 3 second refresh for last block numbers
-    
-    return () => clearInterval(intervalId);
-  }, [refetch]);
+    if (currentPage === 0) {
+      const intervalId = setInterval(() => {
+        refetch();
+      }, 3000); // 3 second refresh for last block numbers
+      
+      return () => clearInterval(intervalId);
+    }
+  }, [refetch, currentPage]);
 
-  // Filter witnesses by search term
+  // Filter all witnesses by search term and activity status
   const filteredWitnesses = useMemo(() => {
-    if (!searchTerm) return witnesses;
+    let filtered = allWitnesses;
     
-    return witnesses.filter((witness) => 
-      witness.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [witnesses, searchTerm]);
+    // Apply search filter if search term exists
+    if (searchTerm) {
+      filtered = filtered.filter((witness) => 
+        witness.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Apply inactive filter if enabled
+    if (hideInactive) {
+      filtered = filtered.filter((witness) => witness.isActive);
+    }
+    
+    return filtered;
+  }, [allWitnesses, searchTerm, hideInactive]);
 
   // Sort witnesses
   const sortedWitnesses = useMemo(() => {
@@ -105,12 +165,23 @@ export function useWitnesses(searchTerm: string = '', sortBy: 'rank' | 'votes' |
     });
   }, [filteredWitnesses, sortBy]);
 
+  // Load the next batch of witnesses
+  const loadMoreWitnesses = useCallback(() => {
+    if (hasMoreWitnesses && !isFetching) {
+      setCurrentPage(prevPage => prevPage + 1);
+    }
+  }, [hasMoreWitnesses, isFetching]);
+
   return {
     witnesses: sortedWitnesses,
     isLoading,
     isError,
     error,
-    currentBlockProducer
+    currentBlockProducer,
+    hasMoreWitnesses,
+    loadMoreWitnesses,
+    isFetching,
+    totalWitnessesLoaded: loadedCount
   };
 }
 
