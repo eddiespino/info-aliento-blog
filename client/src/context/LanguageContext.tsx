@@ -63,7 +63,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       
       // Home page
       'home.title': 'Welcome to Hive Witness Explorer',
-      'home.description': 'Discover Hive blockchain witnesses, their profiles, and voting power.',
+      'home.description': 'Discover Hive blockchain witnesses, their profiles, and the votes they recieve from the community.',
       'home.featured': 'Featured Witness',
       'home.viewAll': 'View All Witnesses',
       
@@ -231,7 +231,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       
       // Home page
       'home.title': 'Bienvenido al Explorador de Testigos de Hive',
-      'home.description': 'Descubre los testigos de la blockchain Hive, sus perfiles y poder de voto.',
+      'home.description': 'Descubre los testigos de la blockchain Hive, sus perfiles y los votos que reciben de la comunidad.',
       'home.featured': 'Testigo Destacado',
       'home.viewAll': 'Ver Todos los Testigos',
       
