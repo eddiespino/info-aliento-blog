@@ -99,8 +99,9 @@ export default function WitnessList() {
   return (
     <div>
       {/* Search and Filter */}
-      <div className="mb-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="relative w-full sm:w-64">
+      <div className="mb-4 flex flex-col gap-4">
+        {/* Search Input */}
+        <div className="relative w-full">
           <Input
             type="text"
             placeholder={t('witnesses.search')}
@@ -113,8 +114,10 @@ export default function WitnessList() {
           </span>
         </div>
         
-        <div className="flex items-center gap-4">
-          <div className="flex items-center space-x-2 mr-4">
+        {/* Filter Controls - Stacked on mobile, row on larger screens */}
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+          {/* Hide Inactive Toggle */}
+          <div className="flex items-center space-x-2">
             <Switch
               id="hide-inactive"
               checked={hideInactive}
@@ -122,24 +125,27 @@ export default function WitnessList() {
             />
             <Label 
               htmlFor="hide-inactive" 
-              className="text-sm cursor-pointer whitespace-nowrap"
+              className="text-sm cursor-pointer"
             >
               {t('witnesses.hideInactive')}
             </Label>
           </div>
           
-          <span className="text-sm text-muted-foreground">{t('sort.by')}:</span>
-          <Select value={sortBy} onValueChange={handleSortChange}>
-            <SelectTrigger className="w-36">
-              <SelectValue placeholder={t('sort.placeholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="rank">{t('witnesses.rank')}</SelectItem>
-              <SelectItem value="votes">{t('witnesses.votes')}</SelectItem>
-              <SelectItem value="name">{t('witnesses.name')}</SelectItem>
-              <SelectItem value="lastBlock">{t('witnesses.lastBlock')}</SelectItem>
-            </SelectContent>
-          </Select>
+          {/* Sort Dropdown */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">{t('sort.by')}:</span>
+            <Select value={sortBy} onValueChange={handleSortChange}>
+              <SelectTrigger className="w-full sm:w-36">
+                <SelectValue placeholder={t('sort.placeholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="rank">{t('witnesses.rank')}</SelectItem>
+                <SelectItem value="votes">{t('witnesses.votes')}</SelectItem>
+                <SelectItem value="name">{t('witnesses.name')}</SelectItem>
+                <SelectItem value="lastBlock">{t('witnesses.lastBlock')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
