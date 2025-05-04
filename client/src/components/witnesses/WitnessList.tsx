@@ -189,6 +189,10 @@ export default function WitnessList() {
                       <div>
                         <div className="flex items-center gap-2">
                           <h3 className="text-base font-medium text-foreground">@{witness.name}</h3>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <p className="text-sm text-muted-foreground">{t('witnesses.rank')}: #{witness.rank}</p>
+                          <p className="text-xs text-muted-foreground">{witness.version}</p>
                           {witness.name === currentBlockProducer && (
                             <TooltipProvider>
                               <Tooltip>
@@ -203,10 +207,6 @@ export default function WitnessList() {
                               </Tooltip>
                             </TooltipProvider>
                           )}
-                        </div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <p className="text-sm text-muted-foreground">{t('witnesses.rank')}: #{witness.rank}</p>
-                          <p className="text-xs text-muted-foreground">{witness.version}</p>
                           {!witness.isActive && (
                             <TooltipProvider>
                               <Tooltip>
@@ -321,6 +321,9 @@ export default function WitnessList() {
                             <div>
                               <div className="flex items-center gap-2">
                                 <div className="text-sm font-medium text-foreground">@{witness.name}</div>
+                              </div>
+                              <div className="flex items-center gap-2 mt-1">
+                                <p className="text-xs text-muted-foreground">{witness.version}</p>
                                 {witness.name === currentBlockProducer && (
                                   <TooltipProvider>
                                     <Tooltip>
@@ -335,9 +338,6 @@ export default function WitnessList() {
                                     </Tooltip>
                                   </TooltipProvider>
                                 )}
-                              </div>
-                              <div className="flex items-center gap-2 mt-1">
-                                <p className="text-xs text-muted-foreground">{witness.version}</p>
                                 {!witness.isActive && (
                                   <TooltipProvider>
                                     <Tooltip>
