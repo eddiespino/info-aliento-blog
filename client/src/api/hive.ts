@@ -435,7 +435,7 @@ export const getWitnesses = async (offset: number = 0, limit: number = 100): Pro
       return {
         id: witness.id,
         name: witness.owner,
-        rank: index + 1,
+        rank: offset + index + 1, // Calculate actual rank based on page offset
         url: witness.url,
         votes: witness.votes,
         votesHivePower: formattedHp,
