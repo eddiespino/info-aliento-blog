@@ -131,7 +131,7 @@ export function useWitnesses(
 
   // Filter all witnesses by search term and activity status
   const filteredWitnesses = useMemo(() => {
-    let filtered = allWitnesses;
+    let filtered = [...allWitnesses]; // Make a copy to avoid mutating the original data
     
     // Apply search filter if search term exists
     if (searchTerm) {
@@ -142,7 +142,7 @@ export function useWitnesses(
     
     // Apply inactive filter if enabled
     if (hideInactive) {
-      filtered = filtered.filter((witness) => witness.isActive);
+      filtered = filtered.filter((witness) => witness.isActive === true);
     }
     
     return filtered;

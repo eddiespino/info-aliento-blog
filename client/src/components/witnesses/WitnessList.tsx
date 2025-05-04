@@ -115,6 +115,20 @@ export default function WitnessList() {
         </div>
         
         <div className="flex items-center gap-4">
+          <div className="flex items-center space-x-2 mr-4">
+            <Switch
+              id="hide-inactive"
+              checked={hideInactive}
+              onCheckedChange={handleHideInactiveChange}
+            />
+            <Label 
+              htmlFor="hide-inactive" 
+              className="text-sm cursor-pointer whitespace-nowrap"
+            >
+              Hide Inactive Witnesses
+            </Label>
+          </div>
+          
           <span className="text-sm text-muted-foreground">{t('sort.by')}:</span>
           <Select value={sortBy} onValueChange={handleSortChange}>
             <SelectTrigger className="w-36">
@@ -156,9 +170,9 @@ export default function WitnessList() {
             </div>
           ) : (
             <ul className="divide-y divide-border bg-card shadow rounded-lg border border-border">
-              {witnesses.map((witness: any) => (
+              {witnesses.map((witness: any, index: number) => (
                 <li 
-                  key={witness.id} 
+                  key={`${witness.name}-${index}`} 
                   className={`px-4 py-4 
                     ${witness.name === 'aliento' ? 'bg-primary/10' : ''} 
                     ${!witness.isActive ? 'bg-muted opacity-75' : ''} 
@@ -284,9 +298,9 @@ export default function WitnessList() {
                   ))
                 ) : (
                   <>
-                    {witnesses.map((witness: any) => (
+                    {witnesses.map((witness: any, index: number) => (
                       <TableRow 
-                        key={witness.id} 
+                        key={`${witness.name}-${index}`} 
                         className={`
                           ${witness.name === 'aliento' ? 'bg-primary/10' : 'hover:bg-muted/50'}
                           ${!witness.isActive ? 'bg-muted/60 opacity-80' : ''}
@@ -372,46 +386,28 @@ export default function WitnessList() {
         </div>
       )}
 
-      {/* Load More Button and Hide Inactive Toggle */}
+      {/* Load More Button */}
       {!isLoading && (
         <div className="mt-8 border-t border-border pt-4">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            {/* Hide Inactive Toggle */}
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="hide-inactive"
-                checked={hideInactive}
-                onCheckedChange={handleHideInactiveChange}
-              />
-              <Label 
-                htmlFor="hide-inactive" 
-                className="text-sm cursor-pointer"
+          <div className="flex justify-center items-center">
+            {hasMoreWitnesses && (
+              <Button 
+                onClick={loadMoreWitnesses}
+                disabled={isFetching}
+                className="gap-2 mx-auto"
               >
-                Hide Inactive Witnesses
-              </Label>
-            </div>
-
-            {/* Load More Button */}
-            <div>
-              {hasMoreWitnesses && (
-                <Button 
-                  onClick={loadMoreWitnesses}
-                  disabled={isFetching}
-                  className="gap-2"
-                >
-                  {isFetching ? (
-                    <span className="animate-spin mr-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                      </svg>
-                    </span>
-                  ) : (
-                    <span className="material-symbols-outlined text-sm">expand_more</span>
-                  )}
-                  {isFetching ? 'Loading...' : 'Load More Witnesses'}
-                </Button>
-              )}
-            </div>
+                {isFetching ? (
+                  <span className="animate-spin mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    </svg>
+                  </span>
+                ) : (
+                  <span className="material-symbols-outlined text-sm">expand_more</span>
+                )}
+                {isFetching ? 'Loading...' : 'Load More Witnesses'}
+              </Button>
+            )}
           </div>
 
           {/* Show witness count */}
