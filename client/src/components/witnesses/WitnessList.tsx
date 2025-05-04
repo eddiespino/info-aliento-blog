@@ -274,7 +274,7 @@ export default function WitnessList() {
                   <TableHead>{t('witnesses.name')}</TableHead>
                   <TableHead>{t('witnesses.votes')}</TableHead>
                   <TableHead>{t('witnesses.lastBlock')}</TableHead>
-                  <TableHead>{t('witnesses.fee')}</TableHead>
+                  <TableHead>{t('witnesses.priceFeed')}</TableHead>
                   <TableHead>{t('witnesses.action')}</TableHead>
                 </TableRow>
               </TableHeader>
