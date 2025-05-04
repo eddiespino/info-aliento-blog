@@ -29,9 +29,9 @@ const LanguageContext = createContext<LanguageContextType>({
   t: (key: string) => key,
 });
 
-export const useLanguage = () => {
+export function useLanguage() {
   return useContext(LanguageContext);
-};
+}
 
 interface LanguageProviderProps {
   children: ReactNode;
@@ -86,7 +86,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'witnesses.votes': 'Votes',
       'witnesses.lastBlock': 'Last Block',
       'witnesses.missedBlocks': 'Missed',
-      'witnesses.fee': 'Fee',
+      'witnesses.fee': 'Price Feed',
       'witnesses.version': 'Version',
       'witnesses.loading': 'Loading witnesses...',
       'witnesses.viewProfile': 'View Profile',
@@ -117,7 +117,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'profile.votePower': 'Voting Power',
       'profile.lastBlock': 'Last Block',
       'profile.missedBlocks': 'Missed Blocks',
-      'profile.fee': 'Fee',
+      'profile.fee': 'Price Feed',
       'profile.created': 'Account Created',
       'profile.activeSince': 'Active since',
       'profile.since': 'Witness since',
@@ -251,7 +251,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'witnesses.votes': 'Votos',
       'witnesses.lastBlock': 'Último Bloque',
       'witnesses.missedBlocks': 'Perdidos',
-      'witnesses.fee': 'Tarifa',
+      'witnesses.fee': 'Precio de HIVE',
       'witnesses.version': 'Versión',
       'witnesses.loading': 'Cargando testigos...',
       'witnesses.viewProfile': 'Ver Perfil',
@@ -282,7 +282,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'profile.votePower': 'Poder de Voto',
       'profile.lastBlock': 'Último Bloque',
       'profile.missedBlocks': 'Bloques Perdidos',
-      'profile.fee': 'Tarifa',
+      'profile.fee': 'Precio de HIVE',
       'profile.created': 'Cuenta Creada',
       'profile.activeSince': 'Activo desde',
       'profile.since': 'Testigo desde',
