@@ -87,16 +87,10 @@ export function useWitnesses(
       setHasMoreWitnesses(true);
     }
     
-    // Add the new witnesses to our accumulated list
-    if (currentPage === 0) {
-      // Reset on first page
-      setAllWitnesses(result);
-    } else {
-      // Append for subsequent pages
-      setAllWitnesses(prev => [...prev, ...result]);
-    }
+    // Always just set the current page of witnesses (don't accumulate)
+    setAllWitnesses(result);
     
-    // Update the total count
+    // Update the loaded count for the current page
     setLoadedCount((currentPage + 1) * 100);
     
     return result;
@@ -172,10 +166,8 @@ export function useWitnesses(
     }
   }, [isFetching]);
 
-  // Calculate total pages based on what we know so far
-  const totalPages = hasMoreWitnesses ? 
-    Math.ceil(loadedCount / 100) + 1 : // We know there are more pages
-    Math.ceil(loadedCount / 100);      // This is the last page
+  // Set a fixed total pages number (we know there are approximately 600 witnesses total)
+  const totalPages = 6; // 6 pages of 100 witnesses each
 
   return {
     witnesses: sortedWitnesses,

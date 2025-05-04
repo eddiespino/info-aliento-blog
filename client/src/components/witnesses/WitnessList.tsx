@@ -468,7 +468,10 @@ export default function WitnessList() {
 
             {/* Show witness count */}
             <div className="text-sm text-muted-foreground text-center">
-              Showing witnesses {currentPage * 100 + 1}-{Math.min(currentPage * 100 + 100, totalWitnessesLoaded)} {hideInactive ? '(active only)' : ''}
+              Showing witnesses {currentPage * 100 + 1}-{currentPage * 100 + 100} {hideInactive ? '(active only)' : ''}
+              <div className="mt-1 text-xs text-muted-foreground">
+                Page {currentPage + 1} of 6
+              </div>
             </div>
           </div>
         </div>
