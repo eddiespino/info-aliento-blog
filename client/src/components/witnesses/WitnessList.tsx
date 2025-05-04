@@ -99,7 +99,7 @@ export default function WitnessList() {
   return (
     <div>
       {/* Search and Filter */}
-      <div className="mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="mb-4 flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="relative w-full sm:w-64">
           <Input
             type="text"
@@ -385,96 +385,181 @@ export default function WitnessList() {
         </div>
       )}
 
-      {/* Pagination */}
+      {/* Pagination Component that we'll reuse at top and bottom */}
       {!isLoading && (
-        <div className="mt-8 border-t border-border pt-4">
-          <div className="flex flex-col items-center justify-center">
-            {/* Page Buttons */}
-            <div className="flex items-center justify-center space-x-2 my-4">
-              {/* Previous Page Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(Math.max(0, currentPage - 1))}
-                disabled={currentPage === 0 || isFetching}
-                className="h-8 w-8 p-0"
-              >
-                <span className="sr-only">Previous Page</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M15 18l-6-6 6-6" />
-                </svg>
-              </Button>
-              
-              {/* Page Numbers */}
-              {Array.from({ length: totalPages }).map((_, index) => {
-                // If we have a lot of pages, show a limited range around the current page
-                const pageNum = index;
-                const showPage = 
-                  pageNum === 0 || // Always show first page
-                  pageNum === totalPages - 1 || // Always show last page
-                  (pageNum >= currentPage - 2 && pageNum <= currentPage + 2); // Show 2 pages before and after current
-                
-                if (!showPage && pageNum === currentPage - 3) {
-                  return <div key="ellipsis-prev" className="text-muted-foreground">...</div>;
-                }
-                
-                if (!showPage && pageNum === currentPage + 3) {
-                  return <div key="ellipsis-next" className="text-muted-foreground">...</div>;
-                }
-                
-                if (!showPage) return null;
-                
-                return (
-                  <Button
-                    key={pageNum}
-                    variant={pageNum === currentPage ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => goToPage(pageNum)}
-                    disabled={isFetching}
-                    className="h-8 w-8 p-0"
-                  >
-                    <span className="sr-only">Page {pageNum + 1}</span>
-                    {pageNum + 1}
-                  </Button>
-                );
-              })}
-              
-              {/* Next Page Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage === totalPages - 1 || isFetching}
-                className="h-8 w-8 p-0"
-              >
-                <span className="sr-only">Next Page</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 18l6-6-6-6" />
-                </svg>
-              </Button>
-            </div>
-
-            {/* Loading Indicator */}
-            {isFetching && (
-              <div className="flex items-center justify-center mb-2">
-                <span className="animate-spin mr-2">
+        <>
+          {/* Top Pagination */}
+          <div className="mb-6 py-3 border-b border-border">
+            <div className="flex flex-col items-center justify-center">
+              {/* Page Buttons */}
+              <div className="flex items-center justify-center space-x-2 mb-2">
+                {/* Previous Page Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => goToPage(Math.max(0, currentPage - 1))}
+                  disabled={currentPage === 0 || isFetching}
+                  className="h-8 w-8 p-0"
+                >
+                  <span className="sr-only">Previous Page</span>
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    <path d="M15 18l-6-6 6-6" />
                   </svg>
-                </span>
-                <span className="text-sm text-muted-foreground">Loading page {currentPage + 1}...</span>
+                </Button>
+                
+                {/* Page Numbers */}
+                {Array.from({ length: totalPages }).map((_, index) => {
+                  // If we have a lot of pages, show a limited range around the current page
+                  const pageNum = index;
+                  const showPage = 
+                    pageNum === 0 || // Always show first page
+                    pageNum === totalPages - 1 || // Always show last page
+                    (pageNum >= currentPage - 2 && pageNum <= currentPage + 2); // Show 2 pages before and after current
+                  
+                  if (!showPage && pageNum === currentPage - 3) {
+                    return <div key={`top-ellipsis-prev-${pageNum}`} className="text-muted-foreground">...</div>;
+                  }
+                  
+                  if (!showPage && pageNum === currentPage + 3) {
+                    return <div key={`top-ellipsis-next-${pageNum}`} className="text-muted-foreground">...</div>;
+                  }
+                  
+                  if (!showPage) return null;
+                  
+                  return (
+                    <Button
+                      key={`top-page-${pageNum}`}
+                      variant={pageNum === currentPage ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => goToPage(pageNum)}
+                      disabled={isFetching}
+                      className="h-8 w-8 p-0"
+                    >
+                      <span className="sr-only">Page {pageNum + 1}</span>
+                      {pageNum + 1}
+                    </Button>
+                  );
+                })}
+                
+                {/* Next Page Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage === totalPages - 1 || isFetching}
+                  className="h-8 w-8 p-0"
+                >
+                  <span className="sr-only">Next Page</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
+                </Button>
               </div>
-            )}
 
-            {/* Show witness count */}
-            <div className="text-sm text-muted-foreground text-center">
-              Showing witnesses {currentPage * 100 + 1}-{currentPage * 100 + 100} {hideInactive ? '(active only)' : ''}
-              <div className="mt-1 text-xs text-muted-foreground">
-                Page {currentPage + 1} of 6
+              {/* Top Loading Indicator */}
+              {isFetching && (
+                <div className="flex items-center justify-center mb-2">
+                  <span className="animate-spin mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    </svg>
+                  </span>
+                  <span className="text-sm text-muted-foreground">Loading page {currentPage + 1}...</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom Pagination */}
+          <div className="mt-8 border-t border-border pt-4">
+            <div className="flex flex-col items-center justify-center">
+              {/* Page Buttons */}
+              <div className="flex items-center justify-center space-x-2 my-4">
+                {/* Previous Page Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => goToPage(Math.max(0, currentPage - 1))}
+                  disabled={currentPage === 0 || isFetching}
+                  className="h-8 w-8 p-0"
+                >
+                  <span className="sr-only">Previous Page</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M15 18l-6-6 6-6" />
+                  </svg>
+                </Button>
+                
+                {/* Page Numbers */}
+                {Array.from({ length: totalPages }).map((_, index) => {
+                  // If we have a lot of pages, show a limited range around the current page
+                  const pageNum = index;
+                  const showPage = 
+                    pageNum === 0 || // Always show first page
+                    pageNum === totalPages - 1 || // Always show last page
+                    (pageNum >= currentPage - 2 && pageNum <= currentPage + 2); // Show 2 pages before and after current
+                  
+                  if (!showPage && pageNum === currentPage - 3) {
+                    return <div key={`bottom-ellipsis-prev-${pageNum}`} className="text-muted-foreground">...</div>;
+                  }
+                  
+                  if (!showPage && pageNum === currentPage + 3) {
+                    return <div key={`bottom-ellipsis-next-${pageNum}`} className="text-muted-foreground">...</div>;
+                  }
+                  
+                  if (!showPage) return null;
+                  
+                  return (
+                    <Button
+                      key={`bottom-page-${pageNum}`}
+                      variant={pageNum === currentPage ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => goToPage(pageNum)}
+                      disabled={isFetching}
+                      className="h-8 w-8 p-0"
+                    >
+                      <span className="sr-only">Page {pageNum + 1}</span>
+                      {pageNum + 1}
+                    </Button>
+                  );
+                })}
+                
+                {/* Next Page Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage === totalPages - 1 || isFetching}
+                  className="h-8 w-8 p-0"
+                >
+                  <span className="sr-only">Next Page</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
+                </Button>
+              </div>
+
+              {/* Bottom Loading Indicator */}
+              {isFetching && (
+                <div className="flex items-center justify-center mb-2">
+                  <span className="animate-spin mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    </svg>
+                  </span>
+                  <span className="text-sm text-muted-foreground">Loading page {currentPage + 1}...</span>
+                </div>
+              )}
+
+              {/* Show witness count */}
+              <div className="text-sm text-muted-foreground text-center">
+                Showing witnesses {currentPage * 100 + 1}-{currentPage * 100 + 100} {hideInactive ? '(active only)' : ''}
+                <div className="mt-1 text-xs text-muted-foreground">
+                  Page {currentPage + 1} of 6
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Modals */}

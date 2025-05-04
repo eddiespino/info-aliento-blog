@@ -106,7 +106,9 @@ export function useWitnesses(
   } = useQuery({
     queryKey: ['witnesses', currentPage],
     queryFn: fetchWitnesses,
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false,
+    placeholderData: (previousData) => previousData, // TanStack Query v5 way to keep previous data while loading
   });
   
   // Track current block producer
