@@ -189,20 +189,6 @@ export default function WitnessList() {
                       <div>
                         <div className="flex items-center gap-2">
                           <h3 className="text-base font-medium text-foreground">@{witness.name}</h3>
-                          {!witness.isActive && (
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Badge variant="outline" className="bg-destructive/10 text-destructive text-xs">
-                                    Inactive
-                                  </Badge>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p className="text-xs">No blocks signed in last 72 hours</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          )}
                           {witness.name === currentBlockProducer && (
                             <TooltipProvider>
                               <Tooltip>
@@ -218,7 +204,24 @@ export default function WitnessList() {
                             </TooltipProvider>
                           )}
                         </div>
-                        <p className="mt-1 text-sm text-muted-foreground">{t('witnesses.rank')}: #{witness.rank}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <p className="text-sm text-muted-foreground">{t('witnesses.rank')}: #{witness.rank}</p>
+                          <p className="text-xs text-muted-foreground">{witness.version}</p>
+                          {!witness.isActive && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Badge variant="outline" className="bg-destructive/10 text-destructive text-xs">
+                                    Inactive
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="text-xs">No blocks signed in last 72 hours</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                        </div>
                       </div>
                     </Link>
                     {/* Vote button for mobile view */}
@@ -318,20 +321,6 @@ export default function WitnessList() {
                             <div>
                               <div className="flex items-center gap-2">
                                 <div className="text-sm font-medium text-foreground">@{witness.name}</div>
-                                {!witness.isActive && (
-                                  <TooltipProvider>
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <Badge variant="outline" className="bg-destructive/10 text-destructive text-xs">
-                                          Inactive
-                                        </Badge>
-                                      </TooltipTrigger>
-                                      <TooltipContent>
-                                        <p className="text-xs">No blocks signed in last 72 hours</p>
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  </TooltipProvider>
-                                )}
                                 {witness.name === currentBlockProducer && (
                                   <TooltipProvider>
                                     <Tooltip>
@@ -347,7 +336,23 @@ export default function WitnessList() {
                                   </TooltipProvider>
                                 )}
                               </div>
-                              <p className="text-xs text-muted-foreground mt-1">{witness.version}</p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <p className="text-xs text-muted-foreground">{witness.version}</p>
+                                {!witness.isActive && (
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Badge variant="outline" className="bg-destructive/10 text-destructive text-xs">
+                                          Inactive
+                                        </Badge>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p className="text-xs">No blocks signed in last 72 hours</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                )}
+                              </div>
                             </div>
                           </Link>
                         </TableCell>
