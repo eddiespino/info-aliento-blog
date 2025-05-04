@@ -173,7 +173,11 @@ export default function WitnessList() {
               {visibleItems.map((witness: any) => (
                 <li 
                   key={witness.id} 
-                  className={`px-4 py-4 ${witness.name === 'aliento' ? 'bg-primary/10' : ''} ${!witness.isActive ? 'bg-muted opacity-75' : ''}`}
+                  className={`px-4 py-4 
+                    ${witness.name === 'aliento' ? 'bg-primary/10' : ''} 
+                    ${!witness.isActive ? 'bg-muted opacity-75' : ''} 
+                    ${witness.name === currentBlockProducer ? 'animate-pulse bg-green-400/20 dark:bg-green-600/20' : ''}
+                  `}
                 >
                   <div className="flex justify-between items-start">
                     <Link href={`/witness/${witness.name}`} className="flex items-center hover:opacity-90 transition-opacity">
@@ -196,6 +200,20 @@ export default function WitnessList() {
                                 </TooltipTrigger>
                                 <TooltipContent>
                                   <p className="text-xs">No blocks signed in last 72 hours</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                          {witness.name === currentBlockProducer && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 text-xs animate-pulse border-green-400/50">
+                                    Signing
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="text-xs">Currently signing blocks</p>
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
@@ -291,6 +309,7 @@ export default function WitnessList() {
                         className={`
                           ${witness.name === 'aliento' ? 'bg-primary/10' : 'hover:bg-muted/50'}
                           ${!witness.isActive ? 'bg-muted/60 opacity-80' : ''}
+                          ${witness.name === currentBlockProducer ? 'animate-pulse bg-green-400/20 dark:bg-green-600/20' : ''}
                         `}
                       >
                         <TableCell className="text-sm text-muted-foreground">
@@ -315,6 +334,20 @@ export default function WitnessList() {
                                       </TooltipTrigger>
                                       <TooltipContent>
                                         <p className="text-xs">No blocks signed in last 72 hours</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                )}
+                                {witness.name === currentBlockProducer && (
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 text-xs animate-pulse border-green-400/50">
+                                          Signing
+                                        </Badge>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p className="text-xs">Currently signing blocks</p>
                                       </TooltipContent>
                                     </Tooltip>
                                   </TooltipProvider>
@@ -387,6 +420,18 @@ export default function WitnessList() {
                 <Progress value={percent} className="h-2" />
                 <span className="text-xs text-muted-foreground whitespace-nowrap">{percent}%</span>
               </div>
+            </div>
+            
+            {/* Load More Button */}
+            <div className="mt-4 flex justify-center">
+              <Button 
+                onClick={loadMore}
+                variant="outline"
+                className="gap-2"
+              >
+                <span className="material-symbols-outlined text-sm">expand_more</span>
+                {t('witnesses.loadMore')}
+              </Button>
             </div>
           </div>
         </div>
