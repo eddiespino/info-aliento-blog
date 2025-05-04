@@ -1,14 +1,74 @@
 import { useQuery } from '@tanstack/react-query';
-import { getWitnesses, getWitnessByName, getWitnessVoters, getProxyAccounts } from '@/api/hive';
+import { getWitnesses, getWitnessByName, getWitnessVoters, getProxyAccounts, getBestHiveNode } from '@/api/hive';
 import { Witness, WitnessVoter, ProxyAccount } from '@/types/hive';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+
+// State to track the current block producer
+export const useCurrentBlockProducer = () => {
+  const [currentBlockProducer, setCurrentBlockProducer] = useState<string | null>(null);
+  
+  // Poll for the current block producer
+  useEffect(() => {
+    let mounted = true;
+    
+    const fetchCurrentBlockProducer = async () => {
+      try {
+        const apiNode = await getBestHiveNode();
+        
+        // Get dynamic global properties
+        const response = await fetch(apiNode, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "jsonrpc": "2.0",
+            "method": "condenser_api.get_dynamic_global_properties",
+            "params": [],
+            "id": 1
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        if (data.result && mounted) {
+          // Get the current witness/block producer
+          const currentWitness = data.result.current_witness;
+          setCurrentBlockProducer(currentWitness);
+        }
+      } catch (error) {
+        console.error('Error fetching current block producer:', error);
+      }
+    };
+    
+    // Initial fetch
+    fetchCurrentBlockProducer();
+    
+    // Set up polling interval (every 3 seconds)
+    const intervalId = setInterval(fetchCurrentBlockProducer, 3000);
+    
+    // Clean up on unmount
+    return () => {
+      mounted = false;
+      clearInterval(intervalId);
+    };
+  }, []);
+  
+  return currentBlockProducer;
+};
 
 export function useWitnesses(searchTerm: string = '', sortBy: 'rank' | 'votes' | 'name' | 'lastBlock' = 'rank') {
   const { data: witnesses = [], isLoading, isError, error } = useQuery({
     queryKey: ['witnesses'],
     queryFn: getWitnesses,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60, // 1 minute - more frequent updates
   });
+  
+  // Track current block producer
+  const currentBlockProducer = useCurrentBlockProducer();
 
   // Filter witnesses by search term
   const filteredWitnesses = useMemo(() => {
@@ -40,7 +100,8 @@ export function useWitnesses(searchTerm: string = '', sortBy: 'rank' | 'votes' |
     witnesses: sortedWitnesses,
     isLoading,
     isError,
-    error
+    error,
+    currentBlockProducer
   };
 }
 

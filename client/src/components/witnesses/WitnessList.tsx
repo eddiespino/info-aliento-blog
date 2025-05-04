@@ -23,8 +23,8 @@ type SortOption = 'rank' | 'votes' | 'name' | 'lastBlock';
 export default function WitnessList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('rank');
-  const { witnesses, isLoading } = useWitnesses(searchTerm, sortBy);
-  const { visibleItems, loadMore, hasMore, percent } = useLazyLoading(witnesses, 20, 20);
+  const { witnesses, isLoading, currentBlockProducer } = useWitnesses(searchTerm, sortBy);
+  const { visibleItems, loadMore, hasMore, percent } = useLazyLoading(witnesses, 100, 20); // Display 100 by default, load 20 more at a time
   const isMobile = useMobile();
   const [selectedWitness, setSelectedWitness] = useState<string | null>(null);
   const [voteModalOpen, setVoteModalOpen] = useState(false);
