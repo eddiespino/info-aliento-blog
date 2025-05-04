@@ -81,7 +81,7 @@ export default function Header() {
                   className="inline-flex items-center justify-center px-2 py-1 h-8 text-xs"
                 >
                   <span className="material-symbols-outlined text-xs mr-1">login</span>
-                  <span className="hidden sm:inline">{t('login')} with Keychain</span>
+                  <span className="hidden sm:inline">{t('login.withKeychain')}</span>
                   <span className="sm:hidden">{t('login')}</span>
                 </Button>
               ) : (
@@ -215,7 +215,7 @@ export default function Header() {
               <div className="px-4 py-3">
                 {!isLoggedIn ? (
                   <div>
-                    <p className="text-sm text-muted-foreground mb-3">{t('login')} with Hive Keychain to vote for witnesses</p>
+                    <p className="text-sm text-muted-foreground mb-3">{t('login.withKeychain')} {t('login.toVoteForWitnesses')}</p>
                     <Button
                       onClick={() => {
                         setMobileMenuOpen(false);
@@ -225,7 +225,7 @@ export default function Header() {
                       className="w-full"
                     >
                       <span className="material-symbols-outlined mr-2">login</span>
-                      {t('login')} with Keychain
+                      {t('login.withKeychain')}
                     </Button>
                   </div>
                 ) : (
