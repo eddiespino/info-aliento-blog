@@ -124,7 +124,7 @@ export default function WitnessList() {
               htmlFor="hide-inactive" 
               className="text-sm cursor-pointer whitespace-nowrap"
             >
-              Hide Inactive Witnesses
+              {t('witnesses.hideInactive')}
             </Label>
           </div>
           

@@ -98,6 +98,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'witnesses.website': 'Website',
       'witnesses.action': 'Action',
       'witnesses.loadMore': 'Load More',
+      'witnesses.hideInactive': 'Hide Inactive Witnesses',
       
       // Sort
       'sort.by': 'Sort by',
@@ -263,6 +264,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'witnesses.website': 'Sitio Web',
       'witnesses.action': 'Acción',
       'witnesses.loadMore': 'Cargar Más',
+      'witnesses.hideInactive': 'Ocultar Testigos Inactivos',
       
       // Sort
       'sort.by': 'Ordenar por',
