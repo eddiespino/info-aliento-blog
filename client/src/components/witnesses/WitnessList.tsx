@@ -23,15 +23,21 @@ type SortOption = 'rank' | 'votes' | 'name' | 'lastBlock';
 export default function WitnessList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('rank');
-  const { witnesses, isLoading, currentBlockProducer } = useWitnesses(searchTerm, sortBy);
-  const { visibleItems, loadMore, hasMore, percent } = useLazyLoading(witnesses, 100, 20); // Display 100 by default, load 20 more at a time
-  const isMobile = useMobile();
   const [selectedWitness, setSelectedWitness] = useState<string | null>(null);
   const [voteModalOpen, setVoteModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [isUnvoteAction, setIsUnvoteAction] = useState(false);
+  
   // Access user data from the Keychain context to get witness votes
   const { isLoggedIn, user } = useKeychain();
   const { t } = useLanguage();
+  const isMobile = useMobile();
+  
+  // Get witnesses data with real-time updates
+  const { witnesses, isLoading, currentBlockProducer } = useWitnesses(searchTerm, sortBy);
+  
+  // Lazy loading functionality
+  const { visibleItems, loadMore, hasMore, percent } = useLazyLoading(witnesses, 100, 20); // Display 100 by default, load 20 more at a time
   
   // Check if the user has voted for a specific witness
   const hasVotedForWitness = (witnessName: string): boolean => {
@@ -78,9 +84,6 @@ export default function WitnessList() {
     setSortBy(value as SortOption);
   };
 
-  // State to track if action is an unvote
-  const [isUnvoteAction, setIsUnvoteAction] = useState(false);
-  
   // Handle vote or unvote action
   const handleVoteClick = (witnessName: string, unvote: boolean = false) => {
     // If user is not logged in, show login modal

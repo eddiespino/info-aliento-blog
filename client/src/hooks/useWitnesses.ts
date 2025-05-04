@@ -61,14 +61,23 @@ export const useCurrentBlockProducer = () => {
 };
 
 export function useWitnesses(searchTerm: string = '', sortBy: 'rank' | 'votes' | 'name' | 'lastBlock' = 'rank') {
-  const { data: witnesses = [], isLoading, isError, error } = useQuery({
+  const { data: witnesses = [], isLoading, isError, error, refetch } = useQuery({
     queryKey: ['witnesses'],
     queryFn: getWitnesses,
-    staleTime: 1000 * 60, // 1 minute - more frequent updates
+    staleTime: 1000 * 60, // 1 minute
   });
   
   // Track current block producer
   const currentBlockProducer = useCurrentBlockProducer();
+  
+  // Set up automatic refreshing of witness data every 3 seconds
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      refetch();
+    }, 3000); // 3 second refresh for last block numbers
+    
+    return () => clearInterval(intervalId);
+  }, [refetch]);
 
   // Filter witnesses by search term
   const filteredWitnesses = useMemo(() => {
