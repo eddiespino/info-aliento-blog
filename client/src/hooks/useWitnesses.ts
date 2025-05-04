@@ -165,12 +165,17 @@ export function useWitnesses(
     });
   }, [filteredWitnesses, sortBy]);
 
-  // Load the next batch of witnesses
-  const loadMoreWitnesses = useCallback(() => {
-    if (hasMoreWitnesses && !isFetching) {
-      setCurrentPage(prevPage => prevPage + 1);
+  // Set the current page
+  const goToPage = useCallback((pageNumber: number) => {
+    if (!isFetching) {
+      setCurrentPage(pageNumber);
     }
-  }, [hasMoreWitnesses, isFetching]);
+  }, [isFetching]);
+
+  // Calculate total pages based on what we know so far
+  const totalPages = hasMoreWitnesses ? 
+    Math.ceil(loadedCount / 100) + 1 : // We know there are more pages
+    Math.ceil(loadedCount / 100);      // This is the last page
 
   return {
     witnesses: sortedWitnesses,
@@ -178,8 +183,9 @@ export function useWitnesses(
     isError,
     error,
     currentBlockProducer,
-    hasMoreWitnesses,
-    loadMoreWitnesses,
+    currentPage,
+    totalPages,
+    goToPage,
     isFetching,
     totalWitnessesLoaded: loadedCount
   };

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { useWitnesses } from '@/hooks/useWitnesses';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,10 +12,8 @@ import VoteModal from '../modals/VoteModal';
 import { useKeychain } from '@/context/KeychainContext';
 import { useLanguage } from '@/context/LanguageContext';
 import LoginModal from '../modals/LoginModal';
-import { Progress } from '@/components/ui/progress';
 import { Link } from 'wouter';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
@@ -40,8 +38,9 @@ export default function WitnessList() {
     witnesses, 
     isLoading, 
     currentBlockProducer, 
-    hasMoreWitnesses, 
-    loadMoreWitnesses, 
+    currentPage,
+    totalPages,
+    goToPage,
     isFetching,
     totalWitnessesLoaded
   } = useWitnesses(searchTerm, sortBy, hideInactive);
@@ -386,33 +385,91 @@ export default function WitnessList() {
         </div>
       )}
 
-      {/* Load More Button */}
+      {/* Pagination */}
       {!isLoading && (
         <div className="mt-8 border-t border-border pt-4">
-          <div className="flex justify-center items-center">
-            {hasMoreWitnesses && (
-              <Button 
-                onClick={loadMoreWitnesses}
-                disabled={isFetching}
-                className="gap-2 mx-auto"
+          <div className="flex flex-col items-center justify-center">
+            {/* Page Buttons */}
+            <div className="flex items-center justify-center space-x-2 my-4">
+              {/* Previous Page Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => goToPage(Math.max(0, currentPage - 1))}
+                disabled={currentPage === 0 || isFetching}
+                className="h-8 w-8 p-0"
               >
-                {isFetching ? (
-                  <span className="animate-spin mr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                    </svg>
-                  </span>
-                ) : (
-                  <span className="material-symbols-outlined text-sm">expand_more</span>
-                )}
-                {isFetching ? 'Loading...' : 'Load More Witnesses'}
+                <span className="sr-only">Previous Page</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
               </Button>
-            )}
-          </div>
+              
+              {/* Page Numbers */}
+              {Array.from({ length: totalPages }).map((_, index) => {
+                // If we have a lot of pages, show a limited range around the current page
+                const pageNum = index;
+                const showPage = 
+                  pageNum === 0 || // Always show first page
+                  pageNum === totalPages - 1 || // Always show last page
+                  (pageNum >= currentPage - 2 && pageNum <= currentPage + 2); // Show 2 pages before and after current
+                
+                if (!showPage && pageNum === currentPage - 3) {
+                  return <div key="ellipsis-prev" className="text-muted-foreground">...</div>;
+                }
+                
+                if (!showPage && pageNum === currentPage + 3) {
+                  return <div key="ellipsis-next" className="text-muted-foreground">...</div>;
+                }
+                
+                if (!showPage) return null;
+                
+                return (
+                  <Button
+                    key={pageNum}
+                    variant={pageNum === currentPage ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => goToPage(pageNum)}
+                    disabled={isFetching}
+                    className="h-8 w-8 p-0"
+                  >
+                    <span className="sr-only">Page {pageNum + 1}</span>
+                    {pageNum + 1}
+                  </Button>
+                );
+              })}
+              
+              {/* Next Page Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage === totalPages - 1 || isFetching}
+                className="h-8 w-8 p-0"
+              >
+                <span className="sr-only">Next Page</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </Button>
+            </div>
 
-          {/* Show witness count */}
-          <div className="mt-4 text-sm text-muted-foreground text-center">
-            Showing {witnesses.length} witnesses {hideInactive ? '(active only)' : ''}
+            {/* Loading Indicator */}
+            {isFetching && (
+              <div className="flex items-center justify-center mb-2">
+                <span className="animate-spin mr-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                  </svg>
+                </span>
+                <span className="text-sm text-muted-foreground">Loading page {currentPage + 1}...</span>
+              </div>
+            )}
+
+            {/* Show witness count */}
+            <div className="text-sm text-muted-foreground text-center">
+              Showing witnesses {currentPage * 100 + 1}-{Math.min(currentPage * 100 + 100, totalWitnessesLoaded)} {hideInactive ? '(active only)' : ''}
+            </div>
           </div>
         </div>
       )}
