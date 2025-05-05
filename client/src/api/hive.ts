@@ -739,6 +739,29 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
       return null;
     }
     
+    // Fetch the user account information to get the witness_description from posting_metadata
+    let witnessDescription;
+    try {
+      const userAccount = await getUserAccount(name);
+      
+      if (userAccount && 
+          userAccount.posting_json_metadata && 
+          typeof userAccount.posting_json_metadata === 'string') {
+        // Parse the JSON metadata to extract the witness description
+        try {
+          const metadata = JSON.parse(userAccount.posting_json_metadata);
+          if (metadata.profile && metadata.profile.witness_description) {
+            witnessDescription = metadata.profile.witness_description;
+            console.log(`Found witness description for ${name}:`, witnessDescription);
+          }
+        } catch (jsonError) {
+          console.error(`Error parsing JSON metadata for ${name}:`, jsonError);
+        }
+      }
+    } catch (accountError) {
+      console.error(`Error fetching account for witness ${name}:`, accountError);
+    }
+    
     // Ensure we have the vests to HP ratio before processing
     await ensureVestToHpRatio();
     
@@ -807,7 +830,8 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
       version: witness.running_version,
       created: witness.created,
       profileImage: `https://images.hive.blog/u/${witness.owner}/avatar`,
-      isActive: isActive
+      isActive: isActive,
+      witnessDescription: witnessDescription
     };
   } catch (error) {
     console.error(`Error fetching witness ${name}:`, error);
