@@ -739,6 +739,9 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
       return null;
     }
     
+    // Log the witness object to inspect properties
+    console.log(`Witness data for ${name}:`, witness);
+    
     // Fetch the user account information to get the witness_description from posting_metadata
     let witnessDescription;
     try {
@@ -817,14 +820,21 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
     // Check if the witness is active (has signed a block in the last 72 hours)
     const isActive = blockNum > blockFrom72HoursAgo;
     
-    // Get the HBD interest rate from global properties
+    // Get the HBD interest rate from the witness-specific props
     let hbdInterestRate;
     try {
-      // The HBD interest rate is available in the global properties
+      // According to the API response, the witness's proposed HBD interest rate is in witness.props.hbd_interest_rate
       // It's stored as a percentage value * 100 (e.g., 20% is stored as 2000)
-      const hbdInterestPercent = globalProps.hbd_interest_rate / 100;
-      hbdInterestRate = `${hbdInterestPercent.toFixed(2)}%`;
-      console.log(`HBD interest rate: ${hbdInterestRate}`);
+      if (witness.props && typeof witness.props.hbd_interest_rate === 'number') {
+        const witnessInterestRate = witness.props.hbd_interest_rate / 100;
+        hbdInterestRate = `${witnessInterestRate.toFixed(2)}%`;
+        console.log(`Witness ${name} HBD interest rate: ${hbdInterestRate}`);
+      } else {
+        // Fallback to global HBD interest rate if witness doesn't have one set
+        const globalInterestRate = globalProps.hbd_interest_rate / 100;
+        hbdInterestRate = `${globalInterestRate.toFixed(2)}%`;
+        console.log(`Using global HBD interest rate: ${hbdInterestRate}`);
+      }
     } catch (error) {
       console.error('Error getting HBD interest rate:', error);
       hbdInterestRate = 'Unknown';

@@ -254,7 +254,7 @@ export default function WitnessProfile() {
                           
                           <div className="bg-muted/30 p-4 rounded-lg">
                             <dt className="text-sm text-muted-foreground">{t('witnesses.hbdInterestRate')}</dt>
-                            <dd className="mt-1 text-lg font-medium">{witness.hbdInterestRate || '15.00%'}</dd>
+                            <dd className="mt-1 text-lg font-medium">{witness.hbdInterestRate || 'Unknown'}</dd>
                           </div>
                         </dl>
                       ) : (
