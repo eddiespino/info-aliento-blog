@@ -77,7 +77,7 @@ export default function FeaturedWitness() {
             onClick={handleVoteClick}
           >
             <span className="material-symbols-outlined">how_to_vote</span>
-            {isLoggedIn ? t('profile.voteFor') : t('login.loginToVote')}
+            {isLoggedIn ? t('profile.voteFor') + ' @aliento' : t('login.withKeychain') + ' ' + t('login.toVoteForWitnesses')}
           </Button>
         </div>
       </div>
