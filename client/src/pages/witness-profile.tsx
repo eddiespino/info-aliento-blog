@@ -2,7 +2,82 @@ import { useParams } from 'wouter';
 import { useWitness, useWitnessVoters, usePagination } from '@/hooks/useWitnesses';
 import { useKeychain } from '@/context/KeychainContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+// Component to handle translation of witness descriptions
+function TranslatedDescription({ originalText }: { originalText: string }) {
+  const [translatedText, setTranslatedText] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // This function simulates a translation API call
+    // In a real application, you would use an actual translation API
+    const translateText = async () => {
+      try {
+        setIsLoading(true);
+        // Here we would normally call a translation API
+        // For now, we'll simulate a translation with some Spanish phrases
+        
+        // Simple dictionary-based translation for common witness description terms
+        const translations: Record<string, string> = {
+          'witness': 'testigo',
+          'blockchain': 'blockchain', 
+          'Hive': 'Hive',
+          'community': 'comunidad',
+          'support': 'apoyo',
+          'development': 'desarrollo',
+          'network': 'red',
+          'project': 'proyecto',
+          'projects': 'proyectos',
+          'since': 'desde',
+          'dedicated': 'dedicado',
+          'quality': 'calidad',
+          'content': 'contenido',
+          'curation': 'curación',
+          'node': 'nodo',
+          'building': 'construyendo',
+          'infrastructure': 'infraestructura',
+          'video': 'video',
+          'delivery': 'entrega',
+          'supporting': 'apoyando',
+          'and': 'y',
+          'for': 'para',
+          'with': 'con',
+          'tutorials': 'tutoriales',
+          'activities': 'actividades',
+          'more': 'más'
+        };
+        
+        // Very simple translation - just replace words found in our dictionary
+        let translated = originalText;
+        Object.keys(translations).forEach(englishWord => {
+          const regex = new RegExp(`\\b${englishWord}\\b`, 'gi');
+          translated = translated.replace(regex, translations[englishWord]);
+        });
+        
+        // Add a note that this is an automated translation
+        translated += ' (Traducción automática)';
+        
+        setTranslatedText(translated);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Translation error:', error);
+        setTranslatedText(originalText + ' (Error en traducción)');
+        setIsLoading(false);
+      }
+    };
+
+    if (originalText) {
+      translateText();
+    }
+  }, [originalText]);
+
+  if (isLoading) {
+    return <span className="text-muted-foreground italic">Traduciendo...</span>;
+  }
+
+  return <>{translatedText || originalText}</>;
+}
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -24,7 +99,7 @@ export default function WitnessProfile() {
   const { witness, isLoading } = useWitness(witnessName);
   const { voters, isLoading: isLoadingVoters } = useWitnessVoters(witnessName);
   const { isLoggedIn, user } = useKeychain();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [voteModalOpen, setVoteModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
@@ -157,7 +232,12 @@ export default function WitnessProfile() {
                             {witness.witnessDescription && (
                               <div className="bg-primary/5 p-4 rounded-lg mb-4">
                                 <h4 className="font-medium mb-2">{t('profile.witnessDescription')}</h4>
-                                <p className="text-foreground">{witness.witnessDescription}</p>
+                                <p className="text-foreground">
+                                  {language === 'en' 
+                                    ? witness.witnessDescription 
+                                    : <TranslatedDescription originalText={witness.witnessDescription} />
+                                  }
+                                </p>
                               </div>
                             )}
                             
