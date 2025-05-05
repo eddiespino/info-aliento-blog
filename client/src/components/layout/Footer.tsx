@@ -1,5 +1,6 @@
 import { Link } from 'wouter';
 import { useLanguage } from '@/context/LanguageContext';
+import alientoLogo from '@/assets/aliento-logo.png';
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -11,9 +12,11 @@ export default function Footer() {
           {/* Brand and social section */}
           <div className="mb-6 sm:mb-0">
             <div className="flex items-center gap-2 mb-3 sm:mb-4">
-              <span className="material-symbols-outlined text-primary text-2xl sm:text-3xl">
-                hub
-              </span>
+              <img 
+                src={alientoLogo}
+                alt="Aliento Logo"
+                className="h-8 w-8 sm:h-9 sm:w-9"
+              />
               <h3 className="text-lg sm:text-xl font-semibold">Aliento Witness</h3>
             </div>
             <p className="text-sm sm:text-base text-muted-foreground mb-4">
