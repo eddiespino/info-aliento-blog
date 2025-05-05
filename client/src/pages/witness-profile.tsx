@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import VoteModal from '@/components/modals/VoteModal';
 import LoginModal from '@/components/modals/LoginModal';
 import ProxyAccountsModal from '@/components/modals/ProxyAccountsModal';
+import { ExternalLink } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 
@@ -153,6 +154,13 @@ export default function WitnessProfile() {
                           </div>
                         ) : witness ? (
                           <div>
+                            {witness.witnessDescription && (
+                              <div className="bg-primary/5 p-4 rounded-lg mb-4">
+                                <h4 className="font-medium mb-2">{t('profile.witnessDescription')}</h4>
+                                <p className="text-foreground">{witness.witnessDescription}</p>
+                              </div>
+                            )}
+                            
                             <p className="text-muted-foreground mb-4">
                               {witnessName} {t('profile.isWitness')} #{witness.rank} {t('profile.withVotes')} {witness.votesHivePower} {t('profile.fromCommunity')}
                             </p>
@@ -161,9 +169,24 @@ export default function WitnessProfile() {
                               {t('profile.asWitness')} {witnessName} {t('profile.responsible')}
                             </p>
                             
-                            <p className="text-muted-foreground">
+                            <p className="text-muted-foreground mb-4">
                               {t('profile.elected')}
                             </p>
+                            
+                            {witness.url && (
+                              <div className="mt-4">
+                                <h4 className="font-medium mb-2">{t('witnesses.website')}</h4>
+                                <a
+                                  href={witness.url.startsWith('http') ? witness.url : `http://${witness.url}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-primary hover:underline"
+                                >
+                                  <ExternalLink size={16} />
+                                  {t('profile.visitWebsite')}
+                                </a>
+                              </div>
+                            )}
                           </div>
                         ) : (
                           <p className="text-muted-foreground">{t('profile.failed')}</p>
@@ -228,22 +251,6 @@ export default function WitnessProfile() {
                             <dt className="text-sm text-muted-foreground">{t('witnesses.version')}</dt>
                             <dd className="mt-1 text-lg font-medium">{witness.version}</dd>
                           </div>
-                          
-                          {witness.url && (
-                            <div className="bg-muted/30 p-4 rounded-lg">
-                              <dt className="text-sm text-muted-foreground">{t('witnesses.website')}</dt>
-                              <dd className="mt-1 text-lg font-medium">
-                                <a
-                                  href={witness.url.startsWith('http') ? witness.url : `http://${witness.url}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-primary hover:underline"
-                                >
-                                  {t('profile.visitWebsite')}
-                                </a>
-                              </dd>
-                            </div>
-                          )}
                         </dl>
                       ) : (
                         <p className="text-muted-foreground">{t('profile.failed')}</p>
