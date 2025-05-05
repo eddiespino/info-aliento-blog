@@ -817,6 +817,19 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
     // Check if the witness is active (has signed a block in the last 72 hours)
     const isActive = blockNum > blockFrom72HoursAgo;
     
+    // Get the HBD interest rate from global properties
+    let hbdInterestRate;
+    try {
+      // The HBD interest rate is available in the global properties
+      // It's stored as a percentage value * 100 (e.g., 20% is stored as 2000)
+      const hbdInterestPercent = globalProps.hbd_interest_rate / 100;
+      hbdInterestRate = `${hbdInterestPercent.toFixed(2)}%`;
+      console.log(`HBD interest rate: ${hbdInterestRate}`);
+    } catch (error) {
+      console.error('Error getting HBD interest rate:', error);
+      hbdInterestRate = 'Unknown';
+    }
+    
     return {
       id: witness.id,
       name: witness.owner,
@@ -831,7 +844,8 @@ export const getWitnessByName = async (name: string): Promise<Witness | null> =>
       created: witness.created,
       profileImage: `https://images.hive.blog/u/${witness.owner}/avatar`,
       isActive: isActive,
-      witnessDescription: witnessDescription
+      witnessDescription: witnessDescription,
+      hbdInterestRate: hbdInterestRate
     };
   } catch (error) {
     console.error(`Error fetching witness ${name}:`, error);

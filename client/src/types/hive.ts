@@ -28,6 +28,7 @@ export interface Witness {
   profileImage: string;
   isActive: boolean; // Flag to indicate if the witness is active (has signed a block in the last 72 hours)
   witnessDescription?: string; // The witness description from posting_metadata
+  hbdInterestRate?: string; // HBD interest rate (APR)
 }
 
 export interface UserData {

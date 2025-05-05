@@ -251,6 +251,11 @@ export default function WitnessProfile() {
                             <dt className="text-sm text-muted-foreground">{t('witnesses.version')}</dt>
                             <dd className="mt-1 text-lg font-medium">{witness.version}</dd>
                           </div>
+                          
+                          <div className="bg-muted/30 p-4 rounded-lg">
+                            <dt className="text-sm text-muted-foreground">{t('witnesses.hbdInterestRate')}</dt>
+                            <dd className="mt-1 text-lg font-medium">{witness.hbdInterestRate || '15.00%'}</dd>
+                          </div>
                         </dl>
                       ) : (
                         <p className="text-muted-foreground">{t('profile.failed')}</p>
