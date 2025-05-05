@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'wouter';
-import { Separator } from '@/components/ui/separator';
+
 import { Skeleton } from '@/components/ui/skeleton';
 import VoteModal from '@/components/modals/VoteModal';
 import LoginModal from '@/components/modals/LoginModal';
@@ -161,18 +161,6 @@ export default function WitnessProfile() {
                               </div>
                             )}
                             
-                            <p className="text-muted-foreground mb-4">
-                              {witnessName} {t('profile.isWitness')} #{witness.rank} {t('profile.withVotes')} {witness.votesHivePower} {t('profile.fromCommunity')}
-                            </p>
-                            
-                            <p className="text-muted-foreground mb-4">
-                              {t('profile.asWitness')} {witnessName} {t('profile.responsible')}
-                            </p>
-                            
-                            <p className="text-muted-foreground mb-4">
-                              {t('profile.elected')}
-                            </p>
-                            
                             {witness.url && (
                               <div className="mt-4">
                                 <h4 className="font-medium mb-2">{t('witnesses.website')}</h4>
@@ -188,26 +176,6 @@ export default function WitnessProfile() {
                               </div>
                             )}
                           </div>
-                        ) : (
-                          <p className="text-muted-foreground">{t('profile.failed')}</p>
-                        )}
-                      </div>
-                      
-                      <Separator />
-                      
-                      <div>
-                        <h3 className="text-xl font-semibold mb-4">{t('profile.blockProduction')}</h3>
-                        
-                        {isLoading ? (
-                          <div className="space-y-3">
-                            <Skeleton className="h-4 w-full" />
-                            <Skeleton className="h-4 w-3/4" />
-                          </div>
-                        ) : witness ? (
-                          <p className="text-muted-foreground">
-                            {t('profile.hasProduced')} {witness.lastBlock} {t('profile.andMissed')} {witness.missedBlocks.toLocaleString()} {t('profile.throughHistory')}
-                            {t('profile.reliability.desc')}
-                          </p>
                         ) : (
                           <p className="text-muted-foreground">{t('profile.failed')}</p>
                         )}
