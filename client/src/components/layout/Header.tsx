@@ -139,6 +139,11 @@ export default function Header() {
                         </div>
                       </div>
                       <div className="mt-4 border-t border-border pt-2">
+                        <Link href="/user-stats">
+                          <DropdownMenuItem className="cursor-pointer">
+                            {t('userStats.viewStats')}
+                          </DropdownMenuItem>
+                        </Link>
                         <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
                           {t('logout')}
                         </DropdownMenuItem>
@@ -253,17 +258,26 @@ export default function Header() {
                             {user?.freeWitnessVotes} free votes
                           </span>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive p-0 h-auto mt-2"
-                          onClick={() => {
-                            setMobileMenuOpen(false);
-                            handleLogout();
-                          }}
-                        >
-                          {t('logout')}
-                        </Button>
+                        <div className="flex gap-3 mt-3">
+                          <Link 
+                            href="/user-stats"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="text-sm text-primary"
+                          >
+                            {t('userStats.viewStats')}
+                          </Link>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-destructive p-0 h-auto"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              handleLogout();
+                            }}
+                          >
+                            {t('logout')}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>

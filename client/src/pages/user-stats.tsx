@@ -130,7 +130,7 @@ export default function UserStats() {
                         <Button 
                           variant="outline" 
                           className="mt-4"
-                          onClick={() => navigate('/witnesses')}
+                          onClick={() => setLocation('/witnesses')}
                         >
                           {t('userStats.browseWitnesses')}
                         </Button>

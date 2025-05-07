@@ -206,6 +206,24 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'notFound.title': '404 Page Not Found',
       'notFound.message': 'Did you forget to add the page to the router?',
       
+      // User Stats page
+      'userStats.title': 'Your Hive Statistics',
+      'userStats.subtitle': 'View your Hive accounts stats, power metrics, and witness votes',
+      'userStats.needLogin': 'You need to log in with Hive Keychain to view your stats',
+      'userStats.witnessVotes': 'Witness Votes',
+      'userStats.powerAnalysis': 'Power Analysis',
+      'userStats.yourWitnessVotes': 'Your Witness Votes',
+      'userStats.noWitnessVotes': 'You haven\'t voted for any witnesses yet',
+      'userStats.browseWitnesses': 'Browse Witnesses',
+      'userStats.hivePowerBreakdown': 'Hive Power Breakdown',
+      'userStats.effectiveHP': 'Effective HP',
+      'userStats.effectiveHPDesc': 'Your total effective Hive Power including delegations in/out',
+      'userStats.ownHPDesc': 'Hive Power owned directly by your account',
+      'userStats.proxiedHPDesc': 'Hive Power proxied to your account by other users',
+      'userStats.governancePower': 'Governance Power',
+      'userStats.governancePowerDesc': 'Your voting power for governance decisions and witness votes',
+      'userStats.viewStats': 'View Stats',
+      
       // Footer
       'footer.description': 'Supporting the Hive blockchain ecosystem through reliable witness operations and community development.',
       'footer.quickLinks': 'Quick Links',
@@ -375,6 +393,24 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       // NotFound page
       'notFound.title': '404 Página No Encontrada',
       'notFound.message': '¿Olvidaste agregar la página al enrutador?',
+      
+      // User Stats page
+      'userStats.title': 'Tus Estadísticas de Hive',
+      'userStats.subtitle': 'Visualiza las estadísticas de tu cuenta Hive, métricas de poder y votos de testigos',
+      'userStats.needLogin': 'Necesitas iniciar sesión con Hive Keychain para ver tus estadísticas',
+      'userStats.witnessVotes': 'Votos de Testigos',
+      'userStats.powerAnalysis': 'Análisis de Poder',
+      'userStats.yourWitnessVotes': 'Tus Votos de Testigos',
+      'userStats.noWitnessVotes': 'Aún no has votado por ningún testigo',
+      'userStats.browseWitnesses': 'Explorar Testigos',
+      'userStats.hivePowerBreakdown': 'Desglose de Poder de Hive',
+      'userStats.effectiveHP': 'HP Efectivo',
+      'userStats.effectiveHPDesc': 'Tu poder de Hive efectivo total incluyendo delegaciones entrantes/salientes',
+      'userStats.ownHPDesc': 'Poder de Hive que pertenece directamente a tu cuenta',
+      'userStats.proxiedHPDesc': 'Poder de Hive delegado a tu cuenta por otros usuarios',
+      'userStats.governancePower': 'Poder de Gobernanza',
+      'userStats.governancePowerDesc': 'Tu poder de voto para decisiones de gobernanza y votos de testigos',
+      'userStats.viewStats': 'Ver Estadísticas',
       
       // Footer
       'footer.description': 'Apoyando el ecosistema de la blockchain Hive a través de operaciones de testigo confiables y desarrollo comunitario.',
