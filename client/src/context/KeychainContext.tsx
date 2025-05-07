@@ -44,6 +44,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [useDevelopmentMode, setUseDevelopmentMode] = useState(isDevelopmentMode);
 
   // Load saved user data from localStorage if it exists
+  // This is done on initial load and helps prevent unnecessary authentication
   useEffect(() => {
     const savedUser = localStorage.getItem('hive_user');
     if (savedUser) {
@@ -52,6 +53,24 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
         console.log('Found saved user data in localStorage:', userData.username);
         setUser(userData);
         setIsLoggedIn(true);
+        
+        // Silently refresh user data in the background without requiring re-authentication
+        // This ensures we have the latest data without disrupting the user experience
+        if (userData.username) {
+          getUserData(userData.username)
+            .then(freshUserData => {
+              // Only update if there are meaningful differences
+              if (JSON.stringify(userData) !== JSON.stringify(freshUserData)) {
+                console.log('Updating user data with fresh data from API');
+                setUser(freshUserData);
+                localStorage.setItem('hive_user', JSON.stringify(freshUserData));
+              }
+            })
+            .catch(error => {
+              console.error('Background refresh of user data failed:', error);
+              // Keep using cached data on error
+            });
+        }
       } catch (error) {
         console.error('Error parsing saved user data:', error);
         localStorage.removeItem('hive_user');

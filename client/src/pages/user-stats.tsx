@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -18,9 +18,14 @@ export default function UserStats() {
   const [, setLocation] = useLocation();
   const [loginModalOpen, setLoginModalOpen] = useState(false);
 
-  // If user is not logged in, show login modal
+  // If user is not logged in, show login modal only when the page is first loaded
+  // Using a ref to track if we've already shown the login modal
+  const loginModalShown = useRef(false);
+  
   useEffect(() => {
-    if (!isLoggedIn) {
+    // Only show login modal if user is not logged in AND we haven't shown it yet
+    if (!isLoggedIn && !loginModalShown.current) {
+      loginModalShown.current = true;
       setLoginModalOpen(true);
     }
   }, [isLoggedIn]);
