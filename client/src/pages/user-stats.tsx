@@ -194,7 +194,10 @@ export default function UserStats() {
                         </CardHeader>
                         <CardContent>
                           <div className="text-2xl font-bold">
-                            {user?.effectiveHivePower || user?.hivePower}
+                            {user?.hivePower && user?.proxiedHivePower ? 
+                              formatHivePower(parseFloat(user.hivePower.replace(/,/g, '').replace(' HP', '')) + 
+                                                parseFloat(user.proxiedHivePower.replace(/,/g, '').replace(' HP', ''))) : 
+                              user?.hivePower}
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">
                             {t('userStats.governancePowerDesc')}

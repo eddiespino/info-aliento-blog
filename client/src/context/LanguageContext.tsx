@@ -221,7 +221,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'userStats.ownHPDesc': 'Hive Power owned directly by your account',
       'userStats.proxiedHPDesc': 'Hive Power proxied to your account by other users',
       'userStats.governancePower': 'Governance Power',
-      'userStats.governancePowerDesc': 'Your voting power for governance decisions and witness votes',
+      'userStats.governancePowerDesc': 'Your voting power for governance decisions and witness votes (own HP + proxied HP)',
       'userStats.viewStats': 'View Stats',
       
       // Footer
@@ -409,7 +409,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'userStats.ownHPDesc': 'Poder de Hive que pertenece directamente a tu cuenta',
       'userStats.proxiedHPDesc': 'Poder de Hive delegado a tu cuenta por otros usuarios',
       'userStats.governancePower': 'Poder de Gobernanza',
-      'userStats.governancePowerDesc': 'Tu poder de voto para decisiones de gobernanza y votos de testigos',
+      'userStats.governancePowerDesc': 'Tu poder de voto para decisiones de gobernanza y votos de testigos (HP propio + HP delegado)',
       'userStats.viewStats': 'Ver Estadísticas',
       
       // Footer
