@@ -147,8 +147,8 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'profile.throughHistory': 'blocks throughout their history.',
       'profile.account': 'Account',
       'profile.username': 'Username',
-      'profile.ownHP': 'Own HP',
-      'profile.proxiedHP': 'Proxied HP',
+      'profile.ownHP': 'Own Hive Power',
+      'profile.proxiedHP': 'Proxied Hive Power',
       'profile.totalGov': 'Total governance vote',
       'profile.noVoters': 'No voters found for this witness.',
       
@@ -216,12 +216,12 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'userStats.noWitnessVotes': 'You haven\'t voted for any witnesses yet',
       'userStats.browseWitnesses': 'Browse Witnesses',
       'userStats.hivePowerBreakdown': 'Hive Power Breakdown',
-      'userStats.effectiveHP': 'Effective HP',
+      'userStats.effectiveHP': 'Effective Hive Power',
       'userStats.effectiveHPDesc': 'Your total effective Hive Power including delegations in/out',
       'userStats.ownHPDesc': 'Hive Power owned directly by your account',
       'userStats.proxiedHPDesc': 'Hive Power proxied to your account by other users',
       'userStats.governancePower': 'Governance Power',
-      'userStats.governancePowerDesc': 'Your voting power for governance decisions and witness votes (own HP + proxied HP)',
+      'userStats.governancePowerDesc': 'Your voting power for governance decisions and witness votes (own Hive Power + proxied Hive Power)',
       'userStats.viewStats': 'View Stats',
       
       // Footer
@@ -335,8 +335,8 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'profile.throughHistory': 'bloques a lo largo de su historia.',
       'profile.account': 'Cuenta',
       'profile.username': 'Nombre de usuario',
-      'profile.ownHP': 'HP Propio',
-      'profile.proxiedHP': 'HP Delegado',
+      'profile.ownHP': 'Poder de Hive Propio',
+      'profile.proxiedHP': 'Poder de Hive Delegado',
       'profile.totalGov': 'Voto total de gobernanza',
       'profile.noVoters': 'No se encontraron votantes para este testigo.',
       
@@ -404,12 +404,12 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'userStats.noWitnessVotes': 'Aún no has votado por ningún testigo',
       'userStats.browseWitnesses': 'Explorar Testigos',
       'userStats.hivePowerBreakdown': 'Desglose de Poder de Hive',
-      'userStats.effectiveHP': 'HP Efectivo',
+      'userStats.effectiveHP': 'Poder de Hive Efectivo',
       'userStats.effectiveHPDesc': 'Tu poder de Hive efectivo total incluyendo delegaciones entrantes/salientes',
       'userStats.ownHPDesc': 'Poder de Hive que pertenece directamente a tu cuenta',
       'userStats.proxiedHPDesc': 'Poder de Hive delegado a tu cuenta por otros usuarios',
       'userStats.governancePower': 'Poder de Gobernanza',
-      'userStats.governancePowerDesc': 'Tu poder de voto para decisiones de gobernanza y votos de testigos (HP propio + HP delegado)',
+      'userStats.governancePowerDesc': 'Tu poder de voto para decisiones de gobernanza y votos de testigos (Poder de Hive propio + Poder de Hive delegado)',
       'userStats.viewStats': 'Ver Estadísticas',
       
       // Footer
