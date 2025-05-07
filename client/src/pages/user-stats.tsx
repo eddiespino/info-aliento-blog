@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -10,36 +10,38 @@ import { useKeychain } from '@/context/KeychainContext';
 import { useLocation } from 'wouter';
 import { formatHivePower } from '@/lib/utils';
 import LoginModal from '@/components/modals/LoginModal';
-import { useState } from 'react';
 
 export default function UserStats() {
   const { t } = useLanguage();
-  const { user, isLoggedIn, skipAuthPopup } = useKeychain();
+  const { user, isLoggedIn } = useKeychain();
   const [, setLocation] = useLocation();
+  
+  // Track if we should show login modal and if we have already asked before
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const hasAskedForLoginOnce = useRef(false);
   
-  // If user is not logged in, show login modal only when necessary
-  // Using a ref to track if we've already shown the login modal
-  const loginModalShown = useRef(false);
-  
+  // Force redirect if not logged in with a short delay
   useEffect(() => {
-    // Only show login modal if:
-    // 1. User is not logged in AND
-    // 2. We haven't shown it yet on this page AND
-    // 3. We're not supposed to skip authentication (for page reloads)
-    if (!isLoggedIn && !loginModalShown.current && !skipAuthPopup) {
-      console.log('Showing login modal (not skipped)');
-      loginModalShown.current = true;
+    // Make sure we only run this effect on the client side
+    if (typeof window === 'undefined') return;
+    
+    // Check if user has data in localStorage first
+    const hasLocalStorageUser = !!localStorage.getItem('hive_user');
+    
+    // If user is not logged in and we haven't shown login modal yet
+    if (!isLoggedIn && !hasAskedForLoginOnce.current && !hasLocalStorageUser) {
+      // Mark that we've asked once so we don't keep asking
+      hasAskedForLoginOnce.current = true;
+      console.log('Opening login modal on first visit (no localStorage user)');
       setLoginModalOpen(true);
-    } else if (skipAuthPopup) {
-      console.log('Skipping login modal due to skipAuthPopup flag');
     }
-  }, [isLoggedIn, skipAuthPopup]);
-
+  }, [isLoggedIn]);
+  
   // Handle close of login modal
   const handleLoginModalClose = () => {
+    // If the user canceled the login, redirect them back to home
     if (!isLoggedIn) {
-      // If still not logged in, redirect to home
+      console.log('User cancelled login, redirecting to home');
       setLocation('/');
     }
     setLoginModalOpen(false);

@@ -15,7 +15,6 @@ interface KeychainContextType {
   logout: () => void;
   voteWitness: (witness: string, approve: boolean) => Promise<VoteWitnessResponse>;
   isDevelopmentMode: boolean;
-  skipAuthPopup: boolean;
 }
 
 // Create default context values
@@ -27,8 +26,7 @@ const defaultContextValue: KeychainContextType = {
   login: async () => ({ success: false, error: 'Context not initialized' }),
   logout: () => {},
   voteWitness: async () => ({ success: false, error: 'Context not initialized' }),
-  isDevelopmentMode: false,
-  skipAuthPopup: false
+  isDevelopmentMode: false
 };
 
 // Create the context
@@ -55,10 +53,6 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
         console.log('Found saved user data in localStorage:', userData.username);
         setUser(userData);
         setIsLoggedIn(true);
-        
-        // Set skipAuthPopup to true when we already have user data
-        // This will prevent unnecessary keychain prompts on page reloads
-        setSkipAuthPopup(true);
         
         // Silently refresh user data in the background without requiring re-authentication
         // This ensures we have the latest data without disrupting the user experience
@@ -133,8 +127,8 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   }, [isDevelopmentMode]);
 
-  // Track if we need to skip authentication popup (used for app reloads)
-  const [skipAuthPopup, setSkipAuthPopup] = useState(false);
+  // Track if a login is already in progress to avoid duplicate requests
+  const [loginInProgress, setLoginInProgress] = useState(false);
 
   // Mock functions for development environment
   const mockLogin = async (username: string): Promise<LoginResponse> => {
@@ -414,8 +408,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     login,
     logout,
     voteWitness,
-    isDevelopmentMode,
-    skipAuthPopup
+    isDevelopmentMode
   };
 
   return (
