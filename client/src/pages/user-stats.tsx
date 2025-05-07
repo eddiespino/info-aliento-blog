@@ -195,8 +195,8 @@ export default function UserStats() {
                         <CardContent>
                           <div className="text-2xl font-bold">
                             {user?.hivePower && user?.proxiedHivePower ? 
-                              formatHivePower(parseFloat(user.hivePower.replace(/,/g, '').replace(' Hive Power', '').replace(' HP', '')) + 
-                                                parseFloat(user.proxiedHivePower.replace(/,/g, '').replace(' Hive Power', '').replace(' HP', ''))) : 
+                              formatHivePower(parseFloat(user.hivePower.replace(/,/g, '').replace(' HP', '')) + 
+                                                parseFloat(user.proxiedHivePower.replace(/,/g, '').replace(' HP', ''))) : 
                               user?.hivePower}
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">

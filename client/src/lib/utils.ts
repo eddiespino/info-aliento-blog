@@ -32,9 +32,9 @@ export function formatLargeNumber(num: number, decimals: number = 1): string {
 }
 
 /**
- * Format Hive Power value with commas, 3 decimal places, and "Hive Power" suffix
+ * Format Hive Power value with commas, 3 decimal places, and "HP" suffix
  * @param hiveAmount Amount in Hive
- * @returns Formatted string (e.g., 17,123.456 Hive Power)
+ * @returns Formatted string (e.g., 17,123.456 HP)
  */
 export function formatHivePower(hiveAmount: number): string {
   // Format with commas and 3 decimal places
@@ -43,6 +43,6 @@ export function formatHivePower(hiveAmount: number): string {
     maximumFractionDigits: 3
   });
   
-  // Add Hive Power suffix
-  return `${formattedNumber} Hive Power`;
+  // Add HP suffix
+  return `${formattedNumber} HP`;
 }
