@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import Witnesses from "@/pages/witnesses";
 import About from "@/pages/about";
 import WitnessProfile from "@/pages/witness-profile";
+import UserStats from "@/pages/user-stats";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/witnesses" component={Witnesses} />
       <Route path="/about" component={About} />
       <Route path="/witness/:name" component={WitnessProfile} />
+      <Route path="/user-stats" component={UserStats} />
       <Route component={NotFound} />
     </Switch>
   );
