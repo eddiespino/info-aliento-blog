@@ -14,21 +14,27 @@ import { useState } from 'react';
 
 export default function UserStats() {
   const { t } = useLanguage();
-  const { user, isLoggedIn } = useKeychain();
+  const { user, isLoggedIn, skipAuthPopup } = useKeychain();
   const [, setLocation] = useLocation();
   const [loginModalOpen, setLoginModalOpen] = useState(false);
-
-  // If user is not logged in, show login modal only when the page is first loaded
+  
+  // If user is not logged in, show login modal only when necessary
   // Using a ref to track if we've already shown the login modal
   const loginModalShown = useRef(false);
   
   useEffect(() => {
-    // Only show login modal if user is not logged in AND we haven't shown it yet
-    if (!isLoggedIn && !loginModalShown.current) {
+    // Only show login modal if:
+    // 1. User is not logged in AND
+    // 2. We haven't shown it yet on this page AND
+    // 3. We're not supposed to skip authentication (for page reloads)
+    if (!isLoggedIn && !loginModalShown.current && !skipAuthPopup) {
+      console.log('Showing login modal (not skipped)');
       loginModalShown.current = true;
       setLoginModalOpen(true);
+    } else if (skipAuthPopup) {
+      console.log('Skipping login modal due to skipAuthPopup flag');
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, skipAuthPopup]);
 
   // Handle close of login modal
   const handleLoginModalClose = () => {
