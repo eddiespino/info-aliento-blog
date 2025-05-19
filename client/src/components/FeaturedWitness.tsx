@@ -110,7 +110,7 @@ export default function FeaturedWitness() {
             )}
             <div>
               <h4 className="font-medium text-foreground">@aliento</h4>
-              <p className="text-xs sm:text-sm text-muted-foreground">{t('profile.since')} 2021</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">{t('profile.since')} 2022</p>
             </div>
           </div>
           <p className="text-xs sm:text-sm text-muted-foreground">
