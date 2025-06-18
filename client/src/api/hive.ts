@@ -675,8 +675,9 @@ export const calculateProxiedHivePower = async (username: string): Promise<strin
       // Sum all the proxied voting power (each element represents different types of votes)
       // Usually only the first element contains witness votes
       for (const vests of account.proxied_vsf_votes) {
-        if (typeof vests === 'number' && vests > 0) {
-          totalProxiedVests += vests;
+        const vestValue = typeof vests === 'string' ? parseFloat(vests) : vests;
+        if (typeof vestValue === 'number' && vestValue > 0) {
+          totalProxiedVests += vestValue;
         }
       }
     }
