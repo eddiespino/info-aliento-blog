@@ -239,52 +239,8 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
         return { success: false, error: 'Keychain not installed' };
       }
 
-      // Now check if the account exists in keychain
-      console.log('Verifying account exists in keychain:', cleanedUsername);
-      
-      // Create a unique message to sign to verify the key exists
-      const signMessage = `Login to Aliento Witness Dashboard: ${new Date().toISOString()}`;
-
-      // Check if the login will succeed by attempting a signature first
-      const verifyKeychainHasAccount = new Promise<boolean>((resolve) => {
-        // The keychain will only attempt to sign if it has the account
-        keychain.requestSignBuffer(
-          cleanedUsername,
-          signMessage,
-          'Posting',
-          (verifyResponse) => {
-            if (verifyResponse.success) {
-              console.log('Account verified in keychain:', cleanedUsername);
-              resolve(true);
-            } else {
-              // If there's an error that's not related to the account not existing,
-              // log it specifically
-              if (verifyResponse.message && verifyResponse.message.includes("account doesn't exist")) {
-                console.log('Account does not exist in keychain:', cleanedUsername);
-              } else if (verifyResponse.message && verifyResponse.message.includes("User canceled")) {
-                console.log('User canceled the verification:', cleanedUsername);
-              } else {
-                console.log('Verification failed with message:', verifyResponse.message);
-              }
-              resolve(false);
-            }
-          }
-        );
-      });
-
-      // Wait for account verification
-      const accountExists = await verifyKeychainHasAccount;
-      
-      if (!accountExists) {
-        console.error('Account not found in keychain or user canceled');
-        return { 
-          success: false, 
-          error: 'Account not found in your Hive Keychain or request was canceled' 
-        };
-      }
-
-      // If verification passed, proceed with actual login
-      console.log('Proceeding with login for verified account:', cleanedUsername);
+      // Proceed with login - keychain will validate account internally
+      console.log('Attempting login with keychain:', cleanedUsername);
       
       const loginMessage = `Login to Aliento Witness Dashboard: ${new Date().toISOString()}`;
       
@@ -429,7 +385,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
           setUser(userData);
           
           // Update localStorage with the latest user data after voting
-          localStorage.setItem('hive_user', JSON.stringify(userData));
+          localStorage.setItem('hive_current_user', JSON.stringify(userData));
         } catch (dataError) {
           console.error('Error updating user data after vote:', dataError);
         }
