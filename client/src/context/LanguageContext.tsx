@@ -224,7 +224,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'userStats.governancePowerDesc': 'Your voting power for governance decisions and witness votes (own HP + proxied HP)',
       'userStats.viewStats': 'View Stats',
       
-      // Modal translations
+      // Modal translations  
       'modal.login.title': 'Login with Hive Keychain',
       'modal.login.desc': 'Enter your Hive username to authenticate',
       'modal.login.username': 'Hive Username',
@@ -433,7 +433,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'userStats.governancePowerDesc': 'Tu poder de voto para decisiones de gobernanza y votos de testigos (HP propio + HP delegado)',
       'userStats.viewStats': 'Ver Estadísticas',
       
-      // Modal translations
+      // Modal translations ES
       'modal.login.title': 'Iniciar Sesión con Hive Keychain',
       'modal.login.desc': 'Ingresa tu nombre de usuario de Hive para autenticarte',
       'modal.login.username': 'Nombre de usuario de Hive',

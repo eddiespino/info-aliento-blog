@@ -166,51 +166,50 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
       // Remove any @ symbols and trim whitespace
       const cleanedUsername = username.replace('@', '').trim().toLowerCase();
     
-    // First check if the account exists on the Hive blockchain
-    console.log('Checking if account exists on Hive blockchain:', cleanedUsername);
-    const hiveAccount = await getUserAccount(cleanedUsername);
-    
-    if (!hiveAccount) {
-      console.error('Account does not exist on Hive blockchain:', cleanedUsername);
-      return {
-        success: false,
-        error: 'The account does not exist on the Hive blockchain'
-      };
-    }
-    
-    console.log('Account verified on Hive blockchain:', cleanedUsername);
-    
-    if (useDevelopmentMode) {
-      // Use mock login in development
-      const response = await mockLogin(cleanedUsername);
+      // First check if the account exists on the Hive blockchain
+      console.log('Checking if account exists on Hive blockchain:', cleanedUsername);
+      const hiveAccount = await getUserAccount(cleanedUsername);
       
-      if (response.success) {
-        try {
-          console.log('Development mode: Fetching user data for:', cleanedUsername);
-          const userData = await getUserData(cleanedUsername);
-          setUser(userData);
-          
-          // Save user data to localStorage for persistence in development mode
-          localStorage.setItem('hive_user', JSON.stringify(userData));
-        } catch (dataError) {
-          console.error('Development mode: Error fetching user data:', dataError);
-          const userData = { username: cleanedUsername };
-          setUser(userData);
-          
-          // Save minimal user data to localStorage
-          localStorage.setItem('hive_user', JSON.stringify(userData));
-        }
-        setIsLoggedIn(true);
+      if (!hiveAccount) {
+        console.error('Account does not exist on Hive blockchain:', cleanedUsername);
+        return {
+          success: false,
+          error: 'The account does not exist on the Hive blockchain'
+        };
       }
       
-      return response;
-    }
-    
-    if (!isKeychainInstalled || !keychain) {
-      return { success: false, error: 'Keychain not installed' };
-    }
+      console.log('Account verified on Hive blockchain:', cleanedUsername);
+      
+      if (useDevelopmentMode) {
+        // Use mock login in development
+        const response = await mockLogin(cleanedUsername);
+        
+        if (response.success) {
+          try {
+            console.log('Development mode: Fetching user data for:', cleanedUsername);
+            const userData = await getUserData(cleanedUsername);
+            setUser(userData);
+            
+            // Save user data to localStorage for persistence in development mode
+            localStorage.setItem('hive_user', JSON.stringify(userData));
+          } catch (dataError) {
+            console.error('Development mode: Error fetching user data:', dataError);
+            const userData = { username: cleanedUsername };
+            setUser(userData);
+            
+            // Save minimal user data to localStorage
+            localStorage.setItem('hive_user', JSON.stringify(userData));
+          }
+          setIsLoggedIn(true);
+        }
+        
+        return response;
+      }
+      
+      if (!isKeychainInstalled || !keychain) {
+        return { success: false, error: 'Keychain not installed' };
+      }
 
-    try {
       // Now check if the account exists in keychain
       console.log('Verifying account exists in keychain:', cleanedUsername);
       
