@@ -114,6 +114,8 @@ This is a full-stack web application for viewing and interacting with Hive block
 - June 18, 2025. Feature: Added clickable username links in witness voters section - clicking on voter usernames navigates to their individual stats pages
 - June 18, 2025. Bug fixes: Fixed double authentication request in login flow, removed duplicate try-catch blocks causing compilation errors, and corrected localStorage key inconsistency in vote witness function
 - June 18, 2025. Bug fix: Corrected governance power calculation to use Own HP + Proxied HP instead of Effective HP + Proxied HP, ensuring accurate witness voting power display
+- June 18, 2025. Bug fix: Fixed proxied HP calculation handling string values from API instead of numbers, resolving display issues for users like blocktrades with proxied voting power
+- June 18, 2025. Performance optimization: Reduced witness data polling from 3 seconds to 30 seconds to decrease API load while maintaining reasonable data freshness
 
 ## User Preferences
 

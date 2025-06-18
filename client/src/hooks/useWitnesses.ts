@@ -120,7 +120,7 @@ export function useWitnesses(
   } = useQuery({
     queryKey: ['witnesses', currentPage],
     queryFn: fetchWitnesses,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 30, // 30 seconds
     refetchOnWindowFocus: false,
     placeholderData: (previousData) => previousData, // TanStack Query v5 way to keep previous data while loading
   });
@@ -128,14 +128,14 @@ export function useWitnesses(
   // Track current block producer
   const currentBlockProducer = useCurrentBlockProducer();
   
-  // Set up automatic refreshing of witness data every 3 seconds - only for the first page
+  // Set up automatic refreshing of witness data every 30 seconds - only for the first page
   useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null;
     
     if (currentPage === 0) {
       intervalId = setInterval(() => {
         refetch();
-      }, 3000); // 3 second refresh for last block numbers
+      }, 30000); // 30 second refresh for last block numbers
     }
       
     return () => {
