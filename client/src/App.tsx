@@ -14,6 +14,7 @@ import Footer from "./components/layout/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { KeychainProvider } from "./context/KeychainContext";
 import { LanguageProvider } from "./context/LanguageContext";
+import { ErrorBoundary } from "./components/ui/error-boundary";
 
 function Router() {
   return (
@@ -31,24 +32,26 @@ function Router() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <KeychainProvider>
-        <LanguageProvider>
-          <ThemeProvider defaultTheme="system">
-            <TooltipProvider>
-              <div className="min-h-screen flex flex-col">
-                <Header />
-                <main className="flex-1">
-                  <Router />
-                </main>
-                <Footer />
-              </div>
-              <Toaster />
-            </TooltipProvider>
-          </ThemeProvider>
-        </LanguageProvider>
-      </KeychainProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <KeychainProvider>
+          <LanguageProvider>
+            <ThemeProvider defaultTheme="system">
+              <TooltipProvider>
+                <div className="min-h-screen flex flex-col">
+                  <Header />
+                  <main className="flex-1">
+                    <Router />
+                  </main>
+                  <Footer />
+                </div>
+                <Toaster />
+              </TooltipProvider>
+            </ThemeProvider>
+          </LanguageProvider>
+        </KeychainProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
