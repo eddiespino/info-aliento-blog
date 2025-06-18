@@ -649,6 +649,7 @@ export const calculateProxiedHivePower = async (username: string): Promise<strin
     // If this account has a proxy set, they are delegating TO someone else, not receiving delegation
     if (account.proxy && account.proxy !== '') {
       // This account delegates to a proxy, so it receives 0 proxied power
+      console.log(`${username} has proxy set to ${account.proxy}, returning 0 proxied power`);
       return '0 HP';
     }
     
