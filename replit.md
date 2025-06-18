@@ -113,6 +113,7 @@ This is a full-stack web application for viewing and interacting with Hive block
 - June 18, 2025. Bug fix: Fixed translation key issues displaying proper English text instead of untranslated keys in user stats pages
 - June 18, 2025. Feature: Added clickable username links in witness voters section - clicking on voter usernames navigates to their individual stats pages
 - June 18, 2025. Bug fixes: Fixed double authentication request in login flow, removed duplicate try-catch blocks causing compilation errors, and corrected localStorage key inconsistency in vote witness function
+- June 18, 2025. Bug fix: Corrected governance power calculation to use Own HP + Proxied HP instead of Effective HP + Proxied HP, ensuring accurate witness voting power display
 
 ## User Preferences
 
