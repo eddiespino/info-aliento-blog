@@ -201,7 +201,7 @@ export default function UserStats() {
                           <div className="text-sm text-muted-foreground">Governance Power</div>
                           <div className="text-2xl font-bold">
                             {formatHivePower(
-                              (parseFloat(user?.effectiveHivePower?.replace(/[^0-9.]/g, '') || '0') + 
+                              (parseFloat(user?.hivePower?.replace(/[^0-9.]/g, '') || '0') + 
                                parseFloat(user?.proxiedHivePower?.replace(/[^0-9.]/g, '') || '0'))
                             )}
                           </div>
