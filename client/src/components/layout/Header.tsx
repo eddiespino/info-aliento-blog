@@ -9,7 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import UserSwitchModal from '@/components/modals/UserSwitchModal';
 import { ThemeToggle } from '../ThemeToggle';
 import { LanguageToggle } from '../LanguageToggle';
-import { ViewOnlyToggle } from '../ViewOnlyToggle';
+
 import alientoLogo from '@/assets/aliento-logo.png';
 
 export default function Header() {
@@ -72,7 +72,6 @@ export default function Header() {
             {/* Authentication */}
             <div className="flex items-center gap-2">
               <div className="ml-auto flex items-center gap-2">
-                <ViewOnlyToggle />
                 <LanguageToggle />
                 <ThemeToggle />
               </div>

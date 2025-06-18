@@ -35,9 +35,7 @@ const defaultContextValue: KeychainContextType = {
   isDevelopmentMode: false,
   getSavedUsers: () => [],
   switchUser: async () => false,
-  removeUser: () => {},
-  viewOnlyMode: false,
-  setViewOnlyMode: () => {}
+  removeUser: () => {}
 };
 
 // Create the context
@@ -561,9 +559,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     isDevelopmentMode,
     getSavedUsers,
     switchUser,
-    removeUser,
-    viewOnlyMode,
-    setViewOnlyMode: updateViewOnlyMode
+    removeUser: updateViewOnlyMode
   };
 
   return (

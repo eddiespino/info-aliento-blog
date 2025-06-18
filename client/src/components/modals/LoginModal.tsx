@@ -65,18 +65,14 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
           <DialogTitle className="flex items-center gap-2">
             <span className="material-symbols-outlined text-primary">login</span>
             {t('modal.login.title')}
-            {(isDevelopmentMode || viewOnlyMode) && (
+            {isDevelopmentMode && (
               <Badge variant="secondary" className="ml-2 text-xs">
-                {isDevelopmentMode ? 'Dev Mode' : 'View Only'}
+                Dev Mode
               </Badge>
             )}
           </DialogTitle>
           <DialogDescription>
-            {viewOnlyMode && !isDevelopmentMode ? (
-              'Enter any Hive username to view their witness votes and stats. Authentication required for voting.'
-            ) : (
-              t('modal.login.desc')
-            )}
+            {t('modal.login.desc')}
           </DialogDescription>
         </DialogHeader>
         
