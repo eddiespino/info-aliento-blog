@@ -5,7 +5,8 @@ import { useLanguage } from '@/context/LanguageContext';
 import LoginModal from '../modals/LoginModal';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import UserSwitchModal from '@/components/modals/UserSwitchModal';
 import { ThemeToggle } from '../ThemeToggle';
 import { LanguageToggle } from '../LanguageToggle';
 import alientoLogo from '@/assets/aliento-logo.png';
@@ -13,6 +14,7 @@ import alientoLogo from '@/assets/aliento-logo.png';
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [userSwitchModalOpen, setUserSwitchModalOpen] = useState(false);
   const { isLoggedIn, user, logout } = useKeychain();
   const { t } = useLanguage();
   const [location] = useLocation();
