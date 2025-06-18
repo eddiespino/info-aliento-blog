@@ -99,7 +99,7 @@ This is a full-stack web application for viewing and interacting with Hive block
 ## Changelog
 
 - June 18, 2025. Initial setup
-- June 18, 2025. Bug fixes: Fixed duplicate translation keys, memory leaks in polling intervals, API error handling, and race conditions in login flow
+- June 18, 2025. Bug fixes: Fixed duplicate translation keys, memory leaks in polling intervals, API error handling, and race conditions in login flow  
 - June 18, 2025. UI improvement: Removed flag emojis from language toggle dropdown for cleaner appearance
 - June 18, 2025. Bug fix: Corrected proxied power calculation logic - fixed misunderstanding of proxied_vsf_votes field and implemented more efficient calculation method
 - June 18, 2025. Bug fix: Fixed proxy calculation to use proxied_vsf_votes field directly instead of scanning all witness voters, which is much more efficient and accurate
@@ -112,6 +112,7 @@ This is a full-stack web application for viewing and interacting with Hive block
 - June 18, 2025. Architecture change: Removed Auth-only and View-only modes completely, simplifying the application to support public profile viewing by default
 - June 18, 2025. Bug fix: Fixed translation key issues displaying proper English text instead of untranslated keys in user stats pages
 - June 18, 2025. Feature: Added clickable username links in witness voters section - clicking on voter usernames navigates to their individual stats pages
+- June 18, 2025. Bug fixes: Fixed double authentication request in login flow, removed duplicate try-catch blocks causing compilation errors, and corrected localStorage key inconsistency in vote witness function
 
 ## User Preferences
 
