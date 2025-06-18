@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -18,8 +18,14 @@ export default function UserSwitchModal({ open, onClose }: UserSwitchModalProps)
   const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [savedUsers, setSavedUsers] = useState<any[]>([]);
 
-  const savedUsers = getSavedUsers();
+  // Update saved users when modal opens or when users change
+  useEffect(() => {
+    if (open) {
+      setSavedUsers(getSavedUsers());
+    }
+  }, [open, getSavedUsers]);
 
   const handleSwitchUser = async (username: string) => {
     if (username === currentUser?.username) {
@@ -44,6 +50,9 @@ export default function UserSwitchModal({ open, onClose }: UserSwitchModalProps)
     // Confirm removal
     if (confirm(`Remove account @${username} from saved accounts?`)) {
       removeUser(username);
+      // Refresh the saved users list immediately
+      setSavedUsers(getSavedUsers());
+      console.log(`Account @${username} removed, refreshing list`);
     }
   };
 
@@ -53,6 +62,8 @@ export default function UserSwitchModal({ open, onClose }: UserSwitchModalProps)
 
   const handleLoginModalClose = () => {
     setLoginModalOpen(false);
+    // Refresh saved users list when login modal closes
+    setSavedUsers(getSavedUsers());
     // If a new user was added, close this modal too
     if (currentUser) {
       onClose();
