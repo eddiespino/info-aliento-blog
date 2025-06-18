@@ -108,6 +108,10 @@ This is a full-stack web application for viewing and interacting with Hive block
 - June 18, 2025. Bug fix: Fixed remove account button functionality and added confirmation dialog for account removal
 - June 18, 2025. Feature: Added view-only mode toggle that allows exploring any account's witness votes without authentication (voting still requires keychain)
 - June 18, 2025. UI improvement: Moved view-only mode toggle to header for better accessibility alongside theme and language toggles
+- June 18, 2025. Feature: Implemented public user stats via direct URLs - users can now access any user's stats by visiting /username (e.g., /eddiespino, /theycallmedan)
+- June 18, 2025. Architecture change: Removed Auth-only and View-only modes completely, simplifying the application to support public profile viewing by default
+- June 18, 2025. Bug fix: Fixed translation key issues displaying proper English text instead of untranslated keys in user stats pages
+- June 18, 2025. Feature: Added clickable username links in witness voters section - clicking on voter usernames navigates to their individual stats pages
 
 ## User Preferences
 
