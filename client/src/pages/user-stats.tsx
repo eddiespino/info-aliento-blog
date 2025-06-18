@@ -108,9 +108,15 @@ export default function UserStats() {
             <div className="text-center sm:text-left">
               <h2 className="text-3xl font-bold">@{user?.username}</h2>
               <div className="flex flex-wrap gap-4 mt-2">
-                <Badge variant="outline" className="bg-primary/10">
-                  {user?.witnessVotes?.length || 0}/30 witness votes
-                </Badge>
+                {user?.proxy ? (
+                  <Badge variant="outline" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                    Proxy: @{user.proxy}
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="bg-primary/10">
+                    {user?.witnessVotes?.length || 0}/30 witness votes
+                  </Badge>
+                )}
               </div>
             </div>
           </div>

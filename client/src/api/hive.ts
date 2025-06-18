@@ -706,6 +706,10 @@ export const getUserData = async (username: string): Promise<UserData> => {
     const account = await getUserAccount(username);
     const proxy = account?.proxy || null;
     
+    if (proxy) {
+      console.log(`User ${username} has proxy set to: ${proxy}`);
+    }
+    
     // Get user's own Hive Power (without delegations)
     const hivePower = await calculateUserHivePower(username);
     
