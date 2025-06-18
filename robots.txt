@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hive-witness-directory.replit.app/sitemap.xml
