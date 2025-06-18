@@ -299,6 +299,11 @@ export default function Header() {
       </header>
 
       <LoginModal open={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
+      
+      <UserSwitchModal 
+        open={userSwitchModalOpen} 
+        onClose={() => setUserSwitchModalOpen(false)} 
+      />
     </>
   );
 }
