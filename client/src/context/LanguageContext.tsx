@@ -224,27 +224,6 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'userStats.governancePowerDesc': 'Your voting power for governance decisions and witness votes (own HP + proxied HP)',
       'userStats.viewStats': 'View Stats',
       
-      // Modal translations  
-      'modal.login.title': 'Login with Hive Keychain',
-      'modal.login.desc': 'Enter your Hive username to authenticate',
-      'modal.login.username': 'Hive Username',
-      'modal.login.devMode': 'Development mode: Keychain not required for testing',
-      'modal.login.login': 'Login',
-      'modal.login.cancel': 'Cancel',
-      'modal.login.installing': 'Installing...',
-      
-      'modal.vote.title': 'Vote for Witness',
-      'modal.vote.remove': 'Remove Vote',
-      'modal.vote.desc': 'You are about to vote for',
-      'modal.vote.broadcast': 'This transaction will be broadcast to the blockchain.',
-      'modal.vote.approval': 'Approval',
-      'modal.vote.approve': 'Approve',
-      'modal.vote.cancel': 'Cancel',
-      'modal.vote.confirm': 'Confirm Vote',
-      'modal.vote.confirming': 'Confirming...',
-      
-      'error': 'Error',
-      
       // Footer
       'footer.description': 'Supporting the Hive blockchain ecosystem through reliable witness operations and community development.',
       'footer.quickLinks': 'Quick Links',
@@ -432,27 +411,6 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'userStats.governancePower': 'Poder de Gobernanza',
       'userStats.governancePowerDesc': 'Tu poder de voto para decisiones de gobernanza y votos de testigos (HP propio + HP delegado)',
       'userStats.viewStats': 'Ver Estadísticas',
-      
-      // Modal translations ES
-      'modal.login.title': 'Iniciar Sesión con Hive Keychain',
-      'modal.login.desc': 'Ingresa tu nombre de usuario de Hive para autenticarte',
-      'modal.login.username': 'Nombre de usuario de Hive',
-      'modal.login.devMode': 'Modo de desarrollo: Keychain no requerido para pruebas',
-      'modal.login.login': 'Iniciar Sesión',
-      'modal.login.cancel': 'Cancelar',
-      'modal.login.installing': 'Instalando...',
-      
-      'modal.vote.title': 'Votar por Testigo',
-      'modal.vote.remove': 'Remover Voto',
-      'modal.vote.desc': 'Estás a punto de votar por',
-      'modal.vote.broadcast': 'Esta transacción será transmitida a la blockchain.',
-      'modal.vote.approval': 'Aprobación',
-      'modal.vote.approve': 'Aprobar',
-      'modal.vote.cancel': 'Cancelar',
-      'modal.vote.confirm': 'Confirmar Voto',
-      'modal.vote.confirming': 'Confirmando...',
-      
-      'error': 'Error',
       
       // Footer
       'footer.description': 'Apoyando el ecosistema de la blockchain Hive a través de operaciones de testigo confiables y desarrollo comunitario.',
