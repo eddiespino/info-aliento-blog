@@ -155,8 +155,16 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   // Real login implementation with strict username verification
   const login = async (username: string): Promise<LoginResponse> => {
-    // Remove any @ symbols and trim whitespace
-    const cleanedUsername = username.replace('@', '').trim().toLowerCase();
+    // Prevent duplicate login attempts
+    if (loginInProgress) {
+      return { success: false, error: 'Login already in progress' };
+    }
+    
+    setLoginInProgress(true);
+    
+    try {
+      // Remove any @ symbols and trim whitespace
+      const cleanedUsername = username.replace('@', '').trim().toLowerCase();
     
     // First check if the account exists on the Hive blockchain
     console.log('Checking if account exists on Hive blockchain:', cleanedUsername);
@@ -297,6 +305,8 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     } catch (error) {
       console.error('Login error:', error);
       return { success: false, error: String(error) };
+    } finally {
+      setLoginInProgress(false);
     }
   };
 

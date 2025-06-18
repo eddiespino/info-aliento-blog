@@ -116,23 +116,34 @@ export function useWitnesses(
   
   // Set up automatic refreshing of witness data every 3 seconds - only for the first page
   useEffect(() => {
+    let intervalId: NodeJS.Timeout | null = null;
+    
     if (currentPage === 0) {
-      const intervalId = setInterval(() => {
+      intervalId = setInterval(() => {
         refetch();
       }, 3000); // 3 second refresh for last block numbers
-      
-      return () => clearInterval(intervalId);
     }
+      
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
   }, [refetch, currentPage]);
 
   // Filter all witnesses by search term and activity status
   const filteredWitnesses = useMemo(() => {
+    if (!allWitnesses || allWitnesses.length === 0) {
+      return [];
+    }
+    
     let filtered = [...allWitnesses]; // Make a copy to avoid mutating the original data
     
     // Apply search filter if search term exists
-    if (searchTerm) {
+    if (searchTerm && searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase().trim();
       filtered = filtered.filter((witness) => 
-        witness.name.toLowerCase().includes(searchTerm.toLowerCase())
+        witness.name && witness.name.toLowerCase().includes(searchLower)
       );
     }
     

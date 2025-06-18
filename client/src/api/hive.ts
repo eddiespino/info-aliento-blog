@@ -276,14 +276,24 @@ export const getNetworkStats = async (): Promise<NetworkStats> => {
       return lastBlock > blockFrom24HoursAgo;
     }).length;
     
-    // Format the price as USD
-    const hivePrice = parseFloat(price.base.split(' ')[0]) / parseFloat(price.quote.split(' ')[0]);
+    // Format the price as USD - handle potential parsing errors
+    let hivePrice = 0;
+    try {
+      const basePrice = parseFloat(price.base.split(' ')[0]);
+      const quotePrice = parseFloat(price.quote.split(' ')[0]);
+      if (quotePrice !== 0) {
+        hivePrice = basePrice / quotePrice;
+      }
+    } catch (priceParseError) {
+      console.error('Error parsing price data:', priceParseError);
+      hivePrice = 0;
+    }
     
     return {
       blockHeight: props.head_block_number.toLocaleString(),
       txPerDay: Math.round(props.current_aslot / 1440 * 20).toLocaleString(), // Rough estimate
       activeWitnesses: activeWitnessCount.toString(), // Total witnesses that signed a block in last 24 hours
-      hivePrice: `$${hivePrice.toFixed(3)}`
+      hivePrice: hivePrice > 0 ? `$${hivePrice.toFixed(3)}` : "N/A"
     };
   } catch (error) {
     console.error('Error fetching network stats:', error);
