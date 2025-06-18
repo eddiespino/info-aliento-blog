@@ -133,14 +133,22 @@ export default function Header() {
                       </div>
                       <div className="flex flex-col space-y-1 mb-2">
                         <div className="text-muted-foreground">Witness Votes:</div>
-                        <div className="flex items-center gap-2">
-                          <span className="bg-primary/20 text-primary font-medium px-2 py-0.5 rounded-full text-xs">
-                            {user?.freeWitnessVotes} free votes
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            ({30 - (user?.freeWitnessVotes || 0)}/30 used)
-                          </span>
-                        </div>
+                        {user?.proxy ? (
+                          <div className="flex items-center gap-2">
+                            <span className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 font-medium px-2 py-0.5 rounded-full text-xs">
+                              Proxy: @{user.proxy}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <span className="bg-primary/20 text-primary font-medium px-2 py-0.5 rounded-full text-xs">
+                              {user?.freeWitnessVotes} free votes
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              ({30 - (user?.freeWitnessVotes || 0)}/30 used)
+                            </span>
+                          </div>
+                        )}
                       </div>
                       <div className="mt-4 border-t border-border pt-2">
                         <Link href="/user-stats">
@@ -266,9 +274,15 @@ export default function Header() {
                           <div>
                             {user?.proxiedHivePower} <span className="opacity-70">(proxied)</span>
                           </div>
-                          <span className="bg-primary/20 text-primary font-medium px-2 py-0.5 rounded-full inline-block mt-1 w-fit">
-                            {user?.freeWitnessVotes} free votes
-                          </span>
+                          {user?.proxy ? (
+                            <span className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 font-medium px-2 py-0.5 rounded-full inline-block mt-1 w-fit">
+                              Proxy: @{user.proxy}
+                            </span>
+                          ) : (
+                            <span className="bg-primary/20 text-primary font-medium px-2 py-0.5 rounded-full inline-block mt-1 w-fit">
+                              {user?.freeWitnessVotes} free votes
+                            </span>
+                          )}
                         </div>
                         <div className="flex gap-3 mt-3">
                           <Link 
