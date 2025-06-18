@@ -10,8 +10,11 @@ export const useCurrentBlockProducer = () => {
   // Poll for the current block producer
   useEffect(() => {
     let mounted = true;
+    let intervalId: NodeJS.Timeout | null = null;
     
     const fetchCurrentBlockProducer = async () => {
+      if (!mounted) return;
+      
       try {
         const apiNode = await getBestHiveNode();
         
@@ -40,7 +43,9 @@ export const useCurrentBlockProducer = () => {
           setCurrentBlockProducer(currentWitness);
         }
       } catch (error) {
-        console.error('Error fetching current block producer:', error);
+        if (mounted) {
+          console.error('Error fetching current block producer:', error);
+        }
       }
     };
     
@@ -48,12 +53,14 @@ export const useCurrentBlockProducer = () => {
     fetchCurrentBlockProducer();
     
     // Set up polling interval (every 3 seconds)
-    const intervalId = setInterval(fetchCurrentBlockProducer, 3000);
+    intervalId = setInterval(fetchCurrentBlockProducer, 3000);
     
     // Clean up on unmount
     return () => {
       mounted = false;
-      clearInterval(intervalId);
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
     };
   }, []);
   

@@ -81,8 +81,8 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
         if (userData.username) {
           getUserData(userData.username)
             .then(freshUserData => {
-              // Only update if there are meaningful differences
-              if (JSON.stringify(userData) !== JSON.stringify(freshUserData)) {
+              // Only update if component is still mounted and there are meaningful differences
+              if (freshUserData && JSON.stringify(userData) !== JSON.stringify(freshUserData)) {
                 console.log('Updating user data with fresh data from API');
                 setUser(freshUserData);
                 try {
@@ -149,7 +149,11 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
         }
       }, 1000); // Check every second
       
-      return () => clearInterval(checkInterval);
+      return () => {
+        if (checkInterval) {
+          clearInterval(checkInterval);
+        }
+      };
     }
     
     // No cleanup needed if initial check succeeded
@@ -194,6 +198,10 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     try {
       // Remove any @ symbols and trim whitespace
       const cleanedUsername = username.replace('@', '').trim().toLowerCase();
+      
+      if (!cleanedUsername) {
+        return { success: false, error: 'Username cannot be empty' };
+      }
     
       // First check if the account exists on the Hive blockchain
       console.log('Checking if account exists on Hive blockchain:', cleanedUsername);

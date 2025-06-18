@@ -13,25 +13,39 @@ export default function Debug() {
   const { witness, isLoading: witnessLoading, error: witnessError, isError: isWitnessError } = useAlientoWitness();
 
   useEffect(() => {
+    let isMounted = true;
+    
     const fetchDirect = async () => {
       try {
         const netStats = await getNetworkStats();
-        setDirectNetStats(netStats);
-        setDirectNetError(null);
+        if (isMounted) {
+          setDirectNetStats(netStats);
+          setDirectNetError(null);
+        }
       } catch (error) {
-        setDirectNetError(String(error));
+        if (isMounted) {
+          setDirectNetError(String(error));
+        }
       }
       
       try {
         const witness = await getWitnessByName('aliento');
-        setDirectWitness(witness);
-        setDirectWitnessError(null);
+        if (isMounted) {
+          setDirectWitness(witness);
+          setDirectWitnessError(null);
+        }
       } catch (error) {
-        setDirectWitnessError(String(error));
+        if (isMounted) {
+          setDirectWitnessError(String(error));
+        }
       }
     };
     
     fetchDirect();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (

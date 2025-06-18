@@ -28,8 +28,10 @@ export default function UserStats() {
     setIsRefreshing(true);
     try {
       const freshUserData = await getUserData(user.username);
-      setUser(freshUserData);
-      localStorage.setItem('hive_current_user', JSON.stringify(freshUserData));
+      if (freshUserData) {
+        setUser(freshUserData);
+        localStorage.setItem('hive_current_user', JSON.stringify(freshUserData));
+      }
     } catch (error) {
       console.error('Error refreshing user data:', error);
     } finally {
