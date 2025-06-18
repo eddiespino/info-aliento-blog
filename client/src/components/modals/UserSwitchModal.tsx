@@ -40,7 +40,11 @@ export default function UserSwitchModal({ open, onClose }: UserSwitchModalProps)
 
   const handleRemoveUser = (username: string, event: React.MouseEvent) => {
     event.stopPropagation();
-    removeUser(username);
+    
+    // Confirm removal
+    if (confirm(`Remove account @${username} from saved accounts?`)) {
+      removeUser(username);
+    }
   };
 
   const handleAddNewUser = () => {

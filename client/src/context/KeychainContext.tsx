@@ -19,6 +19,8 @@ interface KeychainContextType {
   getSavedUsers: () => UserData[];
   switchUser: (username: string) => Promise<boolean>;
   removeUser: (username: string) => void;
+  viewOnlyMode: boolean;
+  setViewOnlyMode: (enabled: boolean) => void;
 }
 
 // Create default context values
@@ -34,7 +36,9 @@ const defaultContextValue: KeychainContextType = {
   isDevelopmentMode: false,
   getSavedUsers: () => [],
   switchUser: async () => false,
-  removeUser: () => {}
+  removeUser: () => {},
+  viewOnlyMode: false,
+  setViewOnlyMode: () => {}
 };
 
 // Create the context
@@ -50,6 +54,16 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
   // For development environment
   const isDevelopmentMode = import.meta.env.DEV || import.meta.env.MODE === 'development';
   const [useDevelopmentMode, setUseDevelopmentMode] = useState(isDevelopmentMode);
+  
+  // View-only mode allows viewing account data without authentication
+  const [viewOnlyMode, setViewOnlyMode] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hive_view_only_mode');
+      return saved ? JSON.parse(saved) : true; // Default to true for better UX
+    } catch {
+      return true;
+    }
+  });
 
   // Load saved user data from localStorage if it exists
   // This is done on initial load and helps prevent unnecessary authentication
@@ -502,8 +516,11 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
       const filteredUsers = savedUsers.filter(u => u.username !== username);
       localStorage.setItem('hive_saved_users', JSON.stringify(filteredUsers));
       
+      console.log(`Removed user ${username} from saved accounts`);
+      
       // If we're removing the current user, log them out
       if (user?.username === username) {
+        console.log('Removing current user, logging out');
         logout();
       }
     } catch (error) {
@@ -512,6 +529,16 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
   };
   
   // Create context value
+  // Update view-only mode setting
+  const updateViewOnlyMode = (enabled: boolean) => {
+    setViewOnlyMode(enabled);
+    try {
+      localStorage.setItem('hive_view_only_mode', JSON.stringify(enabled));
+    } catch (error) {
+      console.warn('Error saving view-only mode setting:', error);
+    }
+  };
+
   const contextValue: KeychainContextType = {
     keychain,
     user,
@@ -525,7 +552,9 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     isDevelopmentMode,
     getSavedUsers,
     switchUser,
-    removeUser
+    removeUser,
+    viewOnlyMode,
+    setViewOnlyMode: updateViewOnlyMode
   };
 
   return (

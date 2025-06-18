@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useKeychain } from '@/context/KeychainContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Download } from 'lucide-react';
 

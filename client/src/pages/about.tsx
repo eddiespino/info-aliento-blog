@@ -50,6 +50,14 @@ export default function About() {
             </div>
           </div>
         </div>
+
+        {/* Settings Section */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold mb-6 text-center">Settings</h2>
+          <div className="flex justify-center">
+            <ViewOnlyModeToggle />
+          </div>
+        </div>
       </div>
     </section>
   );
