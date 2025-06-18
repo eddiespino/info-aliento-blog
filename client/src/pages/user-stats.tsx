@@ -29,7 +29,7 @@ export default function UserStats() {
     try {
       const freshUserData = await getUserData(user.username);
       setUser(freshUserData);
-      localStorage.setItem('hive_user', JSON.stringify(freshUserData));
+      localStorage.setItem('hive_current_user', JSON.stringify(freshUserData));
     } catch (error) {
       console.error('Error refreshing user data:', error);
     } finally {
@@ -43,7 +43,7 @@ export default function UserStats() {
     if (typeof window === 'undefined') return;
     
     // Check if user has data in localStorage first
-    const hasLocalStorageUser = !!localStorage.getItem('hive_user');
+    const hasLocalStorageUser = !!localStorage.getItem('hive_current_user');
     
     // If user is not logged in and we haven't shown login modal yet
     if (!isLoggedIn && !hasAskedForLoginOnce.current && !hasLocalStorageUser) {

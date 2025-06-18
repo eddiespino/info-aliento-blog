@@ -16,6 +16,9 @@ interface KeychainContextType {
   voteWitness: (witness: string, approve: boolean) => Promise<VoteWitnessResponse>;
   setUser: (userData: UserData) => void;
   isDevelopmentMode: boolean;
+  getSavedUsers: () => UserData[];
+  switchUser: (username: string) => Promise<boolean>;
+  removeUser: (username: string) => void;
 }
 
 // Create default context values
@@ -28,7 +31,10 @@ const defaultContextValue: KeychainContextType = {
   logout: () => {},
   voteWitness: async () => ({ success: false, error: 'Context not initialized' }),
   setUser: () => {},
-  isDevelopmentMode: false
+  isDevelopmentMode: false,
+  getSavedUsers: () => [],
+  switchUser: async () => false,
+  removeUser: () => {}
 };
 
 // Create the context
@@ -48,7 +54,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
   // Load saved user data from localStorage if it exists
   // This is done on initial load and helps prevent unnecessary authentication
   useEffect(() => {
-    const savedUser = localStorage.getItem('hive_user');
+    const savedUser = localStorage.getItem('hive_current_user');
     if (savedUser) {
       try {
         const userData = JSON.parse(savedUser);
@@ -66,7 +72,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
                 console.log('Updating user data with fresh data from API');
                 setUser(freshUserData);
                 try {
-                  localStorage.setItem('hive_user', JSON.stringify(freshUserData));
+                  localStorage.setItem('hive_current_user', JSON.stringify(freshUserData));
                 } catch (storageError) {
                   console.warn('Error saving fresh user data to localStorage:', storageError);
                 }
@@ -79,7 +85,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
         }
       } catch (error) {
         console.error('Error parsing saved user data:', error);
-        localStorage.removeItem('hive_user');
+        localStorage.removeItem('hive_current_user');
       }
     }
   }, []);
@@ -200,14 +206,16 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
             setUser(userData);
             
             // Save user data to localStorage for persistence in development mode
-            localStorage.setItem('hive_user', JSON.stringify(userData));
+            localStorage.setItem('hive_current_user', JSON.stringify(userData));
+            saveUserToHistory(userData);
           } catch (dataError) {
             console.error('Development mode: Error fetching user data:', dataError);
             const userData = { username: cleanedUsername };
             setUser(userData);
             
             // Save minimal user data to localStorage
-            localStorage.setItem('hive_user', JSON.stringify(userData));
+            localStorage.setItem('hive_current_user', JSON.stringify(userData));
+            saveUserToHistory(userData);
           }
           setIsLoggedIn(true);
         }
@@ -300,7 +308,8 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
           setIsLoggedIn(true);
           
           // Save user data to localStorage for persistence across page reloads
-          localStorage.setItem('hive_user', JSON.stringify(userData));
+          localStorage.setItem('hive_current_user', JSON.stringify(userData));
+          saveUserToHistory(userData);
         } catch (dataError) {
           console.error('Error fetching user data:', dataError);
           // Set minimal user data if fetching complete data fails
@@ -330,7 +339,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     
     // Remove saved user data from localStorage
     try {
-      localStorage.removeItem('hive_user');
+      localStorage.removeItem('hive_current_user');
       console.log('User logged out, data cleared from localStorage');
     } catch (storageError) {
       console.warn('Error removing user data from localStorage:', storageError);
@@ -362,7 +371,8 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
             setUser(userData);
             
             // Update localStorage with the latest user data
-            localStorage.setItem('hive_user', JSON.stringify(userData));
+            localStorage.setItem('hive_current_user', JSON.stringify(userData));
+            saveUserToHistory(userData);
           } catch (dataError) {
             console.error('Development mode: Error updating user data after vote:', dataError);
           }
@@ -419,6 +429,87 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
       return { success: false, error: String(error) };
     }
   };
+
+  // Helper function to save user to history
+  const saveUserToHistory = (userData: UserData) => {
+    try {
+      const savedUsers = getSavedUsers();
+      const existingIndex = savedUsers.findIndex(u => u.username === userData.username);
+      
+      if (existingIndex >= 0) {
+        // Update existing user data
+        savedUsers[existingIndex] = userData;
+      } else {
+        // Add new user to the beginning of the list
+        savedUsers.unshift(userData);
+      }
+      
+      // Limit to 10 saved users
+      const limitedUsers = savedUsers.slice(0, 10);
+      localStorage.setItem('hive_saved_users', JSON.stringify(limitedUsers));
+    } catch (error) {
+      console.warn('Error saving user to history:', error);
+    }
+  };
+
+  // Get all saved users from localStorage
+  const getSavedUsers = (): UserData[] => {
+    try {
+      const savedUsers = localStorage.getItem('hive_saved_users');
+      return savedUsers ? JSON.parse(savedUsers) : [];
+    } catch (error) {
+      console.warn('Error getting saved users:', error);
+      return [];
+    }
+  };
+
+  // Switch to a different user
+  const switchUser = async (username: string): Promise<boolean> => {
+    try {
+      const savedUsers = getSavedUsers();
+      const userData = savedUsers.find(u => u.username === username);
+      
+      if (userData) {
+        // Use cached data first
+        setUser(userData);
+        setIsLoggedIn(true);
+        localStorage.setItem('hive_current_user', JSON.stringify(userData));
+        
+        // Then refresh data in background
+        try {
+          const freshUserData = await getUserData(username);
+          setUser(freshUserData);
+          localStorage.setItem('hive_current_user', JSON.stringify(freshUserData));
+          saveUserToHistory(freshUserData);
+        } catch (error) {
+          console.warn('Failed to refresh user data, using cached data:', error);
+        }
+        
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Error switching user:', error);
+      return false;
+    }
+  };
+
+  // Remove a user from saved users
+  const removeUser = (username: string) => {
+    try {
+      const savedUsers = getSavedUsers();
+      const filteredUsers = savedUsers.filter(u => u.username !== username);
+      localStorage.setItem('hive_saved_users', JSON.stringify(filteredUsers));
+      
+      // If we're removing the current user, log them out
+      if (user?.username === username) {
+        logout();
+      }
+    } catch (error) {
+      console.warn('Error removing user:', error);
+    }
+  };
   
   // Create context value
   const contextValue: KeychainContextType = {
@@ -431,7 +522,10 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     logout,
     voteWitness,
     setUser,
-    isDevelopmentMode
+    isDevelopmentMode,
+    getSavedUsers,
+    switchUser,
+    removeUser
   };
 
   return (
