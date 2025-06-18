@@ -99,7 +99,10 @@ This is a full-stack web application for viewing and interacting with Hive block
 ## Changelog
 
 - June 18, 2025. Initial setup
+- June 18, 2025. Bug fixes: Fixed duplicate translation keys, memory leaks in polling intervals, API error handling, and race conditions in login flow
+- June 18, 2025. UI improvement: Removed flag emojis from language toggle dropdown for cleaner appearance
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+UI preferences: Clean design without flag emojis in language selector.

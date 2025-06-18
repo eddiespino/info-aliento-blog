@@ -24,14 +24,12 @@ export function LanguageToggle() {
           onClick={() => setLanguage('en')}
           className={language === 'en' ? 'bg-primary/10 text-primary' : ''}
         >
-          <span className="mr-2 text-sm">🇺🇸</span>
           {t('english')}
         </DropdownMenuItem>
         <DropdownMenuItem 
           onClick={() => setLanguage('es')}
           className={language === 'es' ? 'bg-primary/10 text-primary' : ''}
         >
-          <span className="mr-2 text-sm">🇪🇸</span>
           {t('spanish')}
         </DropdownMenuItem>
       </DropdownMenuContent>
