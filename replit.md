@@ -107,6 +107,7 @@ This is a full-stack web application for viewing and interacting with Hive block
 - June 18, 2025. Feature: Added user switching functionality - users can now save multiple accounts, switch between them easily, and remove accounts with trash icon
 - June 18, 2025. Bug fix: Fixed remove account button functionality and added confirmation dialog for account removal
 - June 18, 2025. Feature: Added view-only mode toggle that allows exploring any account's witness votes without authentication (voting still requires keychain)
+- June 18, 2025. UI improvement: Moved view-only mode toggle to header for better accessibility alongside theme and language toggles
 
 ## User Preferences
 
