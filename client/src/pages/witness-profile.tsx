@@ -1,4 +1,4 @@
-import { useParams } from 'wouter';
+import { useParams, useLocation } from 'wouter';
 import { useWitness, useWitnessVoters, usePagination } from '@/hooks/useWitnesses';
 import { useKeychain } from '@/context/KeychainContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -25,6 +25,7 @@ export default function WitnessProfile() {
   const { voters, isLoading: isLoadingVoters } = useWitnessVoters(witnessName);
   const { isLoggedIn, user } = useKeychain();
   const { t } = useLanguage();
+  const [, setLocation] = useLocation();
   const [voteModalOpen, setVoteModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
@@ -268,7 +269,14 @@ export default function WitnessProfile() {
                                       <AvatarFallback>{voter.username.substring(0, 2).toUpperCase()}</AvatarFallback>
                                     </Avatar>
                                   </TableCell>
-                                  <TableCell>@{voter.username}</TableCell>
+                                  <TableCell>
+                                    <button 
+                                      onClick={() => setLocation(`/${voter.username}`)}
+                                      className="text-primary hover:underline cursor-pointer font-medium"
+                                    >
+                                      @{voter.username}
+                                    </button>
+                                  </TableCell>
                                   <TableCell className="text-right font-medium">{voter.hivePower}</TableCell>
                                   <TableCell className="text-right font-medium">
                                     {voter.proxiedHivePower ? voter.proxiedHivePower : "-"}
