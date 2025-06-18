@@ -14,6 +14,7 @@ interface KeychainContextType {
   login: (username: string) => Promise<LoginResponse>;
   logout: () => void;
   voteWitness: (witness: string, approve: boolean) => Promise<VoteWitnessResponse>;
+  setUser: (userData: UserData) => void;
   isDevelopmentMode: boolean;
 }
 
@@ -26,6 +27,7 @@ const defaultContextValue: KeychainContextType = {
   login: async () => ({ success: false, error: 'Context not initialized' }),
   logout: () => {},
   voteWitness: async () => ({ success: false, error: 'Context not initialized' }),
+  setUser: () => {},
   isDevelopmentMode: false
 };
 
@@ -417,6 +419,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     login,
     logout,
     voteWitness,
+    setUser,
     isDevelopmentMode
   };
 

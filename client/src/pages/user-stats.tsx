@@ -9,16 +9,33 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useKeychain } from '@/context/KeychainContext';
 import { useLocation } from 'wouter';
 import { formatHivePower } from '@/lib/utils';
+import { getUserData } from '@/api/hive';
 import LoginModal from '@/components/modals/LoginModal';
 
 export default function UserStats() {
   const { t } = useLanguage();
-  const { user, isLoggedIn } = useKeychain();
+  const { user, isLoggedIn, setUser } = useKeychain();
   const [, setLocation] = useLocation();
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   // Track if we should show login modal and if we have already asked before
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const hasAskedForLoginOnce = useRef(false);
+
+  const handleRefresh = async () => {
+    if (!user?.username) return;
+    
+    setIsRefreshing(true);
+    try {
+      const freshUserData = await getUserData(user.username);
+      setUser(freshUserData);
+      localStorage.setItem('hive_user', JSON.stringify(freshUserData));
+    } catch (error) {
+      console.error('Error refreshing user data:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
   
   // Force redirect if not logged in with a short delay
   useEffect(() => {
@@ -49,9 +66,24 @@ export default function UserStats() {
 
   return (
     <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <div className="text-center mb-10">
-        <h1 className="text-3xl font-bold">{t('userStats.title')}</h1>
-        <p className="mt-2 text-muted-foreground">{t('userStats.subtitle')}</p>
+      <div className="flex items-center justify-between mb-10">
+        <div className="text-center flex-1">
+          <h1 className="text-3xl font-bold">{t('userStats.title')}</h1>
+          <p className="mt-2 text-muted-foreground">{t('userStats.subtitle')}</p>
+        </div>
+        {isLoggedIn && (
+          <Button 
+            onClick={handleRefresh} 
+            disabled={isRefreshing}
+            variant="outline"
+            className="ml-4"
+          >
+            <span className="material-symbols-outlined text-sm mr-2">
+              {isRefreshing ? 'progress_activity' : 'refresh'}
+            </span>
+            {isRefreshing ? 'Refreshing...' : 'Refresh Data'}
+          </Button>
+        )}
       </div>
 
       {!isLoggedIn ? (

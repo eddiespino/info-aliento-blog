@@ -638,20 +638,33 @@ export const calculateProxiedHivePower = async (username: string): Promise<strin
     // Ensure we have the vests to HP ratio before processing
     await ensureVestToHpRatio();
     
-    // proxied_vsf_votes is an array with up to 4 elements that contains the total VESTS proxied to the account
-    const proxiedVsf = account.proxied_vsf_votes || [0, 0, 0, 0];
-    let totalProxiedVests = 0;
+    // IMPORTANT: proxied_vsf_votes represents voting power delegated FROM this account to their proxy,
+    // NOT power delegated TO this account. If an account has a proxy set, this field shows
+    // the voting power being delegated to that proxy.
     
-    // Sum all the proxied VSF votes
-    for (const vests of proxiedVsf) {
-      totalProxiedVests += parseFloat(vests) / 1000000; // Divide by 1M to get VESTS value
+    // For accounts that have set a proxy (like eddiespino -> aliento), 
+    // proxied_vsf_votes represents outgoing delegation, not incoming.
+    // We need to find accounts that have THIS username as their proxy to calculate incoming proxied power.
+    
+    // If this account has a proxy set, they are delegating TO someone else, not receiving delegation
+    if (account.proxy && account.proxy !== '') {
+      // This account delegates to a proxy, so it receives 0 proxied power
+      return '0 HP';
     }
     
-    // Calculate Hive Power
-    const proxiedHivePower = totalProxiedVests * (vestToHpRatio || 0.0005);
+    // To find true proxied power, we need to check for accounts that have this username as their proxy
+    // This is computationally expensive, so we'll use a more efficient approach
+    const proxyAccounts = await getProxyAccounts(username);
+    let totalProxiedHP = 0;
     
-    // Format Hive Power
-    return formatHivePower(proxiedHivePower);
+    // Sum up the Hive Power from all accounts that proxy to this user
+    for (const proxyAccount of proxyAccounts) {
+      const hp = parseFloat(proxyAccount.hivePower.replace(/[^0-9.]/g, ''));
+      totalProxiedHP += hp;
+    }
+    
+    // Format and return the total proxied Hive Power
+    return formatHivePower(totalProxiedHP);
   } catch (error) {
     console.error(`Error calculating proxied Hive Power for ${username}:`, error);
     return '0 HP';
