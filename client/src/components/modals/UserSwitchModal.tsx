@@ -120,9 +120,11 @@ export default function UserSwitchModal({ open, onClose }: UserSwitchModalProps)
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span>{userData.hivePower || '0 HP'}</span>
-                        {userData.witnessVotes && (
+                        {userData.proxy ? (
+                          <span>• Proxy: @{userData.proxy}</span>
+                        ) : userData.witnessVotes ? (
                           <span>• {userData.witnessVotes.length}/30 votes</span>
-                        )}
+                        ) : null}
                       </div>
                     </div>
 

@@ -248,6 +248,9 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'userStats.proxiedHPDesc': 'Hive Power proxied to your account by other users',
       'userStats.governancePower': 'Governance Power',
       'userStats.governancePowerDesc': 'Your voting power for governance decisions and witness votes (own HP + proxied HP)',
+      'userStats.proxyAccount': 'Proxy Account',
+      'userStats.proxyExplanation': 'You have delegated your witness voting power to this account. This means they can vote for witnesses on your behalf.',
+      'userStats.viewProxyVotes': 'View Proxy\'s Votes',
       'userStats.viewStats': 'View Stats',
       
       // Footer
@@ -436,6 +439,9 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       'userStats.proxiedHPDesc': 'Poder de Hive delegado a tu cuenta por otros usuarios',
       'userStats.governancePower': 'Poder de Gobernanza',
       'userStats.governancePowerDesc': 'Tu poder de voto para decisiones de gobernanza y votos de testigos (HP propio + HP delegado)',
+      'userStats.proxyAccount': 'Cuenta Proxy',
+      'userStats.proxyExplanation': 'Has delegado tu poder de voto de testigos a esta cuenta. Esto significa que pueden votar por testigos en tu nombre.',
+      'userStats.viewProxyVotes': 'Ver Votos del Proxy',
       'userStats.viewStats': 'Ver Estadísticas',
       
       // Footer

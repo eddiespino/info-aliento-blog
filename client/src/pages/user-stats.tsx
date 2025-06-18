@@ -128,12 +128,50 @@ export default function UserStats() {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <CardTitle className="text-xl">{t('userStats.yourWitnessVotes')}</CardTitle>
-                      <Badge className="bg-primary text-primary-foreground">
-                        {user?.witnessVotes?.length || 0} / 30
-                      </Badge>
+                      {user?.proxy ? (
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                          Proxy: @{user.proxy}
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-primary text-primary-foreground">
+                          {user?.witnessVotes?.length || 0} / 30
+                        </Badge>
+                      )}
                     </div>
 
-                    {user?.witnessVotes && user.witnessVotes.length > 0 ? (
+                    {user?.proxy ? (
+                      <div className="text-center py-8 space-y-4">
+                        <div className="flex flex-col items-center gap-2">
+                          <Avatar className="h-16 w-16">
+                            <AvatarImage src={`https://images.hive.blog/u/${user.proxy}/avatar`} alt={user.proxy} />
+                            <AvatarFallback>
+                              {user.proxy.substring(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium text-lg">@{user.proxy}</p>
+                            <p className="text-muted-foreground">{t('userStats.proxyAccount')}</p>
+                          </div>
+                        </div>
+                        <div className="bg-muted/30 p-4 rounded-lg">
+                          <p className="text-sm text-muted-foreground mb-2">{t('userStats.proxyExplanation')}</p>
+                        </div>
+                        <div className="flex gap-2 justify-center">
+                          <Button 
+                            variant="outline"
+                            onClick={() => setLocation(`/user-stats?user=${user.proxy}`)}
+                          >
+                            {t('userStats.viewProxyVotes')}
+                          </Button>
+                          <Button 
+                            variant="outline"
+                            onClick={() => setLocation('/witnesses')}
+                          >
+                            {t('userStats.browseWitnesses')}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : user?.witnessVotes && user.witnessVotes.length > 0 ? (
                       <div className="space-y-2">
                         {user.witnessVotes.map((witness, index) => (
                           <div 

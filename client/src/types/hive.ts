@@ -39,6 +39,7 @@ export interface UserData {
   proxiedHivePower?: string;
   freeWitnessVotes?: number;
   witnessVotes?: string[];
+  proxy?: string; // The account this user is proxying their votes to
 }
 
 export interface ProxyAccount {

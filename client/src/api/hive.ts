@@ -702,6 +702,10 @@ export const calculateProxiedHivePower = async (username: string): Promise<strin
 // Get complete user data including profile, Hive Power and witness votes
 export const getUserData = async (username: string): Promise<UserData> => {
   try {
+    // Get the user's account to check for proxy setting
+    const account = await getUserAccount(username);
+    const proxy = account?.proxy || null;
+    
     // Get user's own Hive Power (without delegations)
     const hivePower = await calculateUserHivePower(username);
     
@@ -725,7 +729,8 @@ export const getUserData = async (username: string): Promise<UserData> => {
       effectiveHivePower,
       proxiedHivePower,
       freeWitnessVotes,
-      witnessVotes
+      witnessVotes,
+      proxy
     };
   } catch (error) {
     console.error(`Error getting complete user data for ${username}:`, error);
