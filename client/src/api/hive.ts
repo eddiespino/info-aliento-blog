@@ -634,66 +634,68 @@ export const getFreeWitnessVotes = async (username: string): Promise<number> => 
 // Calculate proxied Hive Power (HP proxied to account)
 export const calculateProxiedHivePower = async (username: string): Promise<string> => {
   try {
-    const account = await getUserAccount(username);
+    const apiNode = await getBestHiveNode();
+    
+    // Get the user's account to check their proxied_vsf_votes field
+    const accountResponse = await fetch(apiNode, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "jsonrpc": "2.0",
+        "method": "condenser_api.get_accounts",
+        "params": [[username]],
+        "id": 1
+      })
+    });
+    
+    if (!accountResponse.ok) {
+      throw new Error(`Failed to fetch account ${username}`);
+    }
+    
+    const accountData = await accountResponse.json();
+    const account = accountData.result?.[0];
     
     if (!account) {
-      return '0 HP';
+      console.log(`Account ${username} not found`);
+      return '0.000 HP';
     }
+    
+    console.log(`${username} has no proxy set, checking for incoming proxied power`);
     
     // Ensure we have the vests to HP ratio before processing
     await ensureVestToHpRatio();
     
-    // IMPORTANT: proxied_vsf_votes represents voting power delegated FROM this account to their proxy,
-    // NOT power delegated TO this account. If an account has a proxy set, this field shows
-    // the voting power being delegated to that proxy.
+    // The proxied_vsf_votes field contains the total voting power being proxied TO this account
+    // This is the correct field to use for calculating incoming proxied power
+    let totalProxiedVests = 0;
     
-    // For accounts that have set a proxy (like eddiespino -> aliento), 
-    // proxied_vsf_votes represents outgoing delegation, not incoming.
-    // We need to find accounts that have THIS username as their proxy to calculate incoming proxied power.
-    
-    // If this account has a proxy set, they are delegating TO someone else, not receiving delegation
-    if (account.proxy && account.proxy !== '') {
-      // This account delegates to a proxy, so it receives 0 proxied power
-      console.log(`${username} has proxy set to ${account.proxy}, returning 0 proxied power`);
-      return '0 HP';
-    }
-    
-    // For accounts that don't have a proxy set, they could be receiving proxied power
-    // Use a direct API approach to find proxy relationships more efficiently
-    console.log(`${username} has no proxy set, checking for incoming proxied power`);
-    
-    try {
-      // For now, use a simplified approach that specifically checks for known proxy relationships
-      // This is more efficient than scanning all accounts or using complex witness vote analysis
-      
-      // Use the comprehensive proxy account search for all accounts
-      console.log(`Searching for all accounts that proxy to ${username}`);
-      const proxyAccounts = await getProxyAccounts(username);
-      let totalProxiedHP = 0;
-      
-      if (proxyAccounts.length > 0) {
-        console.log(`Found ${proxyAccounts.length} accounts proxying to ${username}:`);
-        
-        for (const proxyAccount of proxyAccounts) {
-          const hp = parseFloat(proxyAccount.hivePower.replace(/[^0-9.]/g, ''));
-          totalProxiedHP += hp;
-          console.log(`  ${proxyAccount.username}: ${proxyAccount.hivePower}`);
+    if (account.proxied_vsf_votes && Array.isArray(account.proxied_vsf_votes)) {
+      // Sum all the proxied voting power (each element represents different types of votes)
+      // Usually only the first element contains witness votes
+      for (const vests of account.proxied_vsf_votes) {
+        if (typeof vests === 'number' && vests > 0) {
+          totalProxiedVests += vests;
         }
-        
-        console.log(`Total proxied HP for ${username}: ${totalProxiedHP}`);
-        return formatHivePower(totalProxiedHP);
-      } else {
-        console.log(`No proxy accounts found for ${username}`);
-        return '0 HP';
       }
-      
-    } catch (error) {
-      console.error(`Error calculating proxied power for ${username}:`, error);
-      return '0 HP';
     }
+    
+    if (totalProxiedVests === 0) {
+      console.log(`No proxy accounts found for ${username}`);
+      return '0.000 HP';
+    }
+    
+    // Convert VSF votes to VESTS (divide by 1 million) then to HP
+    const proxiedVestsInHiveUnits = totalProxiedVests / 1000000;
+    const proxiedHivePower = proxiedVestsInHiveUnits * (vestToHpRatio || 0.0005);
+    
+    console.log(`${username} has ${formatHivePower(proxiedHivePower)} in proxied power from ${totalProxiedVests} VSF votes`);
+    return formatHivePower(proxiedHivePower);
+    
   } catch (error) {
     console.error(`Error calculating proxied Hive Power for ${username}:`, error);
-    return '0 HP';
+    return '0.000 HP';
   }
 };
 
