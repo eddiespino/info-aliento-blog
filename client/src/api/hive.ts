@@ -917,31 +917,44 @@ export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]
     // Get the VESTS to HP ratio
     await ensureVestToHpRatio();
     
-    // For aliento specifically, we know some accounts that proxy to it
-    // Let's check these directly for efficiency
     const proxyAccounts: ProxyAccount[] = [];
     
-    if (username === 'aliento') {
-      // Known accounts that proxy to aliento - check these directly
-      const knownProxyAccounts = [
-        'eddiespino',
-        'danielvehe',
-        'lucianav',
-        'arlettemsalase',
-        'lileisabel',
-        'mundomanaure',
-        'enrique89',
-        'victoriabsb',
-        'morenow',
-        'anarondon9'
-      ];
+    // Use witness voting data to find actual proxy relationships
+    // Get all voters for this witness to see which votes come through proxies
+    console.log(`Getting witness voters for ${username} to find proxy relationships`);
+    
+    const response = await fetch(apiNode, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "jsonrpc": "2.0",
+        "method": "database_api.list_witness_votes",
+        "params": {
+          "start": [username],
+          "limit": 1000,
+          "order": "by_witness_account"
+        },
+        "id": 1
+      })
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      const votes = data.result?.votes || [];
       
-      console.log(`Checking known proxy accounts for ${username}`);
+      console.log(`Found ${votes.length} votes for witness ${username}`);
       
-      // Check each known account in batches
-      const batchSize = 10;
-      for (let i = 0; i < knownProxyAccounts.length; i += batchSize) {
-        const batch = knownProxyAccounts.slice(i, i + batchSize);
+      // Get unique voter accounts that vote for this witness
+      const voterAccounts = votes
+        .filter(vote => vote.witness === username)
+        .map(vote => vote.account);
+      
+      // Check these voters in batches to see which ones have proxy set to this username
+      const batchSize = 50;
+      for (let i = 0; i < voterAccounts.length; i += batchSize) {
+        const batch = voterAccounts.slice(i, i + batchSize);
         
         try {
           const accountsResponse = await fetch(apiNode, {
@@ -973,17 +986,24 @@ export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]
                   profileImage: `https://images.hive.blog/u/${account.name}/avatar`
                 });
                 
-                console.log(`Found proxy account: ${account.name} -> ${username} (${formatHivePower(hivePower)})`);
+                console.log(`Found actual proxy account: ${account.name} -> ${username} (${formatHivePower(hivePower)})`);
               }
             }
           }
+          
+          // Small delay to prevent API overload
+          if (i + batchSize < voterAccounts.length) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
         } catch (error) {
-          console.error(`Error checking proxy batch:`, error);
+          console.error(`Error checking voter batch:`, error);
         }
       }
+    } else {
+      console.log(`Failed to get witness votes for ${username}`);
     }
     
-    console.log(`Found ${proxyAccounts.length} proxy relationships for ${username}`);
+    console.log(`Found ${proxyAccounts.length} actual proxy relationships for ${username}`);
     
     // Sort by HP descending
     return proxyAccounts.sort((a, b) => {
