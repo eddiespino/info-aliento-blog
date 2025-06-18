@@ -99,9 +99,9 @@ export default function UserStats() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold">{isOwnProfile ? t('userStats.title') : `${user.username}'s Hive Statistics`}</h1>
+          <h1 className="text-3xl font-bold">{isOwnProfile ? 'Your Hive Statistics' : `${user.username}'s Hive Statistics`}</h1>
           <p className="text-muted-foreground mt-1">
-            {isOwnProfile ? t('userStats.description') : `View ${user.username}'s stats, power metrics, and witness votes`}
+            {isOwnProfile ? 'View your account stats, power metrics, and witness votes' : `View ${user.username}'s stats, power metrics, and witness votes`}
           </p>
         </div>
         <Button 
@@ -146,23 +146,23 @@ export default function UserStats() {
           <CardHeader>
             <Tabs defaultValue="power">
               <TabsList className="grid grid-cols-2">
-                <TabsTrigger value="power">{t('userStats.powerAnalysis')}</TabsTrigger>
-                <TabsTrigger value="votes">{t('userStats.witnessVotes')}</TabsTrigger>
+                <TabsTrigger value="power">Power Analysis</TabsTrigger>
+                <TabsTrigger value="votes">Witness Votes</TabsTrigger>
               </TabsList>
 
               <TabsContent value="power" className="mt-4">
                 <div className="space-y-4">
-                  <CardTitle className="text-xl">{t('userStats.hivePowerBreakdown')}</CardTitle>
+                  <CardTitle className="text-xl">Hive Power Breakdown</CardTitle>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Own HP */}
                     <Card>
                       <CardContent className="p-4">
                         <div className="space-y-2">
-                          <div className="text-sm text-muted-foreground">{t('userStats.ownHP')}</div>
+                          <div className="text-sm text-muted-foreground">Own HP</div>
                           <div className="text-2xl font-bold">{user?.hivePower}</div>
                           <div className="text-xs text-muted-foreground">
-                            {t('userStats.ownHPDescription')}
+                            Hive Power owned directly by this account
                           </div>
                         </div>
                       </CardContent>
@@ -172,10 +172,10 @@ export default function UserStats() {
                     <Card>
                       <CardContent className="p-4">
                         <div className="space-y-2">
-                          <div className="text-sm text-muted-foreground">{t('userStats.effectiveHP')}</div>
+                          <div className="text-sm text-muted-foreground">Effective HP</div>
                           <div className="text-2xl font-bold">{user?.effectiveHivePower}</div>
                           <div className="text-xs text-muted-foreground">
-                            {t('userStats.effectiveHPDescription')}
+                            Your total effective Hive Power including delegations in/out
                           </div>
                         </div>
                       </CardContent>
@@ -185,10 +185,10 @@ export default function UserStats() {
                     <Card>
                       <CardContent className="p-4">
                         <div className="space-y-2">
-                          <div className="text-sm text-muted-foreground">{t('userStats.proxiedHP')}</div>
+                          <div className="text-sm text-muted-foreground">Proxied HP</div>
                           <div className="text-2xl font-bold">{user?.proxiedHivePower}</div>
                           <div className="text-xs text-muted-foreground">
-                            {t('userStats.proxiedHPDescription')}
+                            Hive Power proxied to this account by other users
                           </div>
                         </div>
                       </CardContent>
@@ -198,7 +198,7 @@ export default function UserStats() {
                     <Card>
                       <CardContent className="p-4">
                         <div className="space-y-2">
-                          <div className="text-sm text-muted-foreground">{t('userStats.governancePower')}</div>
+                          <div className="text-sm text-muted-foreground">Governance Power</div>
                           <div className="text-2xl font-bold">
                             {formatHivePower(
                               (parseFloat(user?.effectiveHivePower?.replace(/[^0-9.]/g, '') || '0') + 
@@ -206,7 +206,7 @@ export default function UserStats() {
                             )}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            {t('userStats.governancePowerDescription')}
+                            Your voting power for governance decisions and witness votes (own HP + proxied HP)
                           </div>
                         </div>
                       </CardContent>
@@ -218,7 +218,7 @@ export default function UserStats() {
               <TabsContent value="votes" className="mt-4">
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <CardTitle className="text-xl">{isOwnProfile ? t('userStats.yourWitnessVotes') : `${user?.username}'s Witness Votes`}</CardTitle>
+                    <CardTitle className="text-xl">{isOwnProfile ? 'Your Witness Votes' : `${user?.username}'s Witness Votes`}</CardTitle>
                     {user?.proxy ? (
                       <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                         Proxy: @{user.proxy}
@@ -242,7 +242,7 @@ export default function UserStats() {
                         <div>
                           <p className="text-lg font-medium">@{user.proxy}</p>
                           <p className="text-muted-foreground text-sm">
-                            {isOwnProfile ? t('userStats.proxyExplanation') : `${user.username} has delegated their witness votes to @${user.proxy}`}
+                            {isOwnProfile ? 'You have delegated your witness votes to this account' : `${user.username} has delegated their witness votes to @${user.proxy}`}
                           </p>
                         </div>
                         <Button 
@@ -270,7 +270,7 @@ export default function UserStats() {
                               size="sm"
                               onClick={() => setLocation(`/witness/${witness}`)}
                             >
-                              {t('witnesses.viewProfile')}
+                              View Profile
                             </Button>
                             {isOwnProfile && isLoggedIn && (
                               <Button 
@@ -287,13 +287,13 @@ export default function UserStats() {
                     </div>
                   ) : (
                     <div className="text-center py-8">
-                      <p className="text-muted-foreground">{isOwnProfile ? t('userStats.noWitnessVotes') : `${user?.username} hasn't voted for any witnesses yet`}</p>
+                      <p className="text-muted-foreground">{isOwnProfile ? 'You haven\'t voted for any witnesses yet' : `${user?.username} hasn't voted for any witnesses yet`}</p>
                       <Button 
                         variant="outline" 
                         className="mt-4"
                         onClick={() => setLocation('/witnesses')}
                       >
-                        {t('userStats.browseWitnesses')}
+                        Browse Witnesses
                       </Button>
                     </div>
                   )}
