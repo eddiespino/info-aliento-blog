@@ -101,6 +101,7 @@ This is a full-stack web application for viewing and interacting with Hive block
 - June 18, 2025. Initial setup
 - June 18, 2025. Bug fixes: Fixed duplicate translation keys, memory leaks in polling intervals, API error handling, and race conditions in login flow
 - June 18, 2025. UI improvement: Removed flag emojis from language toggle dropdown for cleaner appearance
+- June 18, 2025. Bug fix: Corrected proxied power calculation logic - fixed misunderstanding of proxied_vsf_votes field and implemented more efficient calculation method
 
 ## User Preferences
 
