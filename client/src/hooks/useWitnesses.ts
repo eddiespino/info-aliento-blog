@@ -52,8 +52,8 @@ export const useCurrentBlockProducer = () => {
     // Initial fetch
     fetchCurrentBlockProducer();
     
-    // Set up polling interval (every 3 seconds)
-    intervalId = setInterval(fetchCurrentBlockProducer, 3000);
+    // Set up polling interval (every 30 seconds to reduce API load)
+    intervalId = setInterval(fetchCurrentBlockProducer, 30000);
     
     // Clean up on unmount
     return () => {

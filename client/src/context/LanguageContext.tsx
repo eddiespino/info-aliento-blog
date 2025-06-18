@@ -89,7 +89,7 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       
       // Home page
       'home.title': 'Welcome to Hive Witness Explorer',
-      'home.description': 'Discover Hive blockchain witnesses, their profiles, and the votes they recieve from the community.',
+      'home.description': 'Discover Hive blockchain witnesses, their profiles, and the votes they receive from the community.',
       'home.featured': 'Featured Witness',
       'home.viewAll': 'View All Witnesses',
       
