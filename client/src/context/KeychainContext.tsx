@@ -127,6 +127,9 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
       
       return () => clearInterval(checkInterval);
     }
+    
+    // No cleanup needed if initial check succeeded
+    return undefined;
   }, [isDevelopmentMode]);
 
   // Track if a login is already in progress to avoid duplicate requests

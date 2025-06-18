@@ -10,16 +10,36 @@ interface LanguageContextType {
 
 // Get browser language or default to English
 const getBrowserLanguage = (): Language => {
-  const browserLang = navigator.language.split('-')[0];
-  return browserLang === 'es' ? 'es' : 'en';  
+  // Check if we're in a browser environment
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    return 'en';
+  }
+  
+  try {
+    const browserLang = navigator.language.split('-')[0];
+    return browserLang === 'es' ? 'es' : 'en';
+  } catch (error) {
+    console.warn('Error detecting browser language:', error);
+    return 'en';
+  }
 };
 
 // Get language from localStorage or from browser settings
 const getInitialLanguage = (): Language => {
-  const savedLanguage = localStorage.getItem('language') as Language;
-  if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'es')) {
-    return savedLanguage;
+  // Check if we're in a browser environment
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return 'en';
   }
+  
+  try {
+    const savedLanguage = localStorage.getItem('language') as Language;
+    if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'es')) {
+      return savedLanguage;
+    }
+  } catch (error) {
+    console.warn('Error accessing localStorage for language:', error);
+  }
+  
   return getBrowserLanguage();
 };
 
@@ -43,7 +63,13 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
   // Update language and save to localStorage
   const setLanguage = (newLanguage: Language) => {
     setLanguageState(newLanguage);
-    localStorage.setItem('language', newLanguage);
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('language', newLanguage);
+      }
+    } catch (error) {
+      console.warn('Error saving language to localStorage:', error);
+    }
   };
 
   // Load translations only once to avoid recreating this object on every render

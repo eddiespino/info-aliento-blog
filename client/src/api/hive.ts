@@ -323,27 +323,32 @@ export const getWitnesses = async (offset: number = 0, limit: number = 100): Pro
       
       // If we're requesting a subsequent batch, first fetch just the witness at position offset-1
       if (offset > 0) {
-        // First get the previous witness to use as a starting point
-        const prevResult = await fetch(apiNode, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            "jsonrpc": "2.0",
-            "method": "condenser_api.get_witnesses_by_vote",
-            "params": ["", offset],
-            "id": 1
-          })
-        });
-        
-        if (prevResult.ok) {
-          const prevData = await prevResult.json();
-          const witnesses = prevData.result;
-          if (witnesses && witnesses.length > 0) {
-            // Get the last witness from previous batch
-            startFrom = witnesses[witnesses.length - 1].owner;
+        try {
+          // First get the previous witness to use as a starting point
+          const prevResult = await fetch(apiNode, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              "jsonrpc": "2.0",
+              "method": "condenser_api.get_witnesses_by_vote",
+              "params": ["", offset],
+              "id": 1
+            })
+          });
+          
+          if (prevResult.ok) {
+            const prevData = await prevResult.json();
+            const witnesses = prevData.result;
+            if (witnesses && witnesses.length > 0) {
+              // Get the last witness from previous batch
+              startFrom = witnesses[witnesses.length - 1].owner;
+            }
           }
+        } catch (error) {
+          console.error('Error fetching starting point for pagination:', error);
+          // Continue with empty startFrom as fallback
         }
       }
       

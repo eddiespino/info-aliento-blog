@@ -155,19 +155,23 @@ export function useWitnesses(
     return filtered;
   }, [allWitnesses, searchTerm, hideInactive]);
 
-  // Sort witnesses
+  // Sort witnesses with proper error handling
   const sortedWitnesses = useMemo(() => {
     return [...filteredWitnesses].sort((a, b) => {
       switch (sortBy) {
         case 'name':
-          return a.name.localeCompare(b.name);
+          return (a.name || '').localeCompare(b.name || '');
         case 'votes':
-          return parseFloat(b.votes) - parseFloat(a.votes);
+          const aVotes = parseFloat(a.votes || '0');
+          const bVotes = parseFloat(b.votes || '0');
+          return bVotes - aVotes;
         case 'lastBlock':
-          return parseInt(b.lastBlock.replace(/,/g, '')) - parseInt(a.lastBlock.replace(/,/g, ''));
+          const aBlock = parseInt((a.lastBlock || '0').replace(/,/g, ''));
+          const bBlock = parseInt((b.lastBlock || '0').replace(/,/g, ''));
+          return bBlock - aBlock;
         case 'rank':
         default:
-          return a.rank - b.rank;
+          return (a.rank || 0) - (b.rank || 0);
       }
     });
   }, [filteredWitnesses, sortBy]);
