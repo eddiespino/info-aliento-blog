@@ -17,7 +17,7 @@ interface LoginModalProps {
 export default function LoginModal({ open, onClose }: LoginModalProps) {
   const [username, setUsername] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { isKeychainInstalled, login, isDevelopmentMode, viewOnlyMode } = useKeychain();
+  const { isKeychainInstalled, login, isDevelopmentMode } = useKeychain();
   const { t } = useLanguage();
   const [loginError, setLoginError] = useState<string | null>(null);
 

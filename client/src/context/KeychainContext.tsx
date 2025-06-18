@@ -52,15 +52,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
   const isDevelopmentMode = import.meta.env.DEV || import.meta.env.MODE === 'development';
   const [useDevelopmentMode, setUseDevelopmentMode] = useState(isDevelopmentMode);
   
-  // View-only mode allows viewing account data without authentication
-  const [viewOnlyMode, setViewOnlyMode] = useState(() => {
-    try {
-      const saved = localStorage.getItem('hive_view_only_mode');
-      return saved ? JSON.parse(saved) : true; // Default to true for better UX
-    } catch {
-      return true;
-    }
-  });
+
 
   // Load saved user data from localStorage if it exists
   // This is done on initial load and helps prevent unnecessary authentication
@@ -214,14 +206,13 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
       
       console.log('Account verified on Hive blockchain:', cleanedUsername);
       
-      if (useDevelopmentMode || viewOnlyMode) {
-        // Use mock login in development or view-only mode
+      if (useDevelopmentMode) {
+        // Use mock login in development mode
         const response = await mockLogin(cleanedUsername);
         
         if (response.success) {
           try {
-            const mode = useDevelopmentMode ? 'Development' : 'View-only';
-            console.log(`${mode} mode: Fetching user data for:`, cleanedUsername);
+            console.log('Development mode: Fetching user data for:', cleanedUsername);
             const userData = await getUserData(cleanedUsername);
             setUser(userData);
             
@@ -535,16 +526,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
   
-  // Create context value
-  // Update view-only mode setting
-  const updateViewOnlyMode = (enabled: boolean) => {
-    setViewOnlyMode(enabled);
-    try {
-      localStorage.setItem('hive_view_only_mode', JSON.stringify(enabled));
-    } catch (error) {
-      console.warn('Error saving view-only mode setting:', error);
-    }
-  };
+
 
   const contextValue: KeychainContextType = {
     keychain,
@@ -559,7 +541,7 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     isDevelopmentMode,
     getSavedUsers,
     switchUser,
-    removeUser: updateViewOnlyMode
+    removeUser
   };
 
   return (
