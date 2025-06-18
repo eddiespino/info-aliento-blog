@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -10,184 +10,261 @@ import { useKeychain } from '@/context/KeychainContext';
 import { useLocation } from 'wouter';
 import { formatHivePower } from '@/lib/utils';
 import { getUserData } from '@/api/hive';
-import LoginModal from '@/components/modals/LoginModal';
+import { UserData } from '@/types/hive';
+import { useQuery } from '@tanstack/react-query';
 
 export default function UserStats() {
   const { t } = useLanguage();
-  const { user, isLoggedIn, setUser } = useKeychain();
-  const [, setLocation] = useLocation();
+  const { user: loggedInUser, isLoggedIn, voteWitness } = useKeychain();
+  const [location, setLocation] = useLocation();
   const [isRefreshing, setIsRefreshing] = useState(false);
   
-  // Track if we should show login modal and if we have already asked before
-  const [loginModalOpen, setLoginModalOpen] = useState(false);
-  const hasAskedForLoginOnce = useRef(false);
+  // Extract username from URL path
+  const getUsername = () => {
+    if (location === '/user-stats' && loggedInUser?.username) {
+      return loggedInUser.username;
+    }
+    // For URLs like /eddiespino, extract the username
+    const match = location.match(/^\/([^/]+)$/);
+    return match ? match[1] : null;
+  };
+
+  const username = getUsername();
+  const isOwnProfile = isLoggedIn && username === loggedInUser?.username;
+
+  // Fetch user data for the specified username
+  const { data: user, isLoading, error, refetch } = useQuery({
+    queryKey: ['userData', username],
+    queryFn: () => username ? getUserData(username) : null,
+    enabled: !!username,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   const handleRefresh = async () => {
-    if (!user?.username) return;
-    
     setIsRefreshing(true);
     try {
-      const freshUserData = await getUserData(user.username);
-      if (freshUserData) {
-        setUser(freshUserData);
-        localStorage.setItem('hive_current_user', JSON.stringify(freshUserData));
-      }
+      await refetch();
     } catch (error) {
       console.error('Error refreshing user data:', error);
     } finally {
       setIsRefreshing(false);
     }
   };
-  
-  // Force redirect if not logged in with a short delay
+
+  // Redirect to home if no username can be determined
   useEffect(() => {
-    // Make sure we only run this effect on the client side
-    if (typeof window === 'undefined') return;
-    
-    // Check if user has data in localStorage first
-    const hasLocalStorageUser = !!localStorage.getItem('hive_current_user');
-    
-    // If user is not logged in and we haven't shown login modal yet
-    if (!isLoggedIn && !hasAskedForLoginOnce.current && !hasLocalStorageUser) {
-      // Mark that we've asked once so we don't keep asking
-      hasAskedForLoginOnce.current = true;
-      console.log('Opening login modal on first visit (no localStorage user)');
-      setLoginModalOpen(true);
-    }
-  }, [isLoggedIn]);
-  
-  // Handle close of login modal
-  const handleLoginModalClose = () => {
-    // If the user canceled the login, redirect them back to home
-    if (!isLoggedIn) {
-      console.log('User cancelled login, redirecting to home');
+    if (!username && location !== '/user-stats') {
       setLocation('/');
     }
-    setLoginModalOpen(false);
-  };
+  }, [username, location, setLocation]);
 
-  return (
-    <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-10">
-        <div className="text-center flex-1">
-          <h1 className="text-3xl font-bold">{t('userStats.title')}</h1>
-          <p className="mt-2 text-muted-foreground">{t('userStats.subtitle')}</p>
-        </div>
-        {isLoggedIn && (
-          <Button 
-            onClick={handleRefresh} 
-            disabled={isRefreshing}
-            variant="outline"
-            className="ml-4"
-          >
-            <span className="material-symbols-outlined text-sm mr-2">
-              {isRefreshing ? 'progress_activity' : 'refresh'}
-            </span>
-            {isRefreshing ? 'Refreshing...' : 'Refresh Data'}
-          </Button>
-        )}
-      </div>
-
-      {!isLoggedIn ? (
-        <div className="text-center">
-          <p className="mb-4">{t('userStats.needLogin')}</p>
-          <Button onClick={() => setLoginModalOpen(true)}>
-            {t('login.withKeychain')}
-          </Button>
-        </div>
-      ) : (
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
         <div className="max-w-5xl mx-auto">
-          {/* User Profile Header */}
           <div className="flex flex-col sm:flex-row items-center gap-6 mb-8 p-6 bg-card rounded-lg border">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src={user?.profileImage} alt={user?.username || 'User'} />
-              <AvatarFallback>
-                {user?.username?.substring(0, 2).toUpperCase() || 'U'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="text-center sm:text-left">
-              <h2 className="text-3xl font-bold">@{user?.username}</h2>
-              <div className="flex flex-wrap gap-4 mt-2">
-                {user?.proxy ? (
-                  <Badge variant="outline" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                    Proxy: @{user.proxy}
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="bg-primary/10">
-                    {user?.witnessVotes?.length || 0}/30 witness votes
-                  </Badge>
-                )}
-              </div>
+            <Skeleton className="h-20 w-20 rounded-full" />
+            <div className="text-center sm:text-left space-y-2">
+              <Skeleton className="h-8 w-32" />
+              <Skeleton className="h-4 w-24" />
             </div>
           </div>
+          <div className="space-y-4">
+            <Skeleton className="h-64 w-full" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-          {/* Tabs for different stats */}
-          <Card>
-            <CardHeader>
-              <Tabs defaultValue="power">
-                <TabsList className="grid grid-cols-2">
-                  <TabsTrigger value="power">{t('userStats.powerAnalysis')}</TabsTrigger>
-                  <TabsTrigger value="votes">{t('userStats.witnessVotes')}</TabsTrigger>
-                </TabsList>
+  // Show error state
+  if (error || !user) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-2xl mx-auto text-center">
+          <h1 className="text-2xl font-bold mb-4">User Not Found</h1>
+          <p className="text-muted-foreground mb-4">
+            The user "@{username}" could not be found on the Hive blockchain.
+          </p>
+          <Button onClick={() => setLocation('/')}>
+            Go Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
-                <TabsContent value="votes" className="mt-4">
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <CardTitle className="text-xl">{t('userStats.yourWitnessVotes')}</CardTitle>
-                      {user?.proxy ? (
-                        <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                          Proxy: @{user.proxy}
-                        </Badge>
-                      ) : (
-                        <Badge className="bg-primary text-primary-foreground">
-                          {user?.witnessVotes?.length || 0} / 30
-                        </Badge>
-                      )}
-                    </div>
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold">{isOwnProfile ? t('userStats.title') : `${user.username}'s Hive Statistics`}</h1>
+          <p className="text-muted-foreground mt-1">
+            {isOwnProfile ? t('userStats.description') : `View ${user.username}'s stats, power metrics, and witness votes`}
+          </p>
+        </div>
+        <Button 
+          onClick={handleRefresh}
+          variant="outline"
+          disabled={isRefreshing}
+        >
+          <span className="material-symbols-outlined mr-2">
+            {isRefreshing ? 'sync' : 'refresh'}
+          </span>
+          {isRefreshing ? 'Refreshing...' : 'Refresh Data'}
+        </Button>
+      </div>
 
-                    {user?.proxy ? (
-                      <div className="text-center py-8 space-y-4">
-                        <div className="flex flex-col items-center gap-2">
-                          <Avatar className="h-16 w-16">
-                            <AvatarImage src={`https://images.hive.blog/u/${user.proxy}/avatar`} alt={user.proxy} />
-                            <AvatarFallback>
-                              {user.proxy.substring(0, 2).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium text-lg">@{user.proxy}</p>
-                            <p className="text-muted-foreground">{t('userStats.proxyAccount')}</p>
+      <div className="max-w-5xl mx-auto">
+        {/* User Profile Header */}
+        <div className="flex flex-col sm:flex-row items-center gap-6 mb-8 p-6 bg-card rounded-lg border">
+          <Avatar className="h-20 w-20">
+            <AvatarImage src={user?.profileImage} alt={user?.username || 'User'} />
+            <AvatarFallback>
+              {user?.username?.substring(0, 2).toUpperCase() || 'U'}
+            </AvatarFallback>
+          </Avatar>
+          <div className="text-center sm:text-left">
+            <h2 className="text-3xl font-bold">@{user?.username}</h2>
+            <div className="flex flex-wrap gap-4 mt-2">
+              {user?.proxy ? (
+                <Badge variant="outline" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                  Proxy: @{user.proxy}
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="bg-primary/10">
+                  {user?.witnessVotes?.length || 0}/30 witness votes
+                </Badge>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs for different stats */}
+        <Card>
+          <CardHeader>
+            <Tabs defaultValue="power">
+              <TabsList className="grid grid-cols-2">
+                <TabsTrigger value="power">{t('userStats.powerAnalysis')}</TabsTrigger>
+                <TabsTrigger value="votes">{t('userStats.witnessVotes')}</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="power" className="mt-4">
+                <div className="space-y-4">
+                  <CardTitle className="text-xl">{t('userStats.hivePowerBreakdown')}</CardTitle>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* Own HP */}
+                    <Card>
+                      <CardContent className="p-4">
+                        <div className="space-y-2">
+                          <div className="text-sm text-muted-foreground">{t('userStats.ownHP')}</div>
+                          <div className="text-2xl font-bold">{user?.hivePower}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {t('userStats.ownHPDescription')}
                           </div>
                         </div>
-                        <div className="bg-muted/30 p-4 rounded-lg">
-                          <p className="text-sm text-muted-foreground mb-2">{t('userStats.proxyExplanation')}</p>
+                      </CardContent>
+                    </Card>
+
+                    {/* Effective HP */}
+                    <Card>
+                      <CardContent className="p-4">
+                        <div className="space-y-2">
+                          <div className="text-sm text-muted-foreground">{t('userStats.effectiveHP')}</div>
+                          <div className="text-2xl font-bold">{user?.effectiveHivePower}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {t('userStats.effectiveHPDescription')}
+                          </div>
                         </div>
-                        <div className="flex gap-2 justify-center">
-                          <Button 
-                            variant="outline"
-                            onClick={() => setLocation(`/user-stats?user=${user.proxy}`)}
-                          >
-                            {t('userStats.viewProxyVotes')}
-                          </Button>
-                          <Button 
-                            variant="outline"
-                            onClick={() => setLocation('/witnesses')}
-                          >
-                            {t('userStats.browseWitnesses')}
-                          </Button>
+                      </CardContent>
+                    </Card>
+
+                    {/* Proxied HP */}
+                    <Card>
+                      <CardContent className="p-4">
+                        <div className="space-y-2">
+                          <div className="text-sm text-muted-foreground">{t('userStats.proxiedHP')}</div>
+                          <div className="text-2xl font-bold">{user?.proxiedHivePower}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {t('userStats.proxiedHPDescription')}
+                          </div>
                         </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Governance Power */}
+                    <Card>
+                      <CardContent className="p-4">
+                        <div className="space-y-2">
+                          <div className="text-sm text-muted-foreground">{t('userStats.governancePower')}</div>
+                          <div className="text-2xl font-bold">
+                            {formatHivePower(
+                              (parseFloat(user?.effectiveHivePower?.replace(/[^0-9.]/g, '') || '0') + 
+                               parseFloat(user?.proxiedHivePower?.replace(/[^0-9.]/g, '') || '0'))
+                            )}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {t('userStats.governancePowerDescription')}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="votes" className="mt-4">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-xl">{isOwnProfile ? t('userStats.yourWitnessVotes') : `${user?.username}'s Witness Votes`}</CardTitle>
+                    {user?.proxy ? (
+                      <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        Proxy: @{user.proxy}
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-primary text-primary-foreground">
+                        {user?.witnessVotes?.length || 0} / 30
+                      </Badge>
+                    )}
+                  </div>
+
+                  {user?.proxy ? (
+                    <div className="text-center py-8">
+                      <div className="flex flex-col items-center gap-4">
+                        <Avatar className="h-16 w-16">
+                          <AvatarImage src={`https://images.hive.blog/u/${user.proxy}/avatar`} alt={`@${user.proxy}`} />
+                          <AvatarFallback>
+                            {user.proxy.substring(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-lg font-medium">@{user.proxy}</p>
+                          <p className="text-muted-foreground text-sm">
+                            {isOwnProfile ? t('userStats.proxyExplanation') : `${user.username} has delegated their witness votes to @${user.proxy}`}
+                          </p>
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setLocation(`/${user.proxy}`)}
+                        >
+                          View @{user.proxy}'s Profile
+                        </Button>
                       </div>
-                    ) : user?.witnessVotes && user.witnessVotes.length > 0 ? (
-                      <div className="space-y-2">
-                        {user.witnessVotes.map((witness, index) => (
-                          <div 
-                            key={witness} 
-                            className="flex justify-between items-center p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors"
-                          >
-                            <div className="flex items-center gap-2">
-                              <span className="text-muted-foreground">{index + 1}.</span>
-                              <span className="font-medium">@{witness}</span>
-                            </div>
+                    </div>
+                  ) : user?.witnessVotes && user.witnessVotes.length > 0 ? (
+                    <div className="space-y-2">
+                      {user.witnessVotes.map((witness, index) => (
+                        <div 
+                          key={witness} 
+                          className="flex justify-between items-center p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="text-muted-foreground">{index + 1}.</span>
+                            <span className="font-medium">@{witness}</span>
+                          </div>
+                          <div className="flex gap-2">
                             <Button 
                               variant="outline" 
                               size="sm"
@@ -195,99 +272,37 @@ export default function UserStats() {
                             >
                               {t('witnesses.viewProfile')}
                             </Button>
+                            {isOwnProfile && isLoggedIn && (
+                              <Button 
+                                variant="destructive" 
+                                size="sm"
+                                onClick={() => voteWitness(witness, false)}
+                              >
+                                Remove Vote
+                              </Button>
+                            )}
                           </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <p className="text-muted-foreground">{t('userStats.noWitnessVotes')}</p>
-                        <Button 
-                          variant="outline" 
-                          className="mt-4"
-                          onClick={() => setLocation('/witnesses')}
-                        >
-                          {t('userStats.browseWitnesses')}
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="power" className="mt-4">
-                  <div className="space-y-4">
-                    <CardTitle className="text-xl">{t('userStats.hivePowerBreakdown')}</CardTitle>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                      <Card>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-sm font-medium text-muted-foreground">
-                            {t('profile.ownHP')}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="text-2xl font-bold">{user?.hivePower}</div>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {t('userStats.ownHPDesc')}
-                          </p>
-                        </CardContent>
-                      </Card>
-                      
-                      <Card>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-sm font-medium text-muted-foreground">
-                            {t('userStats.effectiveHP')}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="text-2xl font-bold">{user?.effectiveHivePower}</div>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {t('userStats.effectiveHPDesc')}
-                          </p>
-                        </CardContent>
-                      </Card>
-                      
-                      <Card>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-sm font-medium text-muted-foreground">
-                            {t('profile.proxiedHP')}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="text-2xl font-bold">{user?.proxiedHivePower}</div>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {t('userStats.proxiedHPDesc')}
-                          </p>
-                        </CardContent>
-                      </Card>
-                      
-                      <Card>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-sm font-medium text-muted-foreground">
-                            {t('userStats.governancePower')}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="text-2xl font-bold">
-                            {user?.hivePower && user?.proxiedHivePower ? 
-                              formatHivePower(parseFloat(user.hivePower.replace(/,/g, '').replace(' HP', '')) + 
-                                                parseFloat(user.proxiedHivePower.replace(/,/g, '').replace(' HP', ''))) : 
-                              user?.hivePower}
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {t('userStats.governancePowerDesc')}
-                          </p>
-                        </CardContent>
-                      </Card>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </CardHeader>
-          </Card>
-        </div>
-      )}
-
-      <LoginModal open={loginModalOpen} onClose={handleLoginModalClose} />
-    </section>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground">{isOwnProfile ? t('userStats.noWitnessVotes') : `${user?.username} hasn't voted for any witnesses yet`}</p>
+                      <Button 
+                        variant="outline" 
+                        className="mt-4"
+                        onClick={() => setLocation('/witnesses')}
+                      >
+                        {t('userStats.browseWitnesses')}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardHeader>
+        </Card>
+      </div>
+    </div>
   );
 }

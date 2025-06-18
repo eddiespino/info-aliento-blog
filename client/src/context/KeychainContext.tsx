@@ -19,8 +19,7 @@ interface KeychainContextType {
   getSavedUsers: () => UserData[];
   switchUser: (username: string) => Promise<boolean>;
   removeUser: (username: string) => void;
-  viewOnlyMode: boolean;
-  setViewOnlyMode: (enabled: boolean) => void;
+
 }
 
 // Create default context values

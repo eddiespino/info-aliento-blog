@@ -23,6 +23,7 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/witness/:name" component={WitnessProfile} />
       <Route path="/user-stats" component={UserStats} />
+      <Route path="/:username" component={UserStats} />
       <Route component={NotFound} />
     </Switch>
   );
