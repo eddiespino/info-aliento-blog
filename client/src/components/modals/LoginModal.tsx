@@ -6,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useKeychain } from '@/context/KeychainContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Download } from 'lucide-react';
 
@@ -18,7 +17,7 @@ interface LoginModalProps {
 export default function LoginModal({ open, onClose }: LoginModalProps) {
   const [username, setUsername] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { isKeychainInstalled, login, isDevelopmentMode } = useKeychain();
+  const { isKeychainInstalled, login, isDevelopmentMode, viewOnlyMode } = useKeychain();
   const { t } = useLanguage();
   const [loginError, setLoginError] = useState<string | null>(null);
 
@@ -66,9 +65,18 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
           <DialogTitle className="flex items-center gap-2">
             <span className="material-symbols-outlined text-primary">login</span>
             {t('modal.login.title')}
+            {(isDevelopmentMode || viewOnlyMode) && (
+              <Badge variant="secondary" className="ml-2 text-xs">
+                {isDevelopmentMode ? 'Dev Mode' : 'View Only'}
+              </Badge>
+            )}
           </DialogTitle>
           <DialogDescription>
-            {t('modal.login.desc')}
+            {viewOnlyMode && !isDevelopmentMode ? (
+              'Enter any Hive username to view their witness votes and stats. Authentication required for voting.'
+            ) : (
+              t('modal.login.desc')
+            )}
           </DialogDescription>
         </DialogHeader>
         

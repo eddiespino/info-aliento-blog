@@ -1,5 +1,6 @@
 import FeaturedWitness from "@/components/FeaturedWitness";
 import { useLanguage } from "@/context/LanguageContext";
+import { ViewOnlyModeToggle } from '@/components/ViewOnlyModeToggle';
 
 export default function About() {
   const { t } = useLanguage();

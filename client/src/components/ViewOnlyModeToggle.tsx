@@ -1,4 +1,4 @@
-import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useKeychain } from '@/context/KeychainContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,15 +18,17 @@ export function ViewOnlyModeToggle() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="view-only-mode"
-            checked={viewOnlyMode}
-            onCheckedChange={setViewOnlyMode}
-          />
-          <Label htmlFor="view-only-mode">
-            {viewOnlyMode ? 'Enabled' : 'Disabled'}
+        <div className="flex items-center justify-between">
+          <Label htmlFor="view-only-mode" className="text-sm font-medium">
+            {viewOnlyMode ? 'Currently Enabled' : 'Currently Disabled'}
           </Label>
+          <Button
+            variant={viewOnlyMode ? "destructive" : "default"}
+            size="sm"
+            onClick={() => setViewOnlyMode(!viewOnlyMode)}
+          >
+            {viewOnlyMode ? 'Disable' : 'Enable'}
+          </Button>
         </div>
         <p className="text-sm text-muted-foreground mt-2">
           {viewOnlyMode 

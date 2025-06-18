@@ -209,21 +209,23 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
       
       console.log('Account verified on Hive blockchain:', cleanedUsername);
       
-      if (useDevelopmentMode) {
-        // Use mock login in development
+      if (useDevelopmentMode || viewOnlyMode) {
+        // Use mock login in development or view-only mode
         const response = await mockLogin(cleanedUsername);
         
         if (response.success) {
           try {
-            console.log('Development mode: Fetching user data for:', cleanedUsername);
+            const mode = useDevelopmentMode ? 'Development' : 'View-only';
+            console.log(`${mode} mode: Fetching user data for:`, cleanedUsername);
             const userData = await getUserData(cleanedUsername);
             setUser(userData);
             
-            // Save user data to localStorage for persistence in development mode
+            // Save user data to localStorage for persistence
             localStorage.setItem('hive_current_user', JSON.stringify(userData));
             saveUserToHistory(userData);
           } catch (dataError) {
-            console.error('Development mode: Error fetching user data:', dataError);
+            const mode = useDevelopmentMode ? 'Development' : 'View-only';
+            console.error(`${mode} mode: Error fetching user data:`, dataError);
             const userData = { username: cleanedUsername };
             setUser(userData);
             
