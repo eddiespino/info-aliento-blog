@@ -433,7 +433,7 @@ export const getWitnesses = async (offset: number = 0, limit: number = 100): Pro
     // Format the witness data
     return witnesses.map((witness: any, index: number) => {
       // Convert VESTS to actual Hive Power using the conversion rate
-      const vestAmount = parseFloat(witness.votes);
+      const vestAmount = parseFloat(witness.votes || '0');
       // Divide by 1,000,000 to account for the scale of VESTS in Hive blockchain
       const hiveAmount = vestAmount * (vestToHpRatio || 0.0005) / 1000000;
       
@@ -441,7 +441,7 @@ export const getWitnesses = async (offset: number = 0, limit: number = 100): Pro
       const formattedHp = formatHivePower(hiveAmount);
       
       // Format last block number with commas (PeakD style - no # prefix)
-      const blockNum = parseInt(witness.last_confirmed_block_num);
+      const blockNum = parseInt(witness.last_confirmed_block_num || '0');
       const formattedBlockNum = formatNumberWithCommas(blockNum);
       
       // Check if the witness is active (has signed a block in the last 72 hours)
@@ -953,8 +953,8 @@ export const getProxyAccounts = async (username: string): Promise<ProxyAccount[]
       
       // Get unique voter accounts that vote for this witness
       const voterAccounts = votes
-        .filter(vote => vote.witness === username)
-        .map(vote => vote.account);
+        .filter((vote: any) => vote.witness === username)
+        .map((vote: any) => vote.account);
       
       // Check these voters in batches to see which ones have proxy set to this username
       const batchSize = 50;

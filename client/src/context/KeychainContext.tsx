@@ -65,7 +65,11 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
               if (JSON.stringify(userData) !== JSON.stringify(freshUserData)) {
                 console.log('Updating user data with fresh data from API');
                 setUser(freshUserData);
-                localStorage.setItem('hive_user', JSON.stringify(freshUserData));
+                try {
+                  localStorage.setItem('hive_user', JSON.stringify(freshUserData));
+                } catch (storageError) {
+                  console.warn('Error saving fresh user data to localStorage:', storageError);
+                }
               }
             })
             .catch(error => {
@@ -325,8 +329,12 @@ export const KeychainProvider: React.FC<{ children: ReactNode }> = ({ children }
     setIsLoggedIn(false);
     
     // Remove saved user data from localStorage
-    localStorage.removeItem('hive_user');
-    console.log('User logged out, data cleared from localStorage');
+    try {
+      localStorage.removeItem('hive_user');
+      console.log('User logged out, data cleared from localStorage');
+    } catch (storageError) {
+      console.warn('Error removing user data from localStorage:', storageError);
+    }
   };
 
   // Vote witness implementation using direct Keychain API

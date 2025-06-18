@@ -77,23 +77,30 @@ export function useWitnesses(
   
   // This function will be used by useQuery to fetch witness data
   const fetchWitnesses = async () => {
-    // Fetch witnesses with the current offset
-    const result = await getWitnesses(currentPage * 100, 100);
-    
-    // If we received fewer than 100 witnesses, we've reached the end
-    if (result.length < 100) {
-      setHasMoreWitnesses(false);
-    } else {
-      setHasMoreWitnesses(true);
+    try {
+      // Fetch witnesses with the current offset
+      const result = await getWitnesses(currentPage * 100, 100);
+      
+      // If we received fewer than 100 witnesses, we've reached the end
+      if (result.length < 100) {
+        setHasMoreWitnesses(false);
+      } else {
+        setHasMoreWitnesses(true);
+      }
+      
+      // Always just set the current page of witnesses (don't accumulate)
+      setAllWitnesses(result);
+      
+      // Update the loaded count for the current page
+      setLoadedCount((currentPage + 1) * 100);
+      
+      return result;
+    } catch (error) {
+      console.error('Error fetching witnesses:', error);
+      // Return empty array on error to prevent crashes
+      setAllWitnesses([]);
+      return [];
     }
-    
-    // Always just set the current page of witnesses (don't accumulate)
-    setAllWitnesses(result);
-    
-    // Update the loaded count for the current page
-    setLoadedCount((currentPage + 1) * 100);
-    
-    return result;
   };
   
   const { 

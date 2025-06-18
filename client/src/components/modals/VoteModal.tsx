@@ -35,6 +35,9 @@ export default function VoteModal({ open, onClose, witness, unvote = false }: Vo
       } else {
         setVoteError(null);
       }
+    } else {
+      // Reset error when modal closes
+      setVoteError(null);
     }
   }, [open, isKeychainInstalled, keychain, isLoggedIn, user]);
 
