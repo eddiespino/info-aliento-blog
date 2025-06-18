@@ -175,7 +175,7 @@ export default function UserStats() {
                           <div className="text-sm text-muted-foreground">Effective HP</div>
                           <div className="text-2xl font-bold">{user?.effectiveHivePower}</div>
                           <div className="text-xs text-muted-foreground">
-                            Your total effective Hive Power including delegations in/out
+                            Total effective Hive Power including delegations in/out
                           </div>
                         </div>
                       </CardContent>
@@ -206,7 +206,7 @@ export default function UserStats() {
                             )}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            Your voting power for governance decisions and witness votes (own HP + proxied HP)
+                            Voting power for governance decisions and witness votes (own HP + proxied HP)
                           </div>
                         </div>
                       </CardContent>
