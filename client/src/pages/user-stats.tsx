@@ -94,49 +94,32 @@ export default function UserStats() {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Profile Overview */}
-          <Card className="lg:col-span-1">
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center text-center">
-                <Avatar className="h-24 w-24 mb-4">
-                  <AvatarImage src={user?.profileImage} alt={user?.username || 'User'} />
-                  <AvatarFallback>
-                    {user?.username?.substring(0, 2).toUpperCase() || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <h2 className="text-2xl font-bold mb-1">@{user?.username}</h2>
-                <div className="flex flex-col gap-2 mt-4 w-full">
-                  <div className="flex justify-between items-center p-3 bg-muted/50 rounded-md">
-                    <span className="text-sm text-muted-foreground">{t('profile.ownHP')}</span>
-                    <span className="font-medium">{user?.hivePower}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-muted/50 rounded-md">
-                    <span className="text-sm text-muted-foreground">{t('profile.proxiedHP')}</span>
-                    <span className="font-medium">{user?.proxiedHivePower}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-muted/50 rounded-md">
-                    <span className="text-sm text-muted-foreground">{t('userStats.effectiveHP')}</span>
-                    <span className="font-medium">{user?.effectiveHivePower}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-muted/50 rounded-md">
-                    <span className="text-sm text-muted-foreground">{t('userStats.witnessVotes')}</span>
-                    <Badge variant="outline" className="bg-primary/10 font-medium">
-                      {user?.freeWitnessVotes ? 30 - user.freeWitnessVotes : 0}/{30}
-                    </Badge>
-                  </div>
-                </div>
+        <div className="max-w-5xl mx-auto">
+          {/* User Profile Header */}
+          <div className="flex flex-col sm:flex-row items-center gap-6 mb-8 p-6 bg-card rounded-lg border">
+            <Avatar className="h-20 w-20">
+              <AvatarImage src={user?.profileImage} alt={user?.username || 'User'} />
+              <AvatarFallback>
+                {user?.username?.substring(0, 2).toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="text-center sm:text-left">
+              <h2 className="text-3xl font-bold">@{user?.username}</h2>
+              <div className="flex flex-wrap gap-4 mt-2">
+                <Badge variant="outline" className="bg-primary/10">
+                  {user?.witnessVotes?.length || 0}/30 witness votes
+                </Badge>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Tabs for different stats */}
-          <Card className="lg:col-span-2">
+          <Card>
             <CardHeader>
-              <Tabs defaultValue="votes">
+              <Tabs defaultValue="power">
                 <TabsList className="grid grid-cols-2">
-                  <TabsTrigger value="votes">{t('userStats.witnessVotes')}</TabsTrigger>
                   <TabsTrigger value="power">{t('userStats.powerAnalysis')}</TabsTrigger>
+                  <TabsTrigger value="votes">{t('userStats.witnessVotes')}</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="votes" className="mt-4">

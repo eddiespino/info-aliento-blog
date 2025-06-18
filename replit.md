@@ -103,6 +103,7 @@ This is a full-stack web application for viewing and interacting with Hive block
 - June 18, 2025. UI improvement: Removed flag emojis from language toggle dropdown for cleaner appearance
 - June 18, 2025. Bug fix: Corrected proxied power calculation logic - fixed misunderstanding of proxied_vsf_votes field and implemented more efficient calculation method
 - June 18, 2025. Bug fix: Fixed proxy calculation to use proxied_vsf_votes field directly instead of scanning all witness voters, which is much more efficient and accurate
+- June 18, 2025. UI improvement: Removed redundant profile stats card, cleaned up user stats page layout, made power analysis the default tab
 
 ## User Preferences
 
