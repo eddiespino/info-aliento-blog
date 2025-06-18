@@ -143,10 +143,18 @@ export default function Header() {
                       <div className="mt-4 border-t border-border pt-2">
                         <Link href="/user-stats">
                           <DropdownMenuItem className="cursor-pointer">
+                            <span className="material-symbols-outlined text-sm mr-2">person</span>
                             {t('userStats.viewStats')}
                           </DropdownMenuItem>
                         </Link>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => setUserSwitchModalOpen(true)} className="cursor-pointer">
+                          <span className="material-symbols-outlined text-sm mr-2">people</span>
+                          Switch User
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
+                          <span className="material-symbols-outlined text-sm mr-2">logout</span>
                           {t('logout')}
                         </DropdownMenuItem>
                       </div>
